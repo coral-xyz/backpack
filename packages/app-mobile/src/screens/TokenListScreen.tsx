@@ -5,7 +5,7 @@ import { Suspense, useCallback } from "react";
 import { FlatList } from "react-native";
 
 import { blockchainBalancesSorted } from "@coral-xyz/recoil";
-import { Box } from "@coral-xyz/tamagui";
+import { Stack } from "@coral-xyz/tamagui";
 import { ErrorBoundary } from "react-error-boundary";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRecoilValue } from "recoil";
@@ -41,6 +41,7 @@ function Container({ navigation, route }: TokenListScreenProps): JSX.Element {
     [navigation]
   );
 
+  const keyExtractor = (item) => item.address;
   const renderItem = useCallback(
     ({ item: token, index }: { item: Token; index: number }) => {
       const isFirst = index === 0;
@@ -50,6 +51,7 @@ function Container({ navigation, route }: TokenListScreenProps): JSX.Element {
         <RoundedContainerGroup
           disableTopRadius={!isFirst}
           disableBottomRadius={!isLast}
+          borderRadius={16}
         >
           <TokenRow
             onPressRow={onPressToken}
@@ -65,16 +67,16 @@ function Container({ navigation, route }: TokenListScreenProps): JSX.Element {
 
   return (
     <FlatList
-      style={{ paddingTop: 16, paddingHorizontal: 16 }}
+      style={{ paddingTop: 8, marginTop: 8, paddingHorizontal: 16 }}
       contentContainerStyle={{ paddingBottom: insets.bottom + 16 }}
       data={balances}
-      keyExtractor={(item) => item.address}
+      keyExtractor={keyExtractor}
       renderItem={renderItem}
       showsVerticalScrollIndicator={false}
       ListHeaderComponent={
         <>
-          <BalanceSummaryWidget />
-          <Box marginVertical={12}>
+          <BalanceSummaryWidget hideChange />
+          <Stack mt={18} mb={24}>
             <TransferWidget
               swapEnabled
               rampEnabled={false}
@@ -82,7 +84,7 @@ function Container({ navigation, route }: TokenListScreenProps): JSX.Element {
                 navigation.push(route, options);
               }}
             />
-          </Box>
+          </Stack>
         </>
       }
     />

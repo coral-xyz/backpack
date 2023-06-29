@@ -20,7 +20,16 @@ import {
   blockchainBalancesSorted,
   allWalletsDisplayed,
 } from "@coral-xyz/recoil";
-import { TextPercentChanged, RoundedContainerGroup } from "@coral-xyz/tamagui";
+import {
+  TextPercentChanged,
+  RoundedContainerGroup,
+  XStack,
+  StyledText,
+  Stack,
+  ListItem,
+  YStack,
+  Circle,
+} from "@coral-xyz/tamagui";
 import { useNavigation } from "@react-navigation/native";
 import { useRecoilValueLoadable } from "recoil";
 
@@ -292,7 +301,33 @@ export function WalletPickerButton({
   );
 }
 
-// Renders the individual token row
+function TextUsdBalance({ usdBalance }: { usdBalance: number }): JSX.Element {
+  return (
+    <StyledText fontSize="$lg" color="$baseTextHighEmphasis" numberOfLines={1}>
+      {formatUsd(usdBalance)}
+    </StyledText>
+  );
+}
+
+function TextAmountBalance({
+  displayBalance,
+  ticker,
+}: {
+  displayBalance?: string;
+  ticker: string;
+}): JSX.Element {
+  const subtitle = displayBalance ? `${displayBalance} ${ticker}` : ticker;
+  return (
+    <StyledText
+      textOverflow="ellipsis"
+      color="$baseTextMedEmphasis"
+      numberOfLines={1}
+    >
+      {subtitle}
+    </StyledText>
+  );
+}
+
 export function TokenRow({
   onPressRow,
   token,
@@ -308,81 +343,41 @@ export function TokenRow({
   blockchain: Blockchain;
   walletPublicKey: string;
 }): JSX.Element {
-  const theme = useTheme();
   const { name, recentUsdBalanceChange, logo: iconUrl } = token;
 
-  let subtitle = token.ticker;
-  if (token.displayBalance) {
-    subtitle = `${token.displayBalance.toLocaleString()} ${subtitle}`;
-  }
-
   return (
-    <Pressable
+    <ListItem
+      ai="center"
+      bg="$card"
+      py={16}
+      px={16}
       onPress={() => onPressRow(blockchain, token, walletPublicKey)}
-      style={styles.rowContainer}
     >
-      <View style={{ flexDirection: "row" }}>
-        {iconUrl ? (
-          <Margin right={12}>
-            <ProxyImage size={50} style={styles.rowLogo} src={iconUrl} />
-          </Margin>
-        ) : null}
-        <View>
-          <Text
-            style={[styles.tokenName, { color: theme.custom.colors.fontColor }]}
-          >
-            {name}
-          </Text>
-          <Text
-            style={[
-              styles.tokenAmount,
-              { color: theme.custom.colors.secondary },
-            ]}
-          >
-            {subtitle}
-          </Text>
-        </View>
-      </View>
-      <View style={{ alignItems: "flex-end" }}>
-        <Text
-          style={[
-            styles.tokenBalance,
-            { color: theme.custom.colors.fontColor },
-          ]}
-        >
-          {formatUsd(token.usdBalance)}
-        </Text>
-        <TextPercentChanged percentChange={recentUsdBalanceChange} />
-      </View>
-    </Pressable>
+      <XStack ai="center">
+        <XStack ai="center" jc="space-between">
+          <Circle size={40} mr={16} overflow="hidden">
+            {iconUrl ? <ProxyImage size={40} src={iconUrl} /> : null}
+          </Circle>
+          <YStack f={1} space={4} mr={24}>
+            <StyledText
+              fontSize="$lg"
+              textOverflow="ellipsis"
+              color="$baseTextHighEmphasis"
+              numberOfLines={1}
+            >
+              {name}
+            </StyledText>
+            <TextAmountBalance
+              displayBalance={token.displayBalance}
+              ticker={token.ticker}
+            />
+          </YStack>
+          <YStack f={-1} space={4} ai="flex-end">
+            <TextUsdBalance usdBalance={token.usdBalance} />
+            <TextPercentChanged percentChange={recentUsdBalanceChange} />
+          </YStack>
+        </XStack>
+      </XStack>
+    </ListItem>
   );
 }
-
-const styles = StyleSheet.create({
-  rowContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    padding: 12,
-    overflow: "hidden",
-  },
-  rowLogo: {
-    borderRadius: 25,
-  },
-  tokenName: {
-    height: 24,
-    fontWeight: "500",
-    fontSize: 16,
-    lineHeight: 24,
-  },
-  tokenAmount: {
-    fontWeight: "500",
-    fontSize: 14,
-    lineHeight: 20,
-  },
-  tokenBalance: {
-    fontWeight: "500",
-    fontSize: 16,
-    lineHeight: 24,
-  },
-});

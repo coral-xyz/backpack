@@ -6,15 +6,18 @@ import { useCustomTheme as useTheme } from "../hooks";
 export function RoundedContainerGroup({
   children,
   style,
+  borderRadius,
   disableTopRadius = false,
   disableBottomRadius = false,
 }: {
   children: React.ReactNode;
   style?: StyleProp<ViewStyle>;
+  borderRadius?: number;
   disableTopRadius?: boolean;
   disableBottomRadius?: boolean;
 }): JSX.Element {
   const theme = useTheme();
+  const calculatedBorderRadius = borderRadius !== undefined ? borderRadius : 12;
   return (
     <View
       style={[
@@ -22,6 +25,7 @@ export function RoundedContainerGroup({
         {
           backgroundColor: theme.custom.colors.nav,
           borderColor: theme.custom.colors.borderFull,
+          borderRadius: calculatedBorderRadius,
         },
         disableTopRadius ? styles.disableTopRadius : undefined,
         disableBottomRadius ? styles.disableBottomRadius : undefined,
@@ -36,7 +40,6 @@ export function RoundedContainerGroup({
 const styles = StyleSheet.create({
   container: {
     overflow: "hidden",
-    borderRadius: 12,
     borderLeftWidth: 2,
     borderRightWidth: 2,
     borderTopWidth: 2,

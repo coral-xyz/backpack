@@ -1,4 +1,4 @@
-import { Dimensions } from "react-native";
+import { Dimensions, FlatList, StyleSheet } from "react-native";
 export function maybeRender(
   condition: boolean,
   fn: () => JSX.Element
@@ -20,3 +20,17 @@ export function getRandomColor() {
 }
 
 export const WINDOW_WIDTH = Dimensions.get("window").width;
+
+const ITEM_GAP = 16;
+const ITEM_SPACE = ITEM_GAP / 2;
+
+export const GlobalStyles = StyleSheet.create({
+  listContainer: {
+    paddingTop: ITEM_SPACE,
+    marginTop: ITEM_SPACE,
+    paddingHorizontal: ITEM_GAP,
+  },
+  listContentContainer: {
+    gap: ITEM_GAP,
+  },
+});

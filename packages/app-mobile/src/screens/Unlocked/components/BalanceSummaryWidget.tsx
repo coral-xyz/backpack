@@ -97,7 +97,7 @@ const QUERY_USER_BALANCE_SUMMARY = gql(`
   }
 `);
 
-function Container() {
+function Container({ hideChange }: { hideChange }) {
   const activeWallet = useActiveWallet();
   const { data } = useSuspenseQuery(QUERY_USER_BALANCE_SUMMARY, {
     variables: {
@@ -113,17 +113,19 @@ function Container() {
 
   return (
     <Stack ai="center">
-      <StyledText fontWeight="700" fontSize="$4xl" color="$fontColor">
+      <StyledText fontWeight="600" fontSize="$4xl" color="$fontColor">
         {formatUsd(totalBalance)}
       </StyledText>
-      <XStack alignItems="center">
-        <TextTotalChange totalChange={totalChange} />
-        <TextPercentChange
-          isLoading={false}
-          totalChange={totalChange}
-          percentChange={percentChange as number}
-        />
-      </XStack>
+      {hideChange ? null : (
+        <XStack alignItems="center">
+          <TextTotalChange totalChange={totalChange} />
+          <TextPercentChange
+            isLoading={false}
+            totalChange={totalChange}
+            percentChange={percentChange as number}
+          />
+        </XStack>
+      )}
     </Stack>
   );
 }
@@ -139,11 +141,11 @@ function ErrorFallback({ error }: { error: Error }) {
   );
 }
 
-export function BalanceSummaryWidget() {
+export function BalanceSummaryWidget({ hideChange }: { hideChange: boolean }) {
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
       <Suspense fallback={<BalanceSummaryWidgetLoading />}>
-        <Container />
+        <Container hideChange={hideChange} />
       </Suspense>
     </ErrorBoundary>
   );

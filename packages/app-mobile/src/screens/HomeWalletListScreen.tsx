@@ -75,11 +75,10 @@ function ListItemWalletCard({
         shadowColor: "rgba(0, 0, 0, 1)",
         shadowOffset: {
           width: 0,
-          height: 0,
+          height: 4,
         },
         shadowOpacity: 0.05,
-        shadowRadius: 10,
-        elevation: 2,
+        shadowRadius: 8,
       }}
       onPress={() => {
         if (!dehydrated) {
@@ -186,7 +185,7 @@ function Container({ navigation }: HomeWalletListScreenProps): JSX.Element {
       renderItem={renderItem}
       showsVerticalScrollIndicator={false}
       ListHeaderComponent={
-        <Stack mb={12}>
+        <Stack mt={12} mb={36}>
           <BalanceSummaryWidget />
         </Stack>
       }

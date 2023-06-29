@@ -9,6 +9,7 @@ import {
   createStackNavigator,
   StackScreenProps,
 } from "@react-navigation/stack";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { BottomSheetViewOptions } from "~components/BottomSheetViewOptions";
 import { IconCloseModal } from "~components/Icon";
@@ -55,12 +56,12 @@ function TopTabsNavigator(): JSX.Element {
       screenOptions={{
         tabBarStyle: {
           marginTop: 12,
-          marginHorizontal: 24,
+          marginHorizontal: 12,
           backgroundColor: "transparent",
         },
         tabBarLabelStyle: {
           textTransform: "capitalize",
-          fontSize: 15,
+          fontSize: 16,
           fontFamily: "InterMedium",
         },
         tabBarIndicatorStyle: {
@@ -149,7 +150,7 @@ export function WalletsNavigator(): JSX.Element {
     <Stack.Navigator
       initialRouteName="HomeWalletList"
       screenOptions={{
-        headerTintColor: theme.fontColor.val,
+        headerTintColor: theme.baseTextMedEmphasis.val,
         headerStyle: {
           backgroundColor: "transparent",
         },
@@ -241,6 +242,7 @@ export function WalletsNavigator(): JSX.Element {
           };
         }}
       />
+      <Stack.Screen name="OnboardScreen" component={OnboardScreen} />
       <Stack.Group
         screenOptions={{
           presentation: "modal",
@@ -257,7 +259,6 @@ export function WalletsNavigator(): JSX.Element {
         />
         <Stack.Group screenOptions={{ headerShown: false }}>
           <Stack.Screen name="SendSelectTokenModal" component={SendNavigator} />
-          <Stack.Screen name="OnboardScreen" component={OnboardScreen} />
           <Stack.Screen name="SwapModal" component={SwapNavigator} />
         </Stack.Group>
         <Stack.Screen
@@ -293,9 +294,10 @@ type SwapStackParamList = {
 
 const SwapStack = createNativeStackNavigator<SwapStackParamList>();
 function SwapNavigator(): JSX.Element {
+  const insets = useSafeAreaInsets();
   const theme = useTheme();
   return (
-    <View style={{ paddingBottom: 48 }}>
+    <View style={{ flex: 1, marginBottom: insets.bottom }}>
       <SwapProvider>
         <SwapStack.Navigator
           screenOptions={{

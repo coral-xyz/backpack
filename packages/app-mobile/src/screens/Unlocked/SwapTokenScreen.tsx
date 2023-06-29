@@ -31,6 +31,7 @@ import {
 } from "@coral-xyz/tamagui";
 import { ethers, FixedNumber } from "ethers";
 import { ErrorBoundary } from "react-error-boundary";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { InputFieldMaxLabel } from "~components/Form";
 import {
