@@ -1,9 +1,10 @@
+import type { Blockchain } from "@coral-xyz/common";
 import { ethers } from "ethers";
 import express from "express";
 
 import { clearCookie, setJWTCookie } from "../../auth/util";
+import { BLOCKCHAINS_NATIVE } from "../../blockchains";
 import { getUser } from "../../db/users";
-import { validateSignature } from "../../validation/signature";
 
 const { base58 } = ethers.utils;
 
@@ -25,7 +26,13 @@ router.post("/", async (req, res) => {
 
   const uuid = decodedMessage.toString().replace(messagePrefix, "");
 
-  if (!validateSignature(decodedMessage, blockchain, signature, publicKey)) {
+  if (
+    !BLOCKCHAINS_NATIVE[blockchain as Blockchain].validateSignature(
+      decodedMessage,
+      signature,
+      publicKey
+    )
+  ) {
     return res.status(403).json({ msg: `Invalid ${blockchain} signature` });
   }
 

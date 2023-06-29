@@ -14,6 +14,7 @@ import {
   extractUserId,
 } from "../../auth/middleware";
 import { clearCookie, setJWTCookie, validateJwt } from "../../auth/util";
+import { BLOCKCHAINS_NATIVE } from "../../blockchains";
 import { REFERRER_COOKIE_NAME } from "../../config";
 import { getFriendshipStatus } from "../../db/friendships";
 import { getPublicKeyDetails, updatePublicKey } from "../../db/publicKey";
@@ -33,7 +34,6 @@ import {
 import { getOrcreateXnftSecret } from "../../db/xnftSecrets";
 import { logger } from "../../logger";
 import { validatePublicKey } from "../../validation/publicKey";
-import { validateSignature } from "../../validation/signature";
 import {
   BlockchainPublicKey,
   CreatePublicKeys,
@@ -146,9 +146,10 @@ router.post("/", async (req, res) => {
   for (const blockchainPublicKey of blockchainPublicKeys) {
     const signedMessage = getCreateMessage(blockchainPublicKey.publicKey);
     if (
-      !validateSignature(
+      !BLOCKCHAINS_NATIVE[
+        blockchainPublicKey.blockchain as Blockchain
+      ].validateSignature(
         Buffer.from(signedMessage, "utf-8"),
-        blockchainPublicKey.blockchain as Blockchain,
         blockchainPublicKey.signature,
         blockchainPublicKey.publicKey
       )

@@ -3,7 +3,7 @@ import base58 from "bs58";
 import { GraphQLError, type GraphQLResolveInfo } from "graphql";
 
 import { clearCookie, setJWTCookie } from "../../../../auth/util";
-import { validateSignature } from "../../../../validation/signature";
+import { BLOCKCHAINS_NATIVE } from "../../../../blockchains";
 import type { ApiContext } from "../../context";
 import type { MutationAuthenticateArgs, MutationResolvers } from "../../types";
 
@@ -37,12 +37,9 @@ export const authenticateMutationResolver: MutationResolvers["authenticate"] =
 
     // Throw error if the signature does not match the blockchain and public key
     if (
-      !validateSignature(
-        decoded,
-        args.providerId.toLowerCase() as Blockchain,
-        args.signature,
-        args.publicKey
-      )
+      !BLOCKCHAINS_NATIVE[
+        args.providerId.toLowerCase() as Blockchain
+      ].validateSignature(decoded, args.signature, args.publicKey)
     ) {
       throw new GraphQLError(
         `Invalid ${args.providerId.toLowerCase()} signature`,
