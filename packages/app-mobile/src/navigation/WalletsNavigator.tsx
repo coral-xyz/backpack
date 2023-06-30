@@ -104,9 +104,8 @@ export type WalletStackParamList = {
     publicKey: string;
   };
   TokenDetail: {
-    blockchain: Blockchain;
-    tokenTicker: string;
-    tokenAddress: string;
+    title: string;
+    tokenMint: string;
   };
   // List of collectibles/nfts for a collection
   CollectionDetail: {
@@ -226,10 +225,8 @@ export function WalletsNavigator(): JSX.Element {
         name="TokenDetail"
         component={TokenDetailScreen}
         options={({ route }) => {
-          const { blockchain, tokenTicker } = route.params;
-          const title = `${toTitleCase(blockchain)} / ${tokenTicker}`;
           return {
-            title,
+            title: route.params.title,
           };
         }}
       />

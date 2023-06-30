@@ -1,7 +1,9 @@
 import { Suspense, useCallback } from "react";
+import { SectionListProps } from "react-native";
 
 import { useSuspenseQuery } from "@apollo/client";
 import { useActiveWallet } from "@coral-xyz/recoil";
+import { useNavigation } from "@react-navigation/native";
 import { ErrorBoundary } from "react-error-boundary";
 
 import { SectionSeparator } from "~components/ListItem";
@@ -23,15 +25,16 @@ import {
   SectionHeader,
 } from "~src/components/PaddedFlatList";
 import { gql } from "~src/graphql/__generated__";
+import { ProviderId } from "~src/graphql/__generated__/graphql";
 
 const QUERY_RECENT_TRANSACTIONS = gql(`
-  query WalletTransactions($providerId: ProviderID!, $address: String!) {
+  query WalletTransactions($address: String!, $providerId: ProviderID!, $filters: TransactionFiltersInput) {
     tokenList(providerId: $providerId) {
       ...TokenEntryFragment
     }
     wallet(providerId: $providerId, address: $address) {
       id
-      transactions {
+      transactions(filters: $filters) {
         edges {
           node {
             ...TransactionFragment
@@ -42,13 +45,26 @@ const QUERY_RECENT_TRANSACTIONS = gql(`
   }
 `);
 
-function Container({ navigation }: RecentActivityScreenProps): JSX.Element {
-  const activeWallet = useActiveWallet();
+type TransactionListProps = SectionListProps<any> & {
+  providerId: ProviderId;
+  address: string;
+  tokenMint?: string;
+};
+
+export function TransactionSectionList({
+  providerId,
+  address,
+  tokenMint,
+  ...props
+}: TransactionListProps) {
+  const navigation = useNavigation();
   const { data } = useSuspenseQuery(QUERY_RECENT_TRANSACTIONS, {
     variables: {
-      // @ts-expect-error
-      providerId: activeWallet.blockchain.toUpperCase(),
-      address: activeWallet.publicKey,
+      providerId,
+      address,
+      filters: {
+        token: tokenMint,
+      },
     },
   });
 
@@ -114,6 +130,19 @@ function Container({ navigation }: RecentActivityScreenProps): JSX.Element {
       renderItem={renderItem}
       renderSectionHeader={renderSectionHeader}
       renderSectionFooter={SectionSeparator}
+      {...props}
+    />
+  );
+}
+
+function Container({ navigation }: RecentActivityScreenProps): JSX.Element {
+  const activeWallet = useActiveWallet();
+
+  return (
+    <TransactionSectionList
+      providerId={activeWallet.blockchain.toUpperCase() as ProviderId}
+      address={activeWallet.publicKey}
+      navigation={navigation}
     />
   );
 }

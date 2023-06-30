@@ -14,10 +14,11 @@ import {
 } from "react-native";
 
 import {
+  toDisplayBalance,
   Blockchain,
-  formatWalletAddress,
   UNKNOWN_ICON_SRC,
   formatUsd,
+  formatWalletAddress,
 } from "@coral-xyz/common";
 import {
   blockchainBalancesSorted,
@@ -45,6 +46,7 @@ import {
   ListItemSide,
   ListItemIcon,
 } from "~src/components/ListItem";
+import { ResponseTokenBalance } from "~src/screens/TokenListScreen";
 
 export function SearchableTokenTables({
   onPressRow,
@@ -302,12 +304,26 @@ export function WalletPickerButton({
   );
 }
 
-function TextUsdBalance({ usdBalance }: { usdBalance: number }): JSX.Element {
+function TextUsdBalance({ usdBalance }: { usdBalance?: number }): JSX.Element {
+  const value = usdBalance ? formatUsd(usdBalance) : "-";
   return (
     <ListItemStyledText fontSize="$lg" color="$baseTextHighEmphasis">
-      {formatUsd(usdBalance)}
+      {value}
     </ListItemStyledText>
   );
+}
+
+const displayFormat = new Intl.NumberFormat("en-US", {
+  currency: "USD",
+  maximumFractionDigits: 5,
+});
+
+function formatDisplayBalance(value: string) {
+  try {
+    return displayFormat.format(Number(value));
+  } catch (err) {
+    return "";
+  }
 }
 
 function TextAmountBalance({
@@ -317,7 +333,9 @@ function TextAmountBalance({
   displayBalance?: string;
   ticker: string;
 }): JSX.Element {
-  const subtitle = displayBalance ? `${displayBalance} ${ticker}` : ticker;
+  const subtitle = displayBalance
+    ? `${formatDisplayBalance(displayBalance)} ${ticker}`
+    : ticker;
   return (
     <ListItemStyledText color="$baseTextMedEmphasis">
       {subtitle}
@@ -325,11 +343,43 @@ function TextAmountBalance({
   );
 }
 
-const UNCHANGED_VALUE = "0.00";
-const NO_VALUE = "-";
-
-export function TokenRow({
+export function ListItemTokenBalance({
   balance,
+  onPressRow,
+}: {
+  balance: ResponseTokenBalance;
+  onPressRow: (b: ResponseTokenBalance) => void;
+}): JSX.Element {
+  const name =
+    balance.tokenListEntry?.name ?? formatWalletAddress(balance.token);
+  const iconUrl = balance.tokenListEntry?.logo || UNKNOWN_ICON_SRC;
+
+  return (
+    <ListItemWrapper
+      grouped
+      onPress={() => onPressRow(balance)}
+      icon={<ListItemIcon source={{ uri: iconUrl }} />}
+    >
+      <ListItemRow>
+        <ListItemSide side="left">
+          <ListItemStyledText fontSize="$lg">{name}</ListItemStyledText>
+          <TextAmountBalance
+            displayBalance={balance.displayAmount}
+            ticker={balance.tokenListEntry?.symbol ?? ""}
+          />
+        </ListItemSide>
+        <ListItemSide side="right">
+          <TextUsdBalance usdBalance={balance.marketData?.value} />
+          <TextPercentChanged
+            percentChange={balance.marketData?.percentChange ?? 0}
+          />
+        </ListItemSide>
+      </ListItemRow>
+    </ListItemWrapper>
+  );
+}
+// old token row
+function TokenRow({
   onPressRow,
   token,
   blockchain,
@@ -344,39 +394,7 @@ export function TokenRow({
   blockchain: Blockchain;
   walletPublicKey: string;
 }): JSX.Element {
-  // Set the memoized change value that should be shown based on view type state
-  // for the purpose of checking how the display should appear
-  const changeValue = useMemo(() => {
-    const val = balance.marketData?.percentChange?.toFixed(2) ?? NO_VALUE;
-    return val.endsWith(UNCHANGED_VALUE) && val[0] === "-" ? val.slice(1) : val;
-  }, [balance.marketData]);
-
-  // Set the color of the balance change text based on its positive/negative nature
-  const changeColor =
-    changeValue === UNCHANGED_VALUE || changeValue === NO_VALUE
-      ? "$secondary"
-      : parseFloat(changeValue) < 0
-      ? "$negative"
-      : "$positive";
-
-  // Set the change value prefix if required based on its value
-  const changePrefix =
-    changeColor === "$secondary" ? "" : changeColor === "$positive" ? "+" : "";
-
-  // Set the value of the formatted balance change texted
-  const changeText =
-    changeValue === NO_VALUE ? changeValue : `${changePrefix}${changeValue}%`;
-
-  // Set the name to either the found token list entry name of the truncated mint address
-  const name =
-    balance.tokenListEntry?.name ?? formatWalletAddress(balance.token);
-
-  // Set the fully constructed string for the balance value text
-  const valueText = balance.marketData?.value
-    ? formatUsd(balance.marketData?.value)
-    : "-";
-
-  const iconUrl = balance.tokenListEntry?.logo ?? UNKNOWN_ICON_SRC;
+  const { name, recentUsdBalanceChange, logo: iconUrl } = token;
 
   return (
     <ListItemWrapper
@@ -387,17 +405,14 @@ export function TokenRow({
       <ListItemRow>
         <ListItemSide side="left">
           <ListItemStyledText fontSize="$lg">{name}</ListItemStyledText>
-          <ListItemStyledText color="$baseTextMedEmphasis">
-            {balance.displayAmount} {balance.tokenListEntry?.symbol ?? ""}
-          </ListItemStyledText>
+          <TextAmountBalance
+            displayBalance={token.displayBalance}
+            ticker={token.ticker}
+          />
         </ListItemSide>
         <ListItemSide side="right">
-          <ListItemStyledText fontSize="$lg" color="$baseTextHighEmphasis">
-            {valueText}
-          </ListItemStyledText>
-          <ListItemStyledText fontSize="$lg" color="$baseTextHighEmphasis">
-            {changeText}
-          </ListItemStyledText>
+          <TextUsdBalance usdBalance={token.usdBalance} />
+          <TextPercentChanged percentChange={recentUsdBalanceChange} />
         </ListItemSide>
       </ListItemRow>
     </ListItemWrapper>

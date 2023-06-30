@@ -1,6 +1,38 @@
 import { gql } from "~src/graphql/__generated__";
 // import { gql } from "@apollo/client";
 
+export const TokenBalanceFragment = gql(`
+  fragment TokenBalanceFragment on TokenBalance {
+    id
+    token
+    address
+    displayAmount
+    marketData {
+      ...MarketDataFragment
+    }
+    tokenListEntry {
+      ...TokenListEntryFragment
+    }
+  }
+`);
+
+export const TokenListEntryFragment = gql(`
+  fragment TokenListEntryFragment on TokenListEntry {
+    id
+    logo
+    name
+    symbol
+  }
+`);
+
+export const MarketDataFragment = gql(`
+  fragment MarketDataFragment on MarketData {
+    id
+    percentChange
+    value
+}
+`);
+
 export const TokenListItemFragment = gql(`
   fragment TokenEntryFragment on TokenListEntry {
     address
@@ -75,8 +107,8 @@ export const NftNodeFragment = gql(`
   }
 `);
 
-export const BalanceFragment = gql(`
-  fragment BalanceFragment on Balances {
+export const AggregateBalanceFragment = gql(`
+  fragment AggregateBalanceFragment on Balances {
     id
     aggregate {
       valueChange
@@ -106,7 +138,7 @@ export const WalletFragment = gql(`
       ...ProviderFragment
     }
     balances {
-      ...BalanceFragment
+      ...AggregateBalanceFragment
     }
   }
 `);

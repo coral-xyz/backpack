@@ -1,17 +1,9 @@
-import { Suspense, useState } from "react";
-import { View, StyleSheet } from "react-native";
+import { Suspense } from "react";
 
-import { useSuspenseQuery } from "@apollo/client";
 import { Blockchain } from "@coral-xyz/common";
-import {
-  UsdBalanceAndPercentChange,
-  Stack,
-  YStack,
-  StyledText,
-} from "@coral-xyz/tamagui";
+import { UsdBalanceAndPercentChange, YStack } from "@coral-xyz/tamagui";
 import { ErrorBoundary } from "react-error-boundary";
 
-import { RecentActivityList } from "~components/RecentActivityList";
 import { TransferWidget } from "~components/Unlocked/Balances/TransferWidget";
 import {
   TokenAmountHeader,
@@ -19,15 +11,15 @@ import {
   ScreenError,
 } from "~components/index";
 import {
-  useActiveEthereumWallet,
   useBlockchainTokenData,
   useBlockchainActiveWallet,
 } from "~hooks/recoil";
 import type { TokenDetailScreenProps } from "~navigation/WalletsNavigator";
 
-import { gql } from "~src/graphql/__generated__";
+import { TransactionSectionList } from "./RecentActivityScreen";
+
 import { useSession } from "~src/lib/SessionProvider";
-import { NavTokenAction, NavTokenOptions } from "~types/types";
+import { NavTokenOptions } from "~types/types";
 
 function TokenHeader({
   blockchain,
@@ -36,7 +28,7 @@ function TokenHeader({
 }: {
   blockchain: Blockchain;
   address: string;
-  onPressOption: (route: NavTokenAction, options: NavTokenOptions) => void;
+  onPressOption: (route: string, options: NavTokenOptions) => void;
 }) {
   const { data: wallet } = useBlockchainActiveWallet(blockchain);
   const { data: token, loading } = useBlockchainTokenData({
@@ -45,13 +37,13 @@ function TokenHeader({
     tokenAddress: address,
   });
 
-  if (!token || loading) {
-    return <ScreenLoading />;
+  if (loading) {
+    return null;
   }
 
   return (
-    <YStack mb={24}>
-      <YStack space={8}>
+    <YStack space={24} mb={24}>
+      <YStack>
         <TokenAmountHeader
           token={token}
           amount={token.nativeBalance}
@@ -62,91 +54,52 @@ function TokenHeader({
           recentPercentChange={token.recentPercentChange}
         />
       </YStack>
-      <View style={styles.tokenHeaderButtonContainer}>
-        <TransferWidget
-          swapEnabled
-          token={token}
-          blockchain={blockchain}
-          address={address}
-          onPressOption={onPressOption}
-          rampEnabled={
-            (blockchain === Blockchain.SOLANA && token.ticker === "SOL") ||
-            (blockchain === Blockchain.ETHEREUM && token.ticker === "ETH")
-          }
-        />
-      </View>
+      <TransferWidget
+        swapEnabled
+        token={token}
+        blockchain={blockchain}
+        address={address}
+        onPressOption={onPressOption}
+        rampEnabled={
+          (blockchain === Blockchain.SOLANA && token.ticker === "SOL") ||
+          (blockchain === Blockchain.ETHEREUM && token.ticker === "ETH")
+        }
+      />
     </YStack>
   );
 }
-
-const QUERY_TOKEN_TRANSACTIONS = gql(`
-  query TransactionsByMint($address: String!, $providerId: ProviderID!, $filters: TransactionFiltersInput) {
-    wallet(address: $address, providerId: $providerId) {
-      id
-      provider {
-        providerId
-      }
-      transactions(filters: $filters) {
-        edges {
-          node {
-            ...TransactionFragment
-          }
-        }
-      }
-    }
-  }
-`);
 
 function Container({
   route,
   navigation,
 }: TokenDetailScreenProps): JSX.Element | null {
   const { activeWallet } = useSession();
-  const { blockchain, tokenAddress, tokenMint } = route.params;
-  const variables = {
-    address: activeWallet?.publicKey,
-    providerId: activeWallet?.blockchain.toUpperCase(),
-    filters: {
-      token: tokenMint,
-    },
-  };
+  const { tokenMint, address, providerId } = route.params;
 
-  const { data } = useSuspenseQuery(QUERY_TOKEN_TRANSACTIONS, {
-    variables,
-  });
-
-  // // We only use ethereumWallet here, even though its shared on the Solana side too.
-  // const { data: ethereumWallet, loading } = useActiveEthereumWallet();
-  // if (!blockchain || !tokenAddress || loading) {
-  //   return null;
-  // }
-  //
-  // const activityAddress =
-  //   blockchain === Blockchain.ETHEREUM
-  //     ? ethereumWallet.publicKey
-  //     : tokenAddress;
-  // const contractAddresses =
-  //   blockchain === Blockchain.ETHEREUM ? [tokenAddress] : undefined;
+  const ListHeader = (
+    <TokenHeader
+      blockchain={activeWallet?.blockchain}
+      address={address}
+      onPressOption={(route: string, options: NavTokenOptions) => {
+        navigation.push(route, options);
+      }}
+    />
+  );
 
   return (
-    <>
-      <StyledText>{JSON.stringify({ variables }, null, 2)}</StyledText>
-      <StyledText>{JSON.stringify({ data }, null, 2)}</StyledText>
-    </>
+    <TransactionSectionList
+      ListHeaderComponent={ListHeader}
+      providerId={providerId}
+      address={address}
+      tokenMint={tokenMint}
+    />
   );
 }
-
-const styles = StyleSheet.create({
-  tokenHeaderButtonContainer: {
-    justifyContent: "space-between",
-    marginTop: 24,
-  },
-});
 
 export function TokenDetailScreen({
   route,
   navigation,
-}: TokenDetailScreenProps): JSX.Element | null {
+}: TokenDetailScreenProps) {
   return (
     <ErrorBoundary
       fallbackRender={({ error }) => <ScreenError error={error} />}
