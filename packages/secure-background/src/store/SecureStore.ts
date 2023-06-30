@@ -1,9 +1,7 @@
 import type {
-  Blockchain,
-  BlockchainKeyringJson,
+ Blockchain,  BlockchainKeyringJson,
   DeprecatedWalletDataDoNotUse,
-  Preferences,
-} from "@coral-xyz/common";
+  Preferences } from "@coral-xyz/common";
 
 import type { SecretPayload } from "./keyring/crypto";
 import { decrypt, encrypt } from "./keyring/crypto";
