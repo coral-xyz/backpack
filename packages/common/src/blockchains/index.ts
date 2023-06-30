@@ -13,6 +13,8 @@ export const BLOCKCHAIN_COMMON: Record<
   {
     PreferencesDefault: SolanaData | EclipseData | EthereumData;
     validatePublicKey: (address: string) => boolean;
+    logoUri: string;
+    bip44CoinType: number;
   }
 > = {
   [Blockchain.ETHEREUM]: {
@@ -29,6 +31,9 @@ export const BLOCKCHAIN_COMMON: Record<
       }
       return true;
     },
+    logoUri:
+      "https://s3.us-east-1.amazonaws.com/app-assets.xnfts.dev/images/useBlockchainLogo/ethereum.png",
+    bip44CoinType: 60,
   },
   [Blockchain.SOLANA]: {
     PreferencesDefault: {
@@ -44,6 +49,9 @@ export const BLOCKCHAIN_COMMON: Record<
       }
       return true;
     },
+    logoUri:
+      "https://s3.us-east-1.amazonaws.com/app-assets.xnfts.dev/images/useBlockchainLogo/solana.png",
+    bip44CoinType: 504,
   },
   [Blockchain.ECLIPSE]: {
     PreferencesDefault: {
@@ -59,5 +67,9 @@ export const BLOCKCHAIN_COMMON: Record<
       }
       return true;
     },
+    // todo
+    logoUri:
+      "https://s3.us-east-1.amazonaws.com/app-assets.xnfts.dev/images/useBlockchainLogo/solana.png",
+    bip44CoinType: 504,
   },
 };
