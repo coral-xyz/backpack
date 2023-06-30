@@ -59,16 +59,11 @@ export class SolanaRpc implements BlockchainDataProvider {
   readonly #connection: Connection;
   readonly #mpl: Metaplex;
 
-  constructor({ context, customRpc, tokenList }: SolanaRpcProviderSettings) {
-    const rpcUrl =
-      context?.network.rpc ??
-      customRpc ??
-      `https://rpc.helius.xyz/?api-key=${HELIUS_API_KEY}`;
-
-    this.#connection = new Connection(rpcUrl, "confirmed");
+  constructor(opts: SolanaRpcProviderSettings) {
+    this.#connection = new Connection(this._getRpcUrl(opts), "confirmed");
     this.#mpl = Metaplex.make(this.#connection);
-    this.ctx = context;
-    this.tokenList = tokenList ?? SolanaTokenList;
+    this.ctx = opts.context;
+    this.tokenList = opts.tokenList ?? SolanaTokenList;
   }
 
   /**
@@ -430,5 +425,21 @@ export class SolanaRpc implements BlockchainDataProvider {
       filters?.after !== undefined,
       filters?.before !== undefined
     );
+  }
+
+  /**
+   * Return the target RPC endpoint that should be used based on context.
+   * @private
+   * @param {SolanaRpcProviderSettings} settings
+   * @returns {string}
+   * @memberof SolanaRpc
+   */
+  private _getRpcUrl({
+    context,
+    customRpc,
+  }: SolanaRpcProviderSettings): string {
+    return context?.network.rpc ?? customRpc ?? context?.network.devnet
+      ? `https://rpc-devnet.helius.xyz/?api-key=${HELIUS_API_KEY}`
+      : "https://rpc-proxy.backpack.workers.dev";
   }
 }
