@@ -15,9 +15,9 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ScreenError } from "~components/index";
 import { useWallets } from "~hooks/wallets";
 import type { HomeWalletListScreenProps } from "~navigation/WalletsNavigator";
-import { BalanceSummaryWidget } from "~screens/Unlocked/components/BalanceSummaryWidget";
 
 import Images from "~src/Images";
+import { BalanceSummaryWidget } from "~src/components/BalanceSummaryWidget";
 import { ScreenListLoading } from "~src/components/LoadingStates";
 import { PaddedFlatList } from "~src/components/PaddedFlatList";
 import { gql } from "~src/graphql/__generated__";

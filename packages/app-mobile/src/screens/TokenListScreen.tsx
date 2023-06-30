@@ -11,9 +11,9 @@ import { ErrorBoundary } from "react-error-boundary";
 import { TransferWidget } from "~components/Unlocked/Balances/TransferWidget";
 import { RoundedContainerGroup, ScreenError } from "~components/index";
 import { TokenListScreenProps } from "~navigation/types";
-import { BalanceSummaryWidget } from "~screens/Unlocked/components/BalanceSummaryWidget";
 import { ListItemTokenBalance } from "~screens/Unlocked/components/Balances";
 
+import { BalanceSummaryWidget } from "~src/components/BalanceSummaryWidget";
 import { ScreenListLoading } from "~src/components/LoadingStates";
 import { PaddedFlatList } from "~src/components/PaddedFlatList";
 import { gql } from "~src/graphql/__generated__";
