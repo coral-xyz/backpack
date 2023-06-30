@@ -29,6 +29,7 @@ import { ProviderId } from "../types";
 import { calculateBalanceAggregate, createConnection } from "../utils";
 
 import type { BlockchainDataProvider } from ".";
+import { createMarketDataNode } from "./util";
 
 export type EthereumProviderSettings = {
   context?: ApiContext;
@@ -163,17 +164,11 @@ export class Ethereum implements BlockchainDataProvider {
         amount: native.toString(),
         decimals: this.decimals(),
         displayAmount: nativeDisplayAmount,
-        marketData: NodeBuilder.marketData("ethereum", {
-          lastUpdatedAt: prices.ethereum.last_updated,
-          percentChange: prices.ethereum.price_change_percentage_24h,
-          price: prices.ethereum.current_price,
-          sparkline: prices.ethereum.sparkline_in_7d.price,
-          usdChange: prices.ethereum.price_change_24h,
-          value:
-            parseFloat(nativeDisplayAmount) * prices.ethereum.current_price,
-          valueChange:
-            parseFloat(nativeDisplayAmount) * prices.ethereum.price_change_24h,
-        }),
+        marketData: createMarketDataNode(
+          nativeDisplayAmount,
+          "ethereum",
+          prices.ethereum
+        ),
         token: this.defaultAddress(),
         tokenListEntry: NodeBuilder.tokenListEntry(this.tokenList["native"]),
       },
@@ -187,19 +182,7 @@ export class Ethereum implements BlockchainDataProvider {
 
       const amount = curr.rawBalance ?? "0";
       const displayAmount = curr.balance ?? "0";
-
-      const marketData =
-        p && id
-          ? NodeBuilder.marketData(id, {
-              lastUpdatedAt: p.last_updated,
-              percentChange: p.price_change_percentage_24h,
-              price: p.current_price,
-              sparkline: p.sparkline_in_7d.price,
-              usdChange: p.price_change_24h,
-              value: parseFloat(displayAmount) * p.current_price,
-              valueChange: parseFloat(displayAmount) * p.price_change_24h,
-            })
-          : undefined;
+      const marketData = createMarketDataNode(displayAmount, id, p);
 
       const tokenListEntry = this.tokenList[curr.contractAddress]
         ? NodeBuilder.tokenListEntry(this.tokenList[curr.contractAddress])
