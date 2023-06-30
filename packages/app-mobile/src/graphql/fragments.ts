@@ -16,6 +16,7 @@ export const TransactionFragment = gql(`
   fragment TransactionFragment on Transaction {
     id
     description
+    error
     block
     fee
     feePayer

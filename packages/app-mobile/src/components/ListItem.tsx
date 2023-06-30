@@ -495,7 +495,7 @@ export function ListItemSentReceived({
   action: "Sent" | "Received";
   address: string;
   amount: string;
-  onPress?: () => void;
+  onPress?: (p: any) => void;
   iconUrl: string;
   showSuccessIcon?: boolean;
 }) {
@@ -513,7 +513,13 @@ export function ListItemSentReceived({
 
   const Icon = getIcon(showSuccessIcon, iconUrl);
   return (
-    <ListItemWrapper grouped={grouped} onPress={onPress} icon={Icon}>
+    <ListItemWrapper
+      grouped={grouped}
+      onPress={() => {
+        onPress?.({ action, address, amount });
+      }}
+      icon={Icon}
+    >
       <ListItemRow>
         <ListItemSide side="left">
           <ListItemStyledText fontSize="$lg" color="$baseTextHighEmphasis">
@@ -595,14 +601,20 @@ export function ListItemTokenSwap({
   caption: string;
   sent: string;
   received: string;
-  onPress?: () => void;
+  onPress?: (props: any) => void;
   sentTokenUrl: string;
   receivedTokenUrl: string;
 }) {
   return (
     <ListItemWrapper
       grouped={grouped}
-      onPress={onPress}
+      onPress={() =>
+        onPress?.({
+          sent,
+          received,
+          title,
+        })
+      }
       icon={<SwapIconSet fromIcon={sentTokenUrl} toIcon={receivedTokenUrl} />}
     >
       <ListItemRow>
@@ -679,7 +691,7 @@ export function ListItemNotification({
 
 type ListItemActivityProps = {
   grouped?: boolean;
-  onPress: () => void;
+  onPress: (p: any) => void;
   topLeftText: string;
   topRightText: string;
   bottomLeftText: string;
@@ -733,7 +745,18 @@ export function ListItemActivity({
   const Icon = getIcon(icon, iconUrl);
 
   return (
-    <ListItemWrapper grouped={grouped} onPress={onPress} icon={Icon}>
+    <ListItemWrapper
+      grouped={grouped}
+      onPress={() => {
+        onPress?.({
+          topLeftText,
+          topRightText,
+          bottomLeftText,
+          bottomRightText,
+        });
+      }}
+      icon={Icon}
+    >
       <XStack flex={1} justifyContent="space-between">
         <YStack>
           <StyledText fontSize="$lg" color="$fontColor">

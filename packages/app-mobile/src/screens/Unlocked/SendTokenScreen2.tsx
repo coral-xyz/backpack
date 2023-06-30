@@ -18,6 +18,7 @@ import {
   DangerButton,
   ListItem,
   PrimaryButton,
+  StyledText,
   Text,
   YGroup,
   YStack,
@@ -27,6 +28,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { SearchInput as BaseSearchInput } from "~components/StyledTextInput";
 import { UserAvatar } from "~components/UserAvatar";
 import { useSession } from "~lib/SessionProvider";
+
+import { ThemedMaterialIcon } from "~src/components/Icon";
 
 export const BubbleTopLabel = ({ text }: { text: string }) => {
   return (
@@ -73,7 +76,7 @@ export function SendTokenSelectUserScreen({
   const insets = useSafeAreaInsets();
 
   return (
-    <ScrollView style={{ flex: 1 }}>
+    <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
       <YStack flex={1} jc="space-between" mb={insets.bottom}>
         <View style={{ flex: 1 }}>
           <Box marginBottom={8}>
@@ -365,7 +368,7 @@ function AddressList({
   const walletsWithPrimary = wallets.filter((w) => w.addresses?.[0]);
 
   return (
-    <YGroup bordered>
+    <YGroup>
       {walletsWithPrimary.map((wallet) => {
         const key = [wallet.username, wallet.walletName].join(":");
         const address = wallet.addresses?.[0];
@@ -377,7 +380,7 @@ function AddressList({
         };
 
         return (
-          <AddressListItem
+          <ListItemUserAddress
             key={key}
             address={address}
             user={user}
@@ -393,7 +396,7 @@ function AddressList({
   );
 }
 
-const AddressListItem = ({
+function ListItemUserAddress({
   address,
   user,
   onPress,
@@ -406,33 +409,32 @@ const AddressListItem = ({
     image: string;
     uuid: string;
   };
-}) => {
+}) {
   const title = user.walletName || user.username;
   return (
     <YGroup.Item>
       <ListItem
         hoverTheme
         pressTheme
-        height={48}
-        backgroundColor="$nav"
-        justifyContent="flex-start"
+        bg="$nav"
+        jc="flex-start"
+        ai="center"
         icon={<UserAvatar size={32} uri={user.image} />}
         onPress={onPress}
+        py={6}
       >
-        <Text fontSize={16} fontFamily="InterMedium">
+        <StyledText fontWeight="500" color="$baseTextHighEmphasis">
           {title}
-        </Text>
+        </StyledText>
         {!address ? (
-          <View
-            style={{
-              width: 32,
-              height: 32,
-              backgroundColor: "#E33E3F",
-              marginLeft: 8,
-            }}
+          <ThemedMaterialIcon
+            name="block"
+            color="$redIcon"
+            size={24}
+            style={{ marginLeft: 4 }}
           />
         ) : null}
       </ListItem>
     </YGroup.Item>
   );
-};
+}

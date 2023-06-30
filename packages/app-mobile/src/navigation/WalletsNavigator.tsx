@@ -35,6 +35,7 @@ import { SendCollectibleSendRecipientScreen } from "~screens/Unlocked/SendCollec
 
 import { OnboardingNavigator } from "~src/navigation/OnboardingNavigator";
 import { SendNavigator } from "~src/navigation/SendNavigator";
+import { RecentActivityDetailScreen } from "~src/screens/RecentActivityDetailScreen";
 import {
   Direction,
   SwapTokenScreen,
@@ -117,6 +118,10 @@ export type WalletStackParamList = {
     title: string;
     blockchain: Blockchain;
   };
+  RecentActivityDetail: {
+    id: string;
+    title: string;
+  };
   Notifications: undefined;
   SwapModal: undefined;
   DepositSingle: undefined;
@@ -141,6 +146,11 @@ export type TokenDetailScreenProps = StackScreenProps<
 export type CollectionItemDetailScreenProps = StackScreenProps<
   WalletStackParamList,
   "CollectionItemDetail"
+>;
+
+export type RecentActivityDetailScreenProps = StackScreenProps<
+  WalletStackParamList,
+  "RecentActivityDetail"
 >;
 
 const Stack = createStackNavigator<WalletStackParamList>();
@@ -235,11 +245,18 @@ export function WalletsNavigator(): JSX.Element {
       <Stack.Screen
         name="CollectionItemDetail"
         component={CollectionItemDetailScreen}
-        options={({ route, navigation }) => {
+        options={({ route }) => {
           return {
             headerBackTitleVisible: false,
             title: route.params.title,
           };
+        }}
+      />
+      <Stack.Screen
+        name="RecentActivityDetail"
+        component={RecentActivityDetailScreen}
+        options={{
+          title: "Recent Activity",
         }}
       />
       <Stack.Screen name="OnboardScreen" component={OnboardScreen} />

@@ -52,15 +52,15 @@ function Container({ navigation }: RecentActivityScreenProps): JSX.Element {
     },
   });
 
-  // const handlePressItem = useCallback(
-  //   (item: ListItemProps) => {
-  //     navigation.push("ActivityDetail", {
-  //       id: item.id,
-  //       title: item.title,
-  //     });
-  //   },
-  //   [navigation]
-  // );
+  const handlePressItem = useCallback(
+    (item: ListItemProps) => {
+      navigation.push("RecentActivityDetail", {
+        id: item.id,
+        title: item.title,
+      });
+    },
+    [navigation]
+  );
 
   const getTokenUrl = useCallback(
     (symbol: string) => {
@@ -90,12 +90,12 @@ function Container({ navigation }: RecentActivityScreenProps): JSX.Element {
           <ListItem
             item={item}
             getTokenUrl={getTokenUrl}
-            onPress={console.log}
+            onPress={() => handlePressItem(item)}
           />
         </RoundedContainerGroup>
       );
     },
-    [getTokenUrl]
+    [getTokenUrl, handlePressItem]
   );
 
   const renderSectionHeader = useCallback(({ section }: any) => {

@@ -3,7 +3,8 @@ import type { SvgProps } from "react-native-svg";
 import { Pressable } from "react-native";
 
 import { useTheme as useTamaguiTheme } from "@coral-xyz/tamagui";
-import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { themed as withThemedIcon } from "@tamagui/lucide-icons/src/themed";
 import Svg, { Path, Rect } from "react-native-svg";
 
@@ -13,6 +14,14 @@ type TamaguiIconProp = {
   color?: string;
   size?: number;
 };
+
+export const ThemedMaterialIcon = withThemedIcon(
+  ({ name, color, size, style }) => {
+    return (
+      <MaterialIcons name={name} color={color} size={size} style={style} />
+    );
+  }
+);
 
 export const IconButton = withThemedIcon(
   ({ onPress, name, color, size, iconStyle }) => {

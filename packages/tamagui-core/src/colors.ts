@@ -1,7 +1,9 @@
-import { darkColors, lightColors } from "@coral-xyz/themes";
+import { blue100, blue800, darkColors, lightColors } from "@coral-xyz/themes";
 // tamagui requires a specific format
 
 export const color = {
+  blue800,
+  blue100,
   baseWhite: lightColors.baseWhite,
   lightAccentBlue: lightColors.lightAccentBlue,
   lightAccentPurple: lightColors.lightAccentPurple,
