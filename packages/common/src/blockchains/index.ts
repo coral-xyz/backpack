@@ -51,7 +51,7 @@ export const BLOCKCHAIN_COMMON: Record<
     },
     logoUri:
       "https://s3.us-east-1.amazonaws.com/app-assets.xnfts.dev/images/useBlockchainLogo/solana.png",
-    bip44CoinType: 504,
+    bip44CoinType: 501,
   },
   [Blockchain.ECLIPSE]: {
     PreferencesDefault: {
@@ -70,6 +70,6 @@ export const BLOCKCHAIN_COMMON: Record<
     // todo
     logoUri:
       "https://s3.us-east-1.amazonaws.com/app-assets.xnfts.dev/images/useBlockchainLogo/solana.png",
-    bip44CoinType: 504,
+    bip44CoinType: 501,
   },
 };
