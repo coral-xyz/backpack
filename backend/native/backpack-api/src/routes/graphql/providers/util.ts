@@ -20,12 +20,12 @@ export function createMarketDataNode(
   }
   return NodeBuilder.marketData(id, {
     lastUpdatedAt: price.last_updated,
-    percentChange: price.price_change_percentage_24h,
+    percentChange: price.price_change_percentage_24h ?? 0,
     price: price.current_price,
     sparkline: price.sparkline_in_7d.price,
-    usdChange: price.price_change_24h,
+    usdChange: price.price_change_24h ?? 0,
     value: parseFloat(displayAmount) * price.current_price,
-    valueChange: parseFloat(displayAmount) * price.price_change_24h,
+    valueChange: parseFloat(displayAmount) * (price.price_change_24h ?? 0),
   });
 }
 

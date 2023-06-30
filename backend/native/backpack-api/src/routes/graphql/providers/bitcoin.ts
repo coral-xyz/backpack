@@ -25,6 +25,7 @@ import { ProviderId } from "../types";
 import { calculateBalanceAggregate, createConnection } from "../utils";
 
 import type { BlockchainDataProvider } from ".";
+import { createMarketDataNode } from "./util";
 
 export type BitcoinProviderSettings = {
   context?: ApiContext;
@@ -123,18 +124,11 @@ export class Bitcoin implements BlockchainDataProvider {
           amount: balance.final_balance.toString(),
           decimals: this.decimals(),
           displayAmount,
-          marketData: prices?.bitcoin
-            ? NodeBuilder.marketData("bitcoin", {
-                lastUpdatedAt: prices.bitcoin.last_updated,
-                percentChange: prices.bitcoin.price_change_percentage_24h,
-                price: prices.bitcoin.current_price,
-                sparkline: prices.bitcoin.sparkline_in_7d.price,
-                usdChange: prices.bitcoin.price_change_24h,
-                value: parseFloat(displayAmount) * prices.bitcoin.current_price,
-                valueChange:
-                  parseFloat(displayAmount) * prices.bitcoin.price_change_24h,
-              })
-            : undefined,
+          marketData: createMarketDataNode(
+            displayAmount,
+            "bitcoin",
+            prices.bitcoin
+          ),
           token: this.defaultAddress(),
           tokenListEntry: NodeBuilder.tokenListEntry({
             address: BitcoinToken.address,
