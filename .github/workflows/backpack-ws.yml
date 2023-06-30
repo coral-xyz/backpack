@@ -27,6 +27,8 @@ jobs:
           printf 'REDIS_URL=%s\n' '${{secrets.REDIS_URL}}' >> .env
           printf 'CHAT_JWT=%s\n' '${{secrets.CHAT_JWT}}' >> .env
           printf 'ALCHEMY_API_KEY=%s\n' '${{secrets.ALCHEMY_API_KEY}}' >> .env
+          printf 'AWS_EB_ACCESS_KEY_ID=%s\n' '${{secrets.AWS_EB_ACCESS_KEY_ID}}' >> .env
+          printf 'NRIA_LICENSE_KEY=%s\n' '${{secrets.NRIA_LICENSE_KEY}}' >> .env
           printf 'PORT=%s\n' '8080' >> .env
           cd ../../..
 
