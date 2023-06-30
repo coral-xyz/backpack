@@ -469,4 +469,76 @@ export class Hasura {
 
     return createConnection(nodes, false, false);
   }
+
+  /**
+   * Updates the notification cursor for the argued user if applicable.
+   * @param {string} userId
+   * @param {number} lastNotificationId
+   * @memberof Hasura
+   */
+  async updateNotificationCursor(userId: string, lastNotificationId: number) {
+    const current = await this.#chain("query")(
+      {
+        auth_notification_cursor: [
+          { where: { uuid: { _eq: userId } } },
+          { last_read_notificaiton: true },
+        ],
+      },
+      { operationName: "GetCurrentNotificationCursor" }
+    );
+
+    const currId = current.auth_notification_cursor[0]?.last_read_notificaiton;
+    if (currId && currId >= lastNotificationId) {
+      return;
+    }
+
+    await this.#chain("mutation")(
+      {
+        insert_auth_notification_cursor_one: [
+          {
+            object: {
+              uuid: userId,
+              last_read_notificaiton: lastNotificationId,
+            },
+            on_conflict: {
+              // @ts-ignore
+              update_columns: ["last_read_notificaiton"],
+              // @ts-ignore
+              constraint: "notification_cursor_pkey",
+            },
+          },
+          {
+            uuid: true,
+          },
+        ],
+      },
+      { operationName: "UpdateNotificationCursor" }
+    );
+  }
+
+  /**
+   * Try to update the view status for a list of notification IDs.
+   * @param {string} userId
+   * @param {number[]} ids
+   * @returns {Promise<number | undefined>}
+   * @memberof Hasura
+   */
+  async updateNotificationViewed(
+    userId: string,
+    ids: number[]
+  ): Promise<number | undefined> {
+    const resp = await this.#chain("mutation")(
+      {
+        update_auth_notifications: [
+          {
+            _set: { viewed: true },
+            where: { id: { _in: ids }, uuid: { _eq: userId } },
+          },
+          { affected_rows: true },
+        ],
+      },
+      { operationName: "UpdateNotificationsViewed" }
+    );
+    return resp.update_auth_notifications?.affected_rows;
+  }
 }
