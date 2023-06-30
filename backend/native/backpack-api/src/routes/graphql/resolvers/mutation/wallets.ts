@@ -10,6 +10,7 @@ import { CreatePublicKeys } from "../../../../validation/user";
 import type { ApiContext } from "../../context";
 import type {
   MutationImportPublicKeyArgs,
+  MutationRemovePublicKeyArgs,
   MutationResolvers,
 } from "../../types";
 
@@ -85,4 +86,27 @@ export const importPublicKeyMutationResolver: MutationResolvers["importPublicKey
     });
 
     return resp.isPrimary;
+  };
+
+/**
+ * Handler for the mutation to remove a user public key from the database.
+ * @param {{}} _parent
+ * @param {MutationRemovePublicKeyArgs} args
+ * @param {ApiContext} ctx
+ * @param {GraphQLResolveInfo} _info
+ * @returns {Promise<boolean>}
+ */
+export const removePublicKeyMutationResolver: MutationResolvers["removePublicKey"] =
+  async (
+    _parent: {},
+    args: MutationRemovePublicKeyArgs,
+    ctx: ApiContext,
+    _info: GraphQLResolveInfo
+  ): Promise<boolean> => {
+    const affectedRows = await ctx.dataSources.hasura.removeUserPublicKey(
+      ctx.authorization.userId!,
+      args.providerId,
+      args.address
+    );
+    return affectedRows > 0;
   };

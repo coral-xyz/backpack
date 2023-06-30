@@ -4,21 +4,7 @@ import { applyMiddleware } from "graphql-middleware";
 import { allow, shield } from "graphql-shield";
 import { join } from "path";
 
-import {
-  authenticateMutationResolver,
-  deauthenticateMutationResolver,
-  friendshipTypeResolvers,
-  importPublicKeyMutationResolver,
-  jsonObjectScalar,
-  markNotificationsAsReadMutationResolver,
-  notificationTypeResolvers,
-  sendFriendRequestMutationResolver,
-  tokenListQueryResolver,
-  userQueryResolver,
-  userTypeResolvers,
-  walletQueryResolver,
-  walletTypeResolvers,
-} from "./resolvers";
+import * as handlers from "./resolvers";
 import { authorized } from "./rules";
 import type { MutationResolvers, QueryResolvers, Resolvers } from "./types";
 
@@ -26,20 +12,22 @@ import type { MutationResolvers, QueryResolvers, Resolvers } from "./types";
  * Root `Mutation` object resolver.
  */
 const mutationResolvers: MutationResolvers = {
-  authenticate: authenticateMutationResolver,
-  deauthenticate: deauthenticateMutationResolver,
-  importPublicKey: importPublicKeyMutationResolver,
-  markNotificationsAsRead: markNotificationsAsReadMutationResolver,
-  sendFriendRequest: sendFriendRequestMutationResolver,
+  authenticate: handlers.authenticateMutationResolver,
+  deauthenticate: handlers.deauthenticateMutationResolver,
+  importPublicKey: handlers.importPublicKeyMutationResolver,
+  markNotificationsAsRead: handlers.markNotificationsAsReadMutationResolver,
+  removePublicKey: handlers.removePublicKeyMutationResolver,
+  sendFriendRequest: handlers.sendFriendRequestMutationResolver,
+  setAvatar: handlers.setAvatarMutationResolver,
 };
 
 /**
  * Root `Query` object resolver.
  */
 const queryResolvers: QueryResolvers = {
-  tokenList: tokenListQueryResolver,
-  user: userQueryResolver,
-  wallet: walletQueryResolver,
+  tokenList: handlers.tokenListQueryResolver,
+  user: handlers.userQueryResolver,
+  wallet: handlers.walletQueryResolver,
 };
 
 /**
@@ -48,11 +36,11 @@ const queryResolvers: QueryResolvers = {
 const resolvers: Resolvers = {
   Query: queryResolvers,
   Mutation: mutationResolvers,
-  Friendship: friendshipTypeResolvers,
-  Notification: notificationTypeResolvers,
-  User: userTypeResolvers,
-  Wallet: walletTypeResolvers,
-  JSONObject: jsonObjectScalar,
+  Friendship: handlers.friendshipTypeResolvers,
+  Notification: handlers.notificationTypeResolvers,
+  User: handlers.userTypeResolvers,
+  Wallet: handlers.walletTypeResolvers,
+  JSONObject: handlers.jsonObjectScalar,
 };
 
 /**
