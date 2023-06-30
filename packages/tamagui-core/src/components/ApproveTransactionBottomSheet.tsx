@@ -23,10 +23,10 @@ function ResourceThing({ imageUrl, title, subtitle }) {
           borderRadius: 50,
         }}
       />
-      <StyledText fontSize="$lg" color="$baseTextHighEmphasis">
+      <StyledText size="$lg" color="$baseTextHighEmphasis">
         {title}
       </StyledText>
-      <StyledText fontSize="$sm" color="$baseTextMedEmphasis">
+      <StyledText size="$sm" color="$baseTextMedEmphasis">
         {subtitle}
       </StyledText>
     </YStack>
