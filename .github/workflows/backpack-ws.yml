@@ -27,24 +27,6 @@ jobs:
           printf 'REDIS_URL=%s\n' '${{secrets.REDIS_URL}}' >> .env
           printf 'CHAT_JWT=%s\n' '${{secrets.CHAT_JWT}}' >> .env
           printf 'ALCHEMY_API_KEY=%s\n' '${{secrets.ALCHEMY_API_KEY}}' >> .env
-          printf 'AWS_EB_SECRET_ACCESS_KEY=%s\n' '${{secrets.AWS_EB_SECRET_ACCESS_KEY}}' >> .env
-          printf 'AWS_EB_SESSION_TOKEN=%s\n' '${{secrets.AWS_EB_SESSION_TOKEN}}' >> .env
-          printf 'BUNDLEWATCH_GITHUB_TOKEN=%s\n' '${{secrets.BUNDLEWATCH_GITHUB_TOKEN}}' >> .env
-          printf 'CHROME_CRX_PRIVATE_KEY=%s\n' '${{secrets.CHROME_CRX_PRIVATE_KEY}}' >> .env
-          printf 'DISCORD_WEBHOOK=%s\n' '${{secrets.DISCORD_WEBHOOK}}' >> .env
-          printf 'DOCKERHUB_TOKEN=%s\n' '${{secrets.DOCKERHUB_TOKEN}}' >> .env
-          printf 'DOCKERHUB_USERNAME=%s\n' '${{secrets.DOCKERHUB_USERNAME}}' >> .env
-          printf 'DOCKER_PASSWORD=%s\n' '${{secrets.DOCKER_PASSWORD}}' >> .env
-          printf 'DOCKER_USERNAME=%s\n' '${{secrets.DOCKER_USERNAME}}' >> .env
-          printf 'EXPO_TOKEN=%s\n' '${{secrets.EXPO_TOKEN}}' >> .env
-          printf 'FLY_API_TOKEN=%s\n' '${{secrets.FLY_API_TOKEN}}' >> .env
-          printf 'LEDGER_INJECTION_DEPLOY_KEY=%s\n' '${{secrets.LEDGER_INJECTION_DEPLOY_KEY}}' >> .env
-          printf 'MAGIC_EDEN_API_KEY=%s\n' '${{secrets.MAGIC_EDEN_API_KEY}}' >> .env
-          printf 'NPM_ACCESS_TOKEN=%s\n' '${{secrets.NPM_ACCESS_TOKEN}}' >> .env
-          printf 'RATE_LIMIT_KEY=%s\n' '${{secrets.RATE_LIMIT_KEY}}' >> .env
-          printf 'TURBO_SERVER_TOKEN=%s\n' '${{secrets.TURBO_SERVER_TOKEN}}' >> .env
-          printf 'TURBO_TEAM=%s\n' '${{secrets.TURBO_TEAM}}' >> .env
-          printf 'TURBO_TOKEN=%s\n' '${{secrets.TURBO_TOKEN}}' >> .env
           printf 'PORT=%s\n' '8080' >> .env
           cd ../../..
 
