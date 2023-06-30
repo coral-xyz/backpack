@@ -177,8 +177,12 @@ export type Mutation = {
   importPublicKey?: Maybe<Scalars["Boolean"]>;
   /** Set the `viewed` status of the argued notification IDs are `true`. */
   markNotificationsAsRead: Scalars["Int"];
+  /** Deletes a public key registered to the active user account. */
+  removePublicKey: Scalars["Boolean"];
   /** Allows users to send friend requests to another remote user. */
   sendFriendRequest?: Maybe<Scalars["Boolean"]>;
+  /** Set a user's avatar to a new image. */
+  setAvatar: Scalars["Boolean"];
 };
 
 /** Root level mutation type. */
@@ -202,9 +206,21 @@ export type MutationMarkNotificationsAsReadArgs = {
 };
 
 /** Root level mutation type. */
+export type MutationRemovePublicKeyArgs = {
+  address: Scalars["String"];
+  providerId: ProviderId;
+};
+
+/** Root level mutation type. */
 export type MutationSendFriendRequestArgs = {
   accept: Scalars["Boolean"];
   otherUserId: Scalars["String"];
+};
+
+/** Root level mutation type. */
+export type MutationSetAvatarArgs = {
+  nft: Scalars["String"];
+  providerId: ProviderId;
 };
 
 /** Generic NFT object type definition to provide on-chain and off-chain metadata. */
@@ -1040,11 +1056,23 @@ export type MutationResolvers<
     ContextType,
     RequireFields<MutationMarkNotificationsAsReadArgs, "ids">
   >;
+  removePublicKey?: Resolver<
+    ResolversTypes["Boolean"],
+    ParentType,
+    ContextType,
+    RequireFields<MutationRemovePublicKeyArgs, "address" | "providerId">
+  >;
   sendFriendRequest?: Resolver<
     Maybe<ResolversTypes["Boolean"]>,
     ParentType,
     ContextType,
     RequireFields<MutationSendFriendRequestArgs, "accept" | "otherUserId">
+  >;
+  setAvatar?: Resolver<
+    ResolversTypes["Boolean"],
+    ParentType,
+    ContextType,
+    RequireFields<MutationSetAvatarArgs, "nft" | "providerId">
   >;
 }>;
 

@@ -51,9 +51,19 @@ type Mutation {
   markNotificationsAsRead(ids: [Int!]!): Int!
 
   """
+  Deletes a public key registered to the active user account.
+  """
+  removePublicKey(providerId: ProviderID!, address: String!): Boolean!
+
+  """
   Allows users to send friend requests to another remote user.
   """
   sendFriendRequest(otherUserId: String!, accept: Boolean!): Boolean
+
+  """
+  Set a user's avatar to a new image.
+  """
+  setAvatar(providerId: ProviderID!, nft: String!): Boolean!
 }
 
 """

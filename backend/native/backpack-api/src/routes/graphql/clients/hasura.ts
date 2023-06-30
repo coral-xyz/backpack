@@ -471,6 +471,37 @@ export class Hasura {
   }
 
   /**
+   * Delete a public key table entry for the user matching the arguments.
+   * @param {string} userId
+   * @param {ProviderId} provider
+   * @param {string} address
+   * @returns {Promise<number>}
+   * @memberof Hasura
+   */
+  async removeUserPublicKey(
+    userId: string,
+    provider: ProviderId,
+    address: string
+  ): Promise<number> {
+    const resp = await this.#chain("mutation")(
+      {
+        delete_auth_public_keys: [
+          {
+            where: {
+              user_id: { _eq: userId },
+              blockchain: { _eq: provider.toLowerCase() },
+              public_key: { _eq: address },
+            },
+          },
+          { affected_rows: true },
+        ],
+      },
+      { operationName: "RemoveUserPublicKey" }
+    );
+    return resp.delete_auth_public_keys?.affected_rows ?? 0;
+  }
+
+  /**
    * Updates the notification cursor for the argued user if applicable.
    * @param {string} userId
    * @param {number} lastNotificationId
@@ -540,5 +571,34 @@ export class Hasura {
       { operationName: "UpdateNotificationsViewed" }
     );
     return resp.update_auth_notifications?.affected_rows;
+  }
+
+  /**
+   * Update the argued user's avatar to the provider ID
+   * and NFT address combination provided in the arguments.
+   * @param {string} userId
+   * @param {ProviderId} providerId
+   * @param {string} nft
+   * @returns {Promise<number>}
+   * @memberof Hasura
+   */
+  async updateUserAvatar(
+    userId: string,
+    providerId: ProviderId,
+    nft: string
+  ): Promise<number> {
+    const response = await this.#chain("mutation")(
+      {
+        update_auth_users: [
+          {
+            _set: { avatar_nft: `${providerId.toLowerCase()}/${nft}` },
+            where: { id: { _eq: userId } },
+          },
+          { affected_rows: true },
+        ],
+      },
+      { operationName: "UpdateUserAvatar" }
+    );
+    return response.update_auth_users?.affected_rows ?? 0;
   }
 }
