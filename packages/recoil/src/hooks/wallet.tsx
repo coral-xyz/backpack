@@ -1,10 +1,8 @@
-import { Blockchain } from "@coral-xyz/common";
+import type { Blockchain } from "@coral-xyz/common";
 import { useRecoilValue } from "recoil";
 
 import * as atoms from "../atoms";
 import type { Wallet, WalletPublicKeys } from "../types";
-
-import { useFeatureGates } from "./useFeatureGates";
 
 export function useActiveEthereumWallet(): {
   publicKey: string;
@@ -78,11 +76,7 @@ export function useAllWalletsPerBlockchain(blockchain: Blockchain): Array<{
 }
 
 export function useAllWallets(): Wallet[] {
-  const gates = useFeatureGates();
   const wallets = useRecoilValue(atoms.allWallets);
-  if (!gates.ECLIPSE) {
-    return wallets.filter((w) => w.blockchain !== Blockchain.ECLIPSE);
-  }
   return wallets;
 }
 
