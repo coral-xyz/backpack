@@ -1,8 +1,14 @@
 import { Suspense, useState } from "react";
 import { View, StyleSheet } from "react-native";
 
+import { useSuspenseQuery } from "@apollo/client";
 import { Blockchain } from "@coral-xyz/common";
-import { UsdBalanceAndPercentChange, Stack } from "@coral-xyz/tamagui";
+import {
+  UsdBalanceAndPercentChange,
+  Stack,
+  YStack,
+  StyledText,
+} from "@coral-xyz/tamagui";
 import { ErrorBoundary } from "react-error-boundary";
 
 import { RecentActivityList } from "~components/RecentActivityList";
@@ -19,6 +25,8 @@ import {
 } from "~hooks/recoil";
 import type { TokenDetailScreenProps } from "~navigation/WalletsNavigator";
 
+import { gql } from "~src/graphql/__generated__";
+import { useSession } from "~src/lib/SessionProvider";
 import { NavTokenAction, NavTokenOptions } from "~types/types";
 
 function TokenHeader({
@@ -42,8 +50,8 @@ function TokenHeader({
   }
 
   return (
-    <Stack mb={24}>
-      <View>
+    <YStack mb={24}>
+      <YStack space={8}>
         <TokenAmountHeader
           token={token}
           amount={token.nativeBalance}
@@ -53,7 +61,7 @@ function TokenHeader({
           usdBalance={token.usdBalance}
           recentPercentChange={token.recentPercentChange}
         />
-      </View>
+      </YStack>
       <View style={styles.tokenHeaderButtonContainer}>
         <TransferWidget
           swapEnabled
@@ -67,47 +75,64 @@ function TokenHeader({
           }
         />
       </View>
-    </Stack>
+    </YStack>
   );
 }
+
+const QUERY_TOKEN_TRANSACTIONS = gql(`
+  query TransactionsByMint($address: String!, $providerId: ProviderID!, $filters: TransactionFiltersInput) {
+    wallet(address: $address, providerId: $providerId) {
+      id
+      provider {
+        providerId
+      }
+      transactions(filters: $filters) {
+        edges {
+          node {
+            ...TransactionFragment
+          }
+        }
+      }
+    }
+  }
+`);
 
 function Container({
   route,
   navigation,
 }: TokenDetailScreenProps): JSX.Element | null {
-  const { blockchain, tokenAddress } = route.params;
+  const { activeWallet } = useSession();
+  const { blockchain, tokenAddress, tokenMint } = route.params;
+  const variables = {
+    address: activeWallet?.publicKey,
+    providerId: activeWallet?.blockchain.toUpperCase(),
+    filters: {
+      token: tokenMint,
+    },
+  };
 
-  // We only use ethereumWallet here, even though its shared on the Solana side too.
-  const { data: ethereumWallet, loading } = useActiveEthereumWallet();
-  if (!blockchain || !tokenAddress || loading) {
-    return null;
-  }
+  const { data } = useSuspenseQuery(QUERY_TOKEN_TRANSACTIONS, {
+    variables,
+  });
 
-  const activityAddress =
-    blockchain === Blockchain.ETHEREUM
-      ? ethereumWallet.publicKey
-      : tokenAddress;
-  const contractAddresses =
-    blockchain === Blockchain.ETHEREUM ? [tokenAddress] : undefined;
+  // // We only use ethereumWallet here, even though its shared on the Solana side too.
+  // const { data: ethereumWallet, loading } = useActiveEthereumWallet();
+  // if (!blockchain || !tokenAddress || loading) {
+  //   return null;
+  // }
+  //
+  // const activityAddress =
+  //   blockchain === Blockchain.ETHEREUM
+  //     ? ethereumWallet.publicKey
+  //     : tokenAddress;
+  // const contractAddresses =
+  //   blockchain === Blockchain.ETHEREUM ? [tokenAddress] : undefined;
 
   return (
-    <RecentActivityList
-      ListHeaderComponent={
-        <TokenHeader
-          blockchain={blockchain}
-          address={tokenAddress}
-          onPressOption={(route: string, options: NavTokenOptions) => {
-            navigation.push(route, options);
-          }}
-        />
-      }
-      style={{ paddingTop: 16, paddingHorizontal: 16 }}
-      contentContainerStyle={{ paddingBottom: 32 }}
-      blockchain={blockchain}
-      address={activityAddress}
-      contractAddresses={contractAddresses}
-      minimize
-    />
+    <>
+      <StyledText>{JSON.stringify({ variables }, null, 2)}</StyledText>
+      <StyledText>{JSON.stringify({ data }, null, 2)}</StyledText>
+    </>
   );
 }
 

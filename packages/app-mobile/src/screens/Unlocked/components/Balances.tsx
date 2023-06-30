@@ -1,10 +1,9 @@
 // TODO(peter) one thing we might need to make sure is that when we wrap these FlatLists in a ScrollView, we can't nest virtualized lists.
 // This means we might just use the scrollview directly from within a flatlist by using ListHeaderComponent and ListFooterComponent
-import type { Blockchain } from "@coral-xyz/common";
 import type { useBlockchainTokensSorted } from "@coral-xyz/recoil";
 import type { Token, PublicKey } from "~types/types";
 
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import {
   StyleProp,
   ViewStyle,
@@ -14,7 +13,12 @@ import {
   View,
 } from "react-native";
 
-import { formatUsd } from "@coral-xyz/common";
+import {
+  Blockchain,
+  formatWalletAddress,
+  UNKNOWN_ICON_SRC,
+  formatUsd,
+} from "@coral-xyz/common";
 import {
   blockchainBalancesSorted,
   allWalletsDisplayed,
@@ -321,7 +325,11 @@ function TextAmountBalance({
   );
 }
 
+const UNCHANGED_VALUE = "0.00";
+const NO_VALUE = "-";
+
 export function TokenRow({
+  balance,
   onPressRow,
   token,
   blockchain,
@@ -336,7 +344,39 @@ export function TokenRow({
   blockchain: Blockchain;
   walletPublicKey: string;
 }): JSX.Element {
-  const { name, recentUsdBalanceChange, logo: iconUrl } = token;
+  // Set the memoized change value that should be shown based on view type state
+  // for the purpose of checking how the display should appear
+  const changeValue = useMemo(() => {
+    const val = balance.marketData?.percentChange?.toFixed(2) ?? NO_VALUE;
+    return val.endsWith(UNCHANGED_VALUE) && val[0] === "-" ? val.slice(1) : val;
+  }, [balance.marketData]);
+
+  // Set the color of the balance change text based on its positive/negative nature
+  const changeColor =
+    changeValue === UNCHANGED_VALUE || changeValue === NO_VALUE
+      ? "$secondary"
+      : parseFloat(changeValue) < 0
+      ? "$negative"
+      : "$positive";
+
+  // Set the change value prefix if required based on its value
+  const changePrefix =
+    changeColor === "$secondary" ? "" : changeColor === "$positive" ? "+" : "";
+
+  // Set the value of the formatted balance change texted
+  const changeText =
+    changeValue === NO_VALUE ? changeValue : `${changePrefix}${changeValue}%`;
+
+  // Set the name to either the found token list entry name of the truncated mint address
+  const name =
+    balance.tokenListEntry?.name ?? formatWalletAddress(balance.token);
+
+  // Set the fully constructed string for the balance value text
+  const valueText = balance.marketData?.value
+    ? formatUsd(balance.marketData?.value)
+    : "-";
+
+  const iconUrl = balance.tokenListEntry?.logo ?? UNKNOWN_ICON_SRC;
 
   return (
     <ListItemWrapper
@@ -347,14 +387,17 @@ export function TokenRow({
       <ListItemRow>
         <ListItemSide side="left">
           <ListItemStyledText fontSize="$lg">{name}</ListItemStyledText>
-          <TextAmountBalance
-            displayBalance={token.displayBalance}
-            ticker={token.ticker}
-          />
+          <ListItemStyledText color="$baseTextMedEmphasis">
+            {balance.displayAmount} {balance.tokenListEntry?.symbol ?? ""}
+          </ListItemStyledText>
         </ListItemSide>
         <ListItemSide side="right">
-          <TextUsdBalance usdBalance={token.usdBalance} />
-          <TextPercentChanged percentChange={recentUsdBalanceChange} />
+          <ListItemStyledText fontSize="$lg" color="$baseTextHighEmphasis">
+            {valueText}
+          </ListItemStyledText>
+          <ListItemStyledText fontSize="$lg" color="$baseTextHighEmphasis">
+            {changeText}
+          </ListItemStyledText>
         </ListItemSide>
       </ListItemRow>
     </ListItemWrapper>

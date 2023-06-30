@@ -3,8 +3,9 @@ import type { Token, NavTokenOptions } from "~types/types";
 
 import { Suspense, useCallback } from "react";
 
+import { useSuspenseQuery } from "@apollo/client";
 import { blockchainBalancesSorted } from "@coral-xyz/recoil";
-import { Stack } from "@coral-xyz/tamagui";
+import { Stack, StyledText } from "@coral-xyz/tamagui";
 import { ErrorBoundary } from "react-error-boundary";
 import { useRecoilValue } from "recoil";
 
@@ -16,11 +17,52 @@ import { TokenRow } from "~screens/Unlocked/components/Balances";
 
 import { ScreenListLoading } from "~src/components/LoadingStates";
 import { PaddedFlatList } from "~src/components/PaddedFlatList";
+import { gql } from "~src/graphql/__generated__";
+import { ProviderId } from "~src/graphql/__generated__/graphql";
 import { useSession } from "~src/lib/SessionProvider";
+
+const QUERY_TOKEN_BALANCES = gql(`
+  query GetTokenBalances($address: String!, $providerId: ProviderID!) {
+    wallet(address: $address, providerId: $providerId) {
+      id
+      balances {
+        id
+        tokens {
+          edges {
+            node {
+              id
+              address
+              displayAmount
+            marketData {
+              id
+              percentChange
+              value
+            }
+              token
+              tokenListEntry {
+                id
+                logo
+                name
+                symbol
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`);
 
 function Container({ navigation, route }: TokenListScreenProps): JSX.Element {
   const { activeWallet } = useSession();
   const { blockchain, publicKey } = route.params;
+  const { data } = useSuspenseQuery(QUERY_TOKEN_BALANCES, {
+    variables: {
+      address: "EcxjN4mea6Ah9WSqZhLtSJJCZcxY73Vaz6UVHFZZ5Ttz",
+      providerId: "SOLANA",
+    },
+  });
+
   const balances = useRecoilValue(
     blockchainBalancesSorted({
       blockchain: (activeWallet?.blockchain as Blockchain) || blockchain,
@@ -32,8 +74,7 @@ function Container({ navigation, route }: TokenListScreenProps): JSX.Element {
     (blockchain: Blockchain, token: Token) => {
       navigation.push("TokenDetail", {
         blockchain,
-        tokenAddress: token.address,
-        tokenTicker: token.ticker,
+        tokenMint: token.mint,
       });
     },
     [navigation]
@@ -41,7 +82,7 @@ function Container({ navigation, route }: TokenListScreenProps): JSX.Element {
 
   const keyExtractor = (item) => item.address;
   const renderItem = useCallback(
-    ({ item: token, index }: { item: Token; index: number }) => {
+    ({ item, index }: { item: Token; index: number }) => {
       const isFirst = index === 0;
       const isLast = index === balances.length - 1;
 
@@ -52,10 +93,11 @@ function Container({ navigation, route }: TokenListScreenProps): JSX.Element {
           borderRadius={16}
         >
           <TokenRow
-            onPressRow={onPressToken}
-            blockchain={blockchain}
-            token={token}
-            walletPublicKey={publicKey}
+            balance={item}
+            // onPressRow={onPressToken}
+            // blockchain={blockchain}
+            // token={token}
+            // walletPublicKey={publicKey}
           />
         </RoundedContainerGroup>
       );
@@ -78,9 +120,11 @@ function Container({ navigation, route }: TokenListScreenProps): JSX.Element {
     </>
   );
 
+  const items = data?.wallet?.balances?.tokens?.edges.map((e) => e.node) ?? [];
+
   return (
     <PaddedFlatList
-      data={balances}
+      data={items}
       keyExtractor={keyExtractor}
       renderItem={renderItem}
       ListHeaderComponent={ListHeader}

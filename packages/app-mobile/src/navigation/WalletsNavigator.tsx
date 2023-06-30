@@ -106,6 +106,7 @@ export type WalletStackParamList = {
   TokenDetail: {
     blockchain: Blockchain;
     tokenTicker: string;
+    tokenAddress: string;
   };
   // List of collectibles/nfts for a collection
   CollectionDetail: {

@@ -22,7 +22,7 @@ export function TransferWidget({
   token?: Token;
 }): JSX.Element {
   return (
-    <XStack space={16} ai="center" alignSelf="center" jc="center">
+    <XStack space={24} ai="center" alignSelf="center" jc="center">
       <TransferButton
         label="Receive"
         icon="arrow-downward"

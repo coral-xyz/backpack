@@ -25,10 +25,10 @@ export const TokenAmountHeader = ({
   displayLogo = true,
 }: TokenAmountHeaderProps): JSX.Element => {
   const formattedAmount = ethers.utils.formatUnits(amount, token.decimals);
-  const maxChars = displayLogo ? 8 : 12;
+  const maxChars = displayLogo ? 6 : 8;
   const maybeTruncatedAmount =
     formattedAmount.length > maxChars
-      ? formattedAmount.slice(0, maxChars) + "..."
+      ? formattedAmount.slice(0, maxChars)
       : formattedAmount;
 
   return (
@@ -37,10 +37,18 @@ export const TokenAmountHeader = ({
         <ProxyImage size={32} src={token.logo!} style={styles.logo} />
       ) : null}
       <XStack ai="center" als="center" space={6}>
-        <StyledText fontWeight="600" fontSize="$4xl" color="$fontColor">
+        <StyledText
+          fontWeight="500"
+          fontSize="$4xl"
+          color="$baseTextHighEmphasis"
+        >
           {maybeTruncatedAmount}
         </StyledText>
-        <StyledText fontWeight="500" fontSize="$4xl" color="$secondary">
+        <StyledText
+          fontWeight="500"
+          fontSize="$4xl"
+          color="$baseTextMedEmphasis"
+        >
           {token.ticker ?? ""}
         </StyledText>
       </XStack>
