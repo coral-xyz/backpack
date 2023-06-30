@@ -831,21 +831,15 @@ export function ListItemWalletOverview({
 }): JSX.Element {
   const dehydrated = type === "dehydrated";
   return (
-    <ListItem
+    <ListItemWrapper
+      grouped={grouped}
       opacity={dehydrated ? 0.5 : undefined}
-      backgroundColor="$nav"
+      icon={<BlockchainLogo blockchain={blockchain} size={18} />}
       onPress={() => {
         if (!dehydrated) {
           onPress?.({ blockchain, publicKey });
         }
       }}
-      borderRadius={!grouped ? "$container" : undefined}
-      borderColor={!grouped ? "$borderFull" : undefined}
-      borderWidth={!grouped ? 2 : undefined}
-      paddingHorizontal={16}
-      paddingVertical={12}
-      // TODO fix logo spacing potentially
-      icon={<BlockchainLogo blockchain={blockchain} size={18} />}
     >
       <XStack flex={1} jc="space-between">
         <StyledText fontSize="$lg" color="$fontColor">
@@ -855,7 +849,7 @@ export function ListItemWalletOverview({
           {balance}
         </StyledText>
       </XStack>
-    </ListItem>
+    </ListItemWrapper>
   );
 }
 
@@ -919,7 +913,7 @@ export function _ListItemOneLine({
       py={8}
       px={16}
     >
-      <XStack f={1} jc="space-between" ai="center">
+      <ListItemRow>
         <XStack ai="center">
           {icon ? (
             <Stack ai="center" jc="center" mr={8} width={32} height={32}>
@@ -934,7 +928,7 @@ export function _ListItemOneLine({
           {rightText ? <StyledText mr={8}>{rightText}</StyledText> : null}
           {loading ? <ActivityIndicator size="small" /> : iconAfter}
         </XStack>
-      </XStack>
+      </ListItemRow>
     </ListItem>
   );
 }
