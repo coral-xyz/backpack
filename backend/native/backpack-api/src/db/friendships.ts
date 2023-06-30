@@ -750,7 +750,7 @@ async function deleteFriendRequest({ from, to }: { from: string; to: string }) {
   );
 }
 
-function getSortedUsers(from: string, to: string) {
+export function getSortedUsers(from: string, to: string) {
   let user1 = "";
   let user2 = "";
   if (from < to) {
