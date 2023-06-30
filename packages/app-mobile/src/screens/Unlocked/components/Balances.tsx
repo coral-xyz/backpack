@@ -10,7 +10,6 @@ import {
   ViewStyle,
   FlatList,
   Pressable,
-  StyleSheet,
   Text,
   View,
 } from "react-native";
@@ -20,16 +19,7 @@ import {
   blockchainBalancesSorted,
   allWalletsDisplayed,
 } from "@coral-xyz/recoil";
-import {
-  TextPercentChanged,
-  RoundedContainerGroup,
-  XStack,
-  StyledText,
-  Stack,
-  ListItem,
-  YStack,
-  Circle,
-} from "@coral-xyz/tamagui";
+import { TextPercentChanged, RoundedContainerGroup } from "@coral-xyz/tamagui";
 import { useNavigation } from "@react-navigation/native";
 import { useRecoilValueLoadable } from "recoil";
 
@@ -37,13 +27,20 @@ import { ExpandCollapseIcon } from "~components/Icon";
 import {
   ListRowSeparator,
   Margin,
-  ProxyImage,
   Row,
   StyledTextInput,
 } from "~components/index";
 import { useTheme } from "~hooks/useTheme";
 
 import { TableHeader } from "./index";
+
+import {
+  ListItemRow,
+  ListItemStyledText,
+  ListItemWrapper,
+  ListItemSide,
+  ListItemIcon,
+} from "~src/components/ListItem";
 
 export function SearchableTokenTables({
   onPressRow,
@@ -324,74 +321,6 @@ function TextAmountBalance({
   );
 }
 
-type ListItemSubProps = {
-  children: React.ReactNode;
-};
-
-function ListItemLeft({ children }: ListItemSubProps) {
-  return (
-    <YStack f={1} space={4} mr={24}>
-      {children}
-    </YStack>
-  );
-}
-
-function ListItemRight({ children }: ListItemSubProps) {
-  return (
-    <YStack f={-1} space={4} ai="flex-end">
-      {children}
-    </YStack>
-  );
-}
-
-function ListItemRow({ children }: ListItemSubProps) {
-  return (
-    <XStack f={1} jc="space-between" ai="center">
-      {children}
-    </XStack>
-  );
-}
-
-function ListItemStyledText({ children, ...props }: ListItemSubProps) {
-  return (
-    <StyledText
-      textOverflow="ellipsis"
-      color="$baseTextHighEmphasis"
-      numberOfLines={1}
-      {...props}
-    >
-      {children}
-    </StyledText>
-  );
-}
-
-function ListItemIcon({ iconUrl }: { iconUrl: string }) {
-  return (
-    <Circle size={40} overflow="hidden">
-      {iconUrl ? <ProxyImage size={40} src={iconUrl} /> : null}
-    </Circle>
-  );
-}
-
-function ListItemWrapper({ children, grouped, ...props }): JSX.Element {
-  return (
-    <ListItem
-      pressTheme
-      hoverTheme
-      overflow="hidden"
-      backgroundColor="$nav"
-      borderRadius={grouped ? 0 : "$container"}
-      borderColor={grouped ? undefined : "$borderFull"}
-      borderWidth={grouped ? 0 : 2}
-      px={16}
-      py={12}
-      {...props}
-    >
-      {children}
-    </ListItem>
-  );
-}
-
 export function TokenRow({
   onPressRow,
   token,
@@ -413,20 +342,20 @@ export function TokenRow({
     <ListItemWrapper
       grouped
       onPress={() => onPressRow(blockchain, token, walletPublicKey)}
-      icon={<ListItemIcon iconUrl={iconUrl} />}
+      icon={<ListItemIcon source={{ uri: iconUrl }} />}
     >
       <ListItemRow>
-        <ListItemLeft>
+        <ListItemSide side="left">
           <ListItemStyledText fontSize="$lg">{name}</ListItemStyledText>
           <TextAmountBalance
             displayBalance={token.displayBalance}
             ticker={token.ticker}
           />
-        </ListItemLeft>
-        <ListItemRight>
+        </ListItemSide>
+        <ListItemSide side="right">
           <TextUsdBalance usdBalance={token.usdBalance} />
           <TextPercentChanged percentChange={recentUsdBalanceChange} />
-        </ListItemRight>
+        </ListItemSide>
       </ListItemRow>
     </ListItemWrapper>
   );

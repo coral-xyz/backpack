@@ -384,7 +384,8 @@ const ListItemIconContainer = styled(Stack, {
   overflow: "hidden",
 });
 
-const ListItemIcon = styled(Image, {
+// TODO: ProxyImage probably
+export const ListItemIcon = styled(Image, {
   width: 40,
   height: 40,
   borderRadius: 20,
@@ -446,7 +447,7 @@ export function ListItemTableWrapper({ children }): JSX.Element {
   );
 }
 
-const ListItemWrapper = styled(ListItem, {
+export const ListItemWrapper = styled(ListItem, {
   pressTheme: true,
   hoverTheme: true,
   overflow: "hidden",
@@ -464,7 +465,7 @@ const ListItemWrapper = styled(ListItem, {
   },
 });
 
-const ListItemSide = styled(YStack, {
+export const ListItemSide = styled(YStack, {
   space: 4,
   variants: {
     side: {
@@ -484,13 +485,13 @@ const ListItemSide = styled(YStack, {
   } as const,
 });
 
-const ListItemStyledText = styled(StyledText, {
+export const ListItemStyledText = styled(StyledText, {
   textOverflow: "ellipsis",
   color: "$baseTextHighEmphasis",
   numberOfLines: 1,
 });
 
-const ListItemRow = styled(XStack, {
+export const ListItemRow = styled(XStack, {
   flex: 1,
   justifyContent: "space-between",
   alignItems: "center",
