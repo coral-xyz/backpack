@@ -30,12 +30,11 @@ jobs:
           printf 'COINGECKO_API_KEY=%s\n' '${{secrets.COINGECKO_API_KEY}}' >> .env
           printf 'HASURA_URL=%s\n' '${{secrets.HASURA_URL}}' >> .env
           printf 'HELIUS_API_KEY=%s\n' '${{secrets.HELIUS_API_KEY}}' >> .env
+          printf 'MAGIC_EDEN_API_KEY=%s\n' '${{secrets.MAGIC_EDEN_API_KEY}}' >> .env
           printf 'OVERRIDE_RPC_URL=%s\n' '${{secrets.OVERRIDE_RPC_URL}}' >> .env
           printf 'REDIS_URL=%s\n' '${{secrets.REDIS_URL}}' >> .env
           printf 'SENTRY_DSN=%s\n' '${{secrets.SENTRY_DSN}}' >> .env
           printf 'TENSOR_API_KEY=%s\n' '${{secrets.TENSOR_API_KEY}}' >> .env
-          printf 'TWITTER_CONSUMER_KEY=%s\n' '${{secrets.TWITTER_CONSUMER_KEY}}' >> .env
-          printf 'TWITTER_CONSUMER_SECRET=%s\n' '${{secrets.TWITTER_CONSUMER_SECRET}}' >> .env
           printf 'VAPID_PRIVATE_KEY=%s\n' '${{secrets.VAPID_PRIVATE_KEY}}' >> .env
           printf 'VAPID_PUBLIC_KEY=%s\n' '${{secrets.VAPID_PUBLIC_KEY}}' >> .env
           cd ../../..

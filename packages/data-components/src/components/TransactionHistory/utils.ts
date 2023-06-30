@@ -1,6 +1,12 @@
 import { formatDate } from "@coral-xyz/common";
 
-import type { ResponseTransaction } from ".";
+import type { GetTransactionsQuery } from "../../apollo/graphql";
+
+export type ResponseTransaction = NonNullable<
+  NonNullable<
+    NonNullable<GetTransactionsQuery["user"]>["wallet"]
+  >["transactions"]
+>["edges"][number]["node"];
 
 export type TransactionGroup = {
   date: string;

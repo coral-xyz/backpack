@@ -37,7 +37,7 @@
     "expo-image": "~1.2.3",
     "react-content-loader": "^6.2.1",
     "react-error-boundary": "^4.0.9",
-    "react-native-svg": "^13.9.0",
+    "react-native-svg": "13.4.0",
     "tamagui": "^1.28.1"
   },
   "devDependencies": {

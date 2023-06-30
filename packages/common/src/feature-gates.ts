@@ -6,6 +6,7 @@ export const DEFAULT_FEATURE_GATES = {
   BARTER_ENABLED: false,
   DROPZONE_ENABLED: false,
   GQL_BALANCES: false,
+  GQL_COLLECTIBLES: false,
   GQL_NOTIFICATIONS: true,
   GQL_TRANSACTION_HISTORY: false,
   MESSAGING_ENABLED: true,
@@ -13,7 +14,6 @@ export const DEFAULT_FEATURE_GATES = {
   STICKER_ENABLED: false,
   STRIPE_ENABLED: false,
   SWAP_FEES_ENABLED: false,
-  ECLIPSE: false,
 } as const;
 
 export type FEATURE_GATES_MAP = typeof DEFAULT_FEATURE_GATES;

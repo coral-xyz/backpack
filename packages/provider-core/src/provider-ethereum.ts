@@ -11,8 +11,8 @@ import {
   ETHEREUM_RPC_METHOD_SWITCH_CHAIN,
   getLogger,
   InjectedRequestManager,
+  NOTIFICATION_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_CONNECTION_URL_UPDATED,
-  NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED,
   NOTIFICATION_ETHEREUM_CONNECTED,
   NOTIFICATION_ETHEREUM_DISCONNECTED,
@@ -364,7 +364,7 @@ export class ProviderEthereumInjection extends EventEmitter {
       case NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED:
         this._handleNotificationChainIdUpdated(event);
         break;
-      case NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED:
+      case NOTIFICATION_ACTIVE_WALLET_UPDATED:
         this._handleNotificationActiveWalletUpdated(event);
         break;
       default:
@@ -432,7 +432,12 @@ export class ProviderEthereumInjection extends EventEmitter {
    * Handle a change of the active wallet in Backpack.
    */
   _handleNotificationActiveWalletUpdated = async (event: any) => {
-    const { activeWallet } = event.data.detail.data;
+    const { activeWallet, blockchain } = event.data.detail.data;
+
+    if (blockchain !== Blockchain.ETHEREUM) {
+      return;
+    }
+
     if (this.publicKey !== activeWallet) {
       this.publicKey = activeWallet;
       // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-1193.md#accountschanged

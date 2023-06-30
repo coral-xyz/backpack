@@ -303,16 +303,10 @@ function UserListItem({
                 }}
               >
                 {formatUsername(user.username, 15)}{" "}
-                {user.searchedSolPubKey ? (
-                  <> ({formatWalletAddress(user.searchedSolPubKey, 2)})</>
-                ) : (
-                  ""
-                )}{" "}
-                {user.searchedEthPubKey ? (
-                  <>({formatWalletAddress(user.searchedEthPubKey, 2)})</>
-                ) : (
-                  ""
-                )}
+                {Object.values(user.searched.blockchains).filter((bool) => bool)
+                  .length > 0
+                  ? formatWalletAddress(user.searched.usernamePrefix!, 2)
+                  : ""}
               </div>
               {BACKPACK_TEAM.includes(user.id) ? <BackpackStaffIcon /> : null}
             </div>

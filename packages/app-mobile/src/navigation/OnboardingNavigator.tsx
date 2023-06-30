@@ -380,7 +380,7 @@ function OnboardingCreateOrImportWalletScreen({
           }}
         />
         <LinkButton
-          label="I already have an wallet"
+          label="I already have a wallet"
           onPress={() => {
             setOnboardingData({ action: "recover" });
             navigation.push(RecoverAccountRoutes.KeyringTypeSelector);

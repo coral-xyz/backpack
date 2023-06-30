@@ -103,9 +103,10 @@ export interface RemoteUserData {
   requested: boolean;
   remoteRequested: boolean;
   username: string;
-  searchedSolPubKey?: string; // Returns a public key if it is searched for
-  searchedEclipsePubKey?: string;
-  searchedEthPubKey?: string;
+  searched: {
+    usernamePrefix?: string;
+    blockchains: { [blockchain: string]: boolean };
+  };
   public_keys: {
     blockchain: Blockchain;
     publicKey: string;

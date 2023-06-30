@@ -27,6 +27,7 @@ import {
   IS_MOBILE,
   makeUrl,
   NOTIFICATION_ACTIVE_BLOCKCHAIN_UPDATED,
+  NOTIFICATION_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_AGGREGATE_WALLETS_UPDATED,
   NOTIFICATION_APPROVED_ORIGINS_UPDATE,
   NOTIFICATION_AUTO_LOCK_SETTINGS_UPDATED,
@@ -35,8 +36,6 @@ import {
   NOTIFICATION_CONNECTION_URL_UPDATED,
   NOTIFICATION_DARK_MODE_UPDATED,
   NOTIFICATION_DEVELOPER_MODE_UPDATED,
-  NOTIFICATION_ECLIPSE_ACTIVE_WALLET_UPDATED,
-  NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED,
   NOTIFICATION_EXPLORER_UPDATED,
   NOTIFICATION_FEATURE_GATES_UPDATED,
@@ -55,15 +54,12 @@ import {
   NOTIFICATION_KEYRING_STORE_UNLOCKED,
   NOTIFICATION_KEYRING_STORE_USERNAME_ACCOUNT_CREATED,
   NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
-  NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_SOLANA_COMMITMENT_UPDATED,
   NOTIFICATION_USER_ACCOUNT_AUTHENTICATED,
   NOTIFICATION_USER_ACCOUNT_PUBLIC_KEY_CREATED,
   NOTIFICATION_USER_ACCOUNT_PUBLIC_KEY_DELETED,
   NOTIFICATION_USER_ACCOUNT_PUBLIC_KEYS_UPDATED,
   NOTIFICATION_XNFT_PREFERENCE_UPDATED,
-  SolanaCluster,
-  SolanaExplorer,
   TAB_BALANCES_SET,
   TAB_TOKENS,
   TAB_XNFT,
@@ -769,32 +765,14 @@ export class Backend {
 
     if (newActivePublicKey !== oldActivePublicKey) {
       // Public key has changed, emit an event
-      // TODO: remove the blockchain specific events in favour of a single event
-      if (blockchain === Blockchain.SOLANA) {
-        this.events.emit(BACKEND_EVENT, {
-          name: NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED,
-          data: {
-            activeWallet: newActivePublicKey,
-            activeWallets: await this.activeWallets(),
-          },
-        });
-      } else if (blockchain === Blockchain.ECLIPSE) {
-        this.events.emit(BACKEND_EVENT, {
-          name: NOTIFICATION_ECLIPSE_ACTIVE_WALLET_UPDATED,
-          data: {
-            activeWallet: newActivePublicKey,
-            activeWallets: await this.activeWallets(),
-          },
-        });
-      } else if (blockchain === Blockchain.ETHEREUM) {
-        this.events.emit(BACKEND_EVENT, {
-          name: NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED,
-          data: {
-            activeWallet: newActivePublicKey,
-            activeWallets: await this.activeWallets(),
-          },
-        });
-      }
+      this.events.emit(BACKEND_EVENT, {
+        name: NOTIFICATION_ACTIVE_WALLET_UPDATED,
+        data: {
+          activeWallet: newActivePublicKey,
+          activeWallets: await this.activeWallets(),
+          blockchain,
+        },
+      });
     }
 
     if (blockchain !== oldBlockchain) {

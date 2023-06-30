@@ -1,4 +1,4 @@
-import { Blockchain } from "@coral-xyz/common";
+import type { Blockchain } from "@coral-xyz/common";
 import { PrimaryButton } from "@coral-xyz/react-common";
 import { useFeatureGates } from "@coral-xyz/recoil";
 import { Box, Grid } from "@mui/material";
@@ -57,10 +57,7 @@ export const BlockchainSelector = ({
         <Box style={{ padding: "0 16px 16px" }}>
           <Grid container spacing={1.5}>
             {Object.entries(BLOCKCHAIN_COMPONENTS)
-              .filter(
-                ([blockchain]) =>
-                  gates.ECLIPSE || blockchain !== Blockchain.ECLIPSE
-              )
+              .filter(([, Component]) => Component.Enabled)
               .map(([blockchain, Component]) => (
                 <Grid item xs={6}>
                   <ActionCard

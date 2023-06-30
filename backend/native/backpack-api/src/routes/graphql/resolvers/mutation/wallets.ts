@@ -1,11 +1,11 @@
 import { type Blockchain, getAddMessage } from "@coral-xyz/common";
 import { GraphQLError, type GraphQLResolveInfo } from "graphql";
 
+import { BLOCKCHAINS_NATIVE } from "../../../../blockchains";
 import {
   createUserPublicKey,
   getUsersByPublicKeys,
 } from "../../../../db/users";
-import { validateSignature } from "../../../../validation/signature";
 import { CreatePublicKeys } from "../../../../validation/user";
 import type { ApiContext } from "../../context";
 import type {
@@ -39,9 +39,10 @@ export const importPublicKeyMutationResolver: MutationResolvers["importPublicKey
 
     // Create and validate message signature
     const signedMessage = getAddMessage(publicKey);
-    const valid = validateSignature(
+    const valid = BLOCKCHAINS_NATIVE[
+      blockchain as Blockchain
+    ].validateSignature(
       Buffer.from(signedMessage, "utf-8"),
-      blockchain as Blockchain,
       signature,
       publicKey
     );

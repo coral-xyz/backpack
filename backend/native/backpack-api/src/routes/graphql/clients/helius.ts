@@ -1,11 +1,11 @@
 import { RESTDataSource } from "@apollo/datasource-rest";
 import { getATAAddressSync } from "@saberhq/token-utils";
 import type { AccountInfo } from "@solana/web3.js";
-import { PublicKey } from "@solana/web3.js";
-import type { EnrichedTransaction } from "helius-sdk";
+import { PublicKey, SystemProgram } from "@solana/web3.js";
+import { type EnrichedTransaction, Source, TransactionType } from "helius-sdk";
 import { LRUCache } from "lru-cache";
 
-export const IN_MEM_COLLECTION_DATA_CACHE = new LRUCache<
+export const IN_MEM_SOL_COLLECTION_DATA_CACHE = new LRUCache<
   string,
   { name?: string; image?: string }
 >({
@@ -105,7 +105,7 @@ export class Helius extends RESTDataSource {
     mint?: string
   ): Promise<EnrichedTransaction[]> {
     let target = address;
-    if (mint) {
+    if (mint && mint !== SystemProgram.programId.toBase58()) {
       target = getATAAddressSync({
         mint: new PublicKey(mint),
         owner: new PublicKey(address),

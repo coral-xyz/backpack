@@ -1,8 +1,8 @@
 /* eslint-disable react/jsx-no-useless-fragment */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useContext, useEffect, useState } from "react";
+import type { Blockchain } from "@coral-xyz/common";
 import {
-  Blockchain,
   formatWalletAddress,
   UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
 } from "@coral-xyz/common";
@@ -417,9 +417,7 @@ export function WalletListBlockchainSelector() {
     <Box style={{ padding: "0 16px 16px", marginTop: 12 }}>
       <Grid container spacing={1.5}>
         {Object.entries(BLOCKCHAIN_COMPONENTS)
-          .filter(
-            ([blockchain]) => gates.ECLIPSE || blockchain !== Blockchain.ECLIPSE
-          )
+          .filter(([, Component]) => Component.Enabled)
           .map(([blockchain, Component]) => (
             <Grid item xs={6}>
               <ActionCard

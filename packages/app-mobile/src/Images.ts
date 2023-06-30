@@ -1,6 +1,7 @@
 const Images = {
   solanaLogo: require("../assets/blockchains/solana.png"),
   ethereumLogo: require("../assets/blockchains/ethereum.png"),
+  eclipseLogo: require("../assets/blockchains/eclipse.png"),
   logoAvalanche: require("./images/logo-avalanche.png"),
   logoBsc: require("./images/logo-bsc.png"),
   logoCosmos: require("./images/logo-cosmos.png"),

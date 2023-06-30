@@ -1,6 +1,10 @@
 import { formatDate } from "@coral-xyz/common";
 
-import type { ResponseNotification } from ".";
+import type { GetNotificationsQuery } from "../../apollo/graphql";
+
+export type ResponseNotification = NonNullable<
+  NonNullable<GetNotificationsQuery["user"]>["notifications"]
+>["edges"][number]["node"];
 
 export type NotificationGroup = {
   date: string;

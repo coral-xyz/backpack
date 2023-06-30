@@ -15,13 +15,13 @@ import {
   DEFAULT_SOLANA_CLUSTER,
   fetchSplMetadataUri,
   getLogger,
+  NOTIFICATION_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_BLOCKCHAIN_KEYRING_CREATED,
   NOTIFICATION_BLOCKCHAIN_KEYRING_DELETED,
   NOTIFICATION_CONNECTION_URL_UPDATED,
   NOTIFICATION_KEYRING_STORE_CREATED,
   NOTIFICATION_KEYRING_STORE_LOCKED,
   NOTIFICATION_KEYRING_STORE_UNLOCKED,
-  NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_SOLANA_SPL_TOKENS_DID_UPDATE,
 } from "@coral-xyz/common";
 import type {
@@ -151,7 +151,7 @@ export class SolanaConnectionBackend {
         case NOTIFICATION_KEYRING_STORE_LOCKED:
           handleKeyringStoreLocked(notif);
           break;
-        case NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED:
+        case NOTIFICATION_ACTIVE_WALLET_UPDATED:
           handleActiveWalletUpdated(notif);
           break;
         case NOTIFICATION_CONNECTION_URL_UPDATED:
@@ -193,7 +193,12 @@ export class SolanaConnectionBackend {
     };
 
     const handleActiveWalletUpdated = (notif: Notification) => {
-      const { activeWallet } = notif.data;
+      const { activeWallet, blockchain } = notif.data;
+
+      if (blockchain !== Blockchain.SOLANA) {
+        return;
+      }
+
       this.stopPolling();
       this.startPolling(new PublicKey(activeWallet));
     };

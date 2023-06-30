@@ -11,6 +11,7 @@ export const FEATURE_GATES = ({
     BARTER_ENABLED: false,
     DROPZONE_ENABLED: Boolean(userId && dropzoneUsers.includes(userId)),
     GQL_BALANCES: false,
+    GQL_COLLECTIBLES: false,
     GQL_NOTIFICATIONS: true,
     GQL_TRANSACTION_HISTORY: false,
     MESSAGING_ENABLED: true,

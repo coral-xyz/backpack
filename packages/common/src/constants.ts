@@ -315,8 +315,6 @@ export const NOTIFICATION_ACTIVE_BLOCKCHAIN_UPDATED =
 export const NOTIFICATION_XNFT_PREFERENCE_UPDATED =
   "notification-xnft-preference-updated";
 // Ethereum specific notifications
-export const NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED =
-  "notification-keyring-ethereum-active-wallet-updated";
 export const NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED =
   "notification-ethereum-chain-id-updated";
 export const NOTIFICATION_ETHEREUM_CONNECTED =
@@ -327,11 +325,9 @@ export const NOTIFICATION_ETHEREUM_FEE_DATA_DID_UPDATE =
   "notification-ethereum-fee-data-did-update";
 export const NOTIFICATION_ETHEREUM_TOKENS_DID_UPDATE =
   "notification-ethereum-tokens-did-update";
-export const NOTIFICATION_ECLIPSE_ACTIVE_WALLET_UPDATED =
-  "notification-keyring-eclipse-active-wallet-updated";
 // Solana specific notifications
-export const NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED =
-  "notification-keyring-solana-active-wallet-updated";
+export const NOTIFICATION_ACTIVE_WALLET_UPDATED =
+  "notification-keyring-active-wallet-updated";
 export const NOTIFICATION_SOLANA_COMMITMENT_UPDATED =
   "notification-solana-commitment-updated";
 export const NOTIFICATION_SOLANA_CONNECTED = "notification-solana-connected";

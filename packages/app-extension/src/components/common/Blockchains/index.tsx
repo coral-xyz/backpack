@@ -1,5 +1,4 @@
-import type {
-  EthereumContext} from "@coral-xyz/common";
+import type { EthereumContext } from "@coral-xyz/common";
 import {
   Blockchain,
   DEFAULT_SOLANA_CLUSTER,
@@ -38,6 +37,7 @@ type BIPPath = any;
 export const BLOCKCHAIN_COMPONENTS: Record<
   Blockchain,
   {
+    Enabled: boolean;
     Name: string;
     GasTokenName: string;
     AppTokenName: string;
@@ -114,6 +114,7 @@ export const BLOCKCHAIN_COMPONENTS: Record<
   }
 > = {
   [Blockchain.ETHEREUM]: {
+    Enabled: true,
     Name: "Ethereum",
     GasTokenName: "ETH",
     AppTokenName: "ERC20",
@@ -255,6 +256,7 @@ export const BLOCKCHAIN_COMPONENTS: Record<
     },
   },
   [Blockchain.SOLANA]: {
+    Enabled: true,
     Name: "Solana",
     GasTokenName: "SOL",
     AppTokenName: "SPL",
@@ -410,6 +412,7 @@ export const BLOCKCHAIN_COMPONENTS: Record<
     },
   },
   [Blockchain.ECLIPSE]: {
+    Enabled: true,
     Name: "Eclipse",
     GasTokenName: "ECL",
     AppTokenName: "SPL",

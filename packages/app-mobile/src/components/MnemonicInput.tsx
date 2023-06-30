@@ -98,7 +98,7 @@ export function MnemonicInput({ readOnly, onComplete }: MnemonicInputProps) {
         }}
       />
       {readOnly ? (
-        <CopyButton text={mnemonicWords.join(", ")} />
+        <CopyButton text={mnemonicWords.join(" ")} />
       ) : keyboardStatus === "shown" ? null : (
         <PasteButton
           onPaste={(words) => {

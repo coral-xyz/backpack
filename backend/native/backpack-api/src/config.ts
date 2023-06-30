@@ -41,6 +41,7 @@ export const COINGECKO_API_KEY = process.env.COINGECKO_API_KEY || "";
 export const HELIUS_API_KEY = process.env.HELIUS_API_KEY || "";
 export const ALCHEMY_API_KEY = process.env.ALCHEMY_API_KEY || "";
 export const TENSOR_API_KEY = process.env.TENSOR_API_KEY || "";
+export const MAGIC_EDEN_API_KEY = process.env.MAGIC_EDEN_API_KEY || "";
 
 export const DROPZONE_XNFT_SECRET = process.env.DROPZONE_XNFT_SECRET || "";
 export const DROPZONE_PERMITTED_AUTHORITIES =

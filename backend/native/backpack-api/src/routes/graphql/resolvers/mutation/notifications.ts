@@ -1,9 +1,5 @@
 import type { GraphQLResolveInfo } from "graphql";
 
-import {
-  updateCursor,
-  updateNotificationSeen,
-} from "../../../../db/notifications";
 import type { ApiContext } from "../../context";
 import type {
   MutationMarkNotificationsAsReadArgs,
@@ -25,17 +21,14 @@ export const markNotificationsAsReadMutationResolver: MutationResolvers["markNot
     ctx: ApiContext,
     _info: GraphQLResolveInfo
   ): Promise<number> => {
-    // TODO: move implementation into contextual Hasura client
     const lastNotificationId = [...args.ids].sort((a, b) => b - a)[0];
-    await updateCursor({
-      uuid: ctx.authorization.userId ?? "",
-      lastNotificationId,
-    });
-
-    // TODO: move implementation into contextual Hasura client
-    const res = await updateNotificationSeen({
-      notificationIds: args.ids,
-      uuid: ctx.authorization.userId ?? "",
-    });
-    return res.update_auth_notifications?.affected_rows ?? 0;
+    await ctx.dataSources.hasura.updateNotificationCursor(
+      ctx.authorization.userId ?? "",
+      lastNotificationId
+    );
+    const affectedRows = await ctx.dataSources.hasura.updateNotificationViewed(
+      ctx.authorization.userId ?? "",
+      args.ids
+    );
+    return affectedRows ?? 0;
   };

@@ -15,12 +15,12 @@ export type CoinGeckoPriceData = {
   market_cap_rank: number;
   fully_filuted_valuation: number;
   total_volume: number;
-  high_24h: number;
-  low_24h: number;
-  price_change_24h: number;
-  price_change_percentage_24h: number;
-  market_cap_change_24h: number;
-  market_cap_change_percentage_24h: number;
+  high_24h: number | null;
+  low_24h: number | null;
+  price_change_24h: number | null;
+  price_change_percentage_24h: number | null;
+  market_cap_change_24h: number | null;
+  market_cap_change_percentage_24h: number | null;
   circulating_supply: number;
   total_supply: number;
   max_supply: number | null;

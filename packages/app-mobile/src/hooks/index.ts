@@ -11,6 +11,8 @@ export function getBlockchainLogo(blockchain: Blockchain) {
       return Images.ethereumLogo;
     case Blockchain.SOLANA:
       return Images.solanaLogo;
+    case Blockchain.ECLIPSE:
+      return Images.eclipseLogo;
     default:
       throw new Error(`invalid blockchain ${blockchain}`);
   }

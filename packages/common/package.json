@@ -15,7 +15,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@apollo/client": "3.8.0-beta.2",
+    "@apollo/client": "3.8.0-beta.5",
     "@cardinal/creator-standard": "^2.1.10",
     "@cardinal/token-manager": "^1.7.9",
     "@ethersproject/abstract-provider": "^5.7.0",

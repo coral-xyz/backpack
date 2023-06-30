@@ -7,7 +7,7 @@ import type { CoinGeckoPriceData } from "../../clients/coingecko";
 import {
   Helius,
   type HeliusGetAssetsByOwnerResponse,
-  IN_MEM_COLLECTION_DATA_CACHE,
+  IN_MEM_SOL_COLLECTION_DATA_CACHE,
 } from "../../clients/helius";
 import type { TensorActingListingsResponse } from "../../clients/tensor";
 import type { ApiContext } from "../../context";
@@ -255,7 +255,7 @@ export class Solana extends SolanaRpc implements BlockchainDataProvider {
         );
 
         if (tensorListing) {
-          listing = NodeBuilder.tensorListing(item.id, {
+          listing = NodeBuilder.nftListing(this.id(), item.id, {
             amount: ethers.utils.formatUnits(
               tensorListing.tx.grossAmount,
               this.decimals()
@@ -382,8 +382,8 @@ async function _getCollectionMetadatas(
   // Iterate through in the set and add to the data map if the cache contains
   // the collection key and then remove from the set if found
   for (const c of uniqueCollections) {
-    if (IN_MEM_COLLECTION_DATA_CACHE.has(c)) {
-      collectionMap.set(c, IN_MEM_COLLECTION_DATA_CACHE.get(c)!);
+    if (IN_MEM_SOL_COLLECTION_DATA_CACHE.has(c)) {
+      collectionMap.set(c, IN_MEM_SOL_COLLECTION_DATA_CACHE.get(c)!);
       uniqueCollections.delete(c);
     }
   }
@@ -405,7 +405,7 @@ async function _getCollectionMetadatas(
         };
 
         collectionMap.set(c.account, data);
-        IN_MEM_COLLECTION_DATA_CACHE.set(c.account, data);
+        IN_MEM_SOL_COLLECTION_DATA_CACHE.set(c.account, data);
       }
     }
   }

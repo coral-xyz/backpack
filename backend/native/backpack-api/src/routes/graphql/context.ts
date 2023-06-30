@@ -10,13 +10,7 @@ import {
   TENSOR_API_KEY,
 } from "../../config";
 
-import {
-  BlockchainInfo,
-  CoinGeckoIndexer,
-  Hasura,
-  Swr,
-  Tensor,
-} from "./clients";
+import { CoinGeckoIndexer, Hasura, Swr, Tensor } from "./clients";
 import { extractJwt, getSubjectFromVerifiedJwt } from "./utils";
 
 const IN_MEM_JWT_CACHE = new LRUCache<string, string>({
@@ -27,22 +21,28 @@ const IN_MEM_JWT_CACHE = new LRUCache<string, string>({
 });
 
 export interface ApiContext {
+  // Requesting user authorization and identity data
   authorization: {
     jwt?: string;
     userId?: string;
     valid: boolean;
   };
+  // Data source clients that are common to more than one
+  // type of provider. If a data source is proprietary to a
+  // single provider, if should be instantiated only in that
+  // provider's constructor and not placed in the common context
   dataSources: {
-    blockchainInfo: BlockchainInfo;
     coinGecko: CoinGeckoIndexer;
     hasura: Hasura;
     swr: Swr;
     tensor: Tensor;
   };
+  // The original raw HTTP request and response object from express
   http: {
     req: Request;
     res: Response;
   };
+  // Custom network options parsed from the request headers
   network: {
     devnet: boolean;
     rpc?: string;
@@ -90,7 +90,6 @@ export const createContext: ContextFunction<
       valid,
     },
     dataSources: {
-      blockchainInfo: new BlockchainInfo({}),
       coinGecko: new CoinGeckoIndexer({ apiKey: COINGECKO_API_KEY }),
       hasura: new Hasura({ secret: HASURA_JWT, url: HASURA_URL }),
       swr: new Swr({}),

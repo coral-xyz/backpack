@@ -11,8 +11,8 @@ import {
   DEFAULT_SOLANA_CLUSTER,
   getLogger,
   InjectedRequestManager,
+  NOTIFICATION_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_CONNECTION_URL_UPDATED,
-  NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_SOLANA_CONNECTED,
   NOTIFICATION_SOLANA_DISCONNECTED,
   PLUGIN_NOTIFICATION_CONNECT,
@@ -150,7 +150,7 @@ export class ProviderSolanaInjection
       case NOTIFICATION_CONNECTION_URL_UPDATED:
         this.#handleNotificationConnectionUrlUpdated(event);
         break;
-      case NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED:
+      case NOTIFICATION_ACTIVE_WALLET_UPDATED:
         this.#handleNotificationActiveWalletUpdated(event);
         break;
 
@@ -263,6 +263,9 @@ export class ProviderSolanaInjection
   }
 
   #handleNotificationActiveWalletUpdated(event: Event) {
+    if (event.data.detail.data.blockchain !== Blockchain.SOLANA) {
+      return;
+    }
     this.#publicKey = new PublicKey(event.data.detail.data.activeWallet);
     this.emit("activeWalletDidChange", event.data.detail);
   }
