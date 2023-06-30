@@ -1,7 +1,9 @@
 import type {
- Blockchain,  BlockchainKeyringJson,
+  Blockchain,
+  BlockchainKeyringJson,
   DeprecatedWalletDataDoNotUse,
-  Preferences } from "@coral-xyz/common";
+  Preferences,
+} from "@coral-xyz/common";
 
 import type { SecretPayload } from "./keyring/crypto";
 import { decrypt, encrypt } from "./keyring/crypto";
@@ -98,10 +100,7 @@ export class SecureStore {
   }
 
   async setIsCold(publicKey: string, isCold?: boolean) {
-    let keynames = await this.db.get(KEY_IS_COLD_STORE);
-    if (!keynames) {
-      keynames = {};
-    }
+    const keynames = (await this.db.get(KEY_IS_COLD_STORE)) || {};
     keynames[publicKey] = isCold;
     await this.db.set(KEY_IS_COLD_STORE, keynames);
   }
@@ -113,7 +112,7 @@ export class SecureStore {
   }
 
   async setKeyname(publicKey: string, name: string, blockchain: Blockchain) {
-    let keynames = await this.db.get(KEY_KEYNAME_STORE);
+    const keynames = (await this.db.get(KEY_KEYNAME_STORE)) || {};
     if (!keynames[blockchain]) {
       keynames[blockchain] = {};
     }
