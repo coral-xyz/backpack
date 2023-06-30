@@ -28,6 +28,7 @@ import {
   ProxyImage,
   TextPercentChanged,
   UserAvatar,
+  Circle,
 } from "@coral-xyz/tamagui";
 
 import {
@@ -370,11 +371,24 @@ export function PaddedListItemSeparator() {
 
 const styles = StyleSheet.create({
   rowLogo: {
-    width: 32,
-    height: 32,
+    width: 40,
+    height: 40,
     aspectRatio: 1,
-    borderRadius: 16,
+    borderRadius: 20,
   },
+});
+
+const ListItemIconContainer = styled(Stack, {
+  width: 40,
+  height: 40,
+  overflow: "hidden",
+});
+
+const ListItemIcon = styled(Image, {
+  width: 40,
+  height: 40,
+  borderRadius: 20,
+  aspectRatio: 1,
 });
 
 export function ListItemLabelValue({
@@ -500,25 +514,23 @@ export function ListItemSentReceived({
   showSuccessIcon?: boolean;
 }) {
   const getIcon = (showSuccessIcon: boolean | undefined, iconUrl: string) => {
-    if (showSuccessIcon) {
-      return (
-        <View style={{ width: 32, height: 32 }}>
-          <IconCheckmark color="green" size={28} />
-        </View>
-      );
-    }
-
-    return <Image style={styles.rowLogo} source={{ uri: iconUrl }} />;
+    return showSuccessIcon ? (
+      <ListItemIconContainer>
+        <IconCheckmark color="green" size={28} />
+      </ListItemIconContainer>
+    ) : (
+      <ListItemIcon source={{ uri: iconUrl }} />
+    );
   };
 
   const Icon = getIcon(showSuccessIcon, iconUrl);
   return (
     <ListItemWrapper
+      icon={Icon}
       grouped={grouped}
       onPress={() => {
         onPress?.({ action, address, amount });
       }}
-      icon={Icon}
     >
       <ListItemRow>
         <ListItemSide side="left">
@@ -576,13 +588,13 @@ function SwapIconSet({
   toIcon: string;
 }): JSX.Element {
   return (
-    <View style={{ width: 40, height: 40 }}>
+    <ListItemIconContainer>
       <SwapIcon iconUrl={fromIcon} style={{ top: 5 }} />
       <SwapIcon
         iconUrl={toIcon}
         style={{ position: "absolute", top: 15, left: 10 }}
       />
-    </View>
+    </ListItemIconContainer>
   );
 }
 
@@ -608,6 +620,7 @@ export function ListItemTokenSwap({
   return (
     <ListItemWrapper
       grouped={grouped}
+      icon={<SwapIconSet fromIcon={sentTokenUrl} toIcon={receivedTokenUrl} />}
       onPress={() =>
         onPress?.({
           sent,
@@ -615,7 +628,6 @@ export function ListItemTokenSwap({
           title,
         })
       }
-      icon={<SwapIconSet fromIcon={sentTokenUrl} toIcon={receivedTokenUrl} />}
     >
       <ListItemRow>
         <ListItemSide side="left">
@@ -717,22 +729,22 @@ export function ListItemActivity({
   const getIcon = (icon?: any, iconUrl?: string) => {
     if (showSuccessIcon) {
       return (
-        <View style={{ width: 32, height: 32 }}>
+        <ListItemIconContainer>
           <IconCheckmark color="green" size={28} />
-        </View>
+        </ListItemIconContainer>
       );
     }
 
     if (showErrorIcon) {
       return (
-        <View style={{ width: 44, height: 44 }}>
+        <ListItemIconContainer>
           <IconCheckmark color="red" size={28} />
-        </View>
+        </ListItemIconContainer>
       );
     }
 
     if (iconUrl) {
-      return <Image style={styles.rowLogo} source={{ uri: iconUrl }} />;
+      return <ListItemIcon source={{ uri: iconUrl }} />;
     }
 
     if (icon) {
@@ -747,6 +759,7 @@ export function ListItemActivity({
   return (
     <ListItemWrapper
       grouped={grouped}
+      icon={Icon}
       onPress={() => {
         onPress?.({
           topLeftText,
@@ -755,7 +768,6 @@ export function ListItemActivity({
           bottomRightText,
         });
       }}
-      icon={Icon}
     >
       <XStack flex={1} justifyContent="space-between">
         <YStack>
