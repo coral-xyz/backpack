@@ -19,8 +19,6 @@ import {
   DEFAULT_DARK_MODE,
   defaultPreferences,
   deserializeTransaction,
-  EthereumConnectionUrl,
-  EthereumExplorer,
   getAccountRecoveryPaths,
   getAddMessage,
   getRecoveryPaths,
@@ -60,11 +58,17 @@ import {
   NOTIFICATION_USER_ACCOUNT_PUBLIC_KEY_DELETED,
   NOTIFICATION_USER_ACCOUNT_PUBLIC_KEYS_UPDATED,
   NOTIFICATION_XNFT_PREFERENCE_UPDATED,
+  TAB_APPS,
+  TAB_BALANCES,
   TAB_BALANCES_SET,
+  TAB_MESSAGES,
+  TAB_NFTS,
+  TAB_NOTIFICATIONS,
+  TAB_RECENT_ACTIVITY,
+  TAB_SWAP,
   TAB_TOKENS,
   TAB_XNFT,
 } from "@coral-xyz/common";
-import { makeDefaultNav } from "@coral-xyz/recoil";
 import type {
   BlockchainKeyring,
   KeyringStore,
@@ -2067,6 +2071,30 @@ export class Backend {
 
 export const SUCCESS_RESPONSE = "success";
 const defaultNav = makeDefaultNav();
+
+function makeDefaultNav() {
+  const defaultNav: any = {
+    activeTab: TAB_TOKENS,
+    data: {},
+  };
+  [
+    [TAB_BALANCES, "Balances"],
+    [TAB_NFTS, "Nfts"],
+    [TAB_SWAP, "Swap"],
+    [TAB_APPS, "Apps"],
+    [TAB_MESSAGES, "Messages"],
+    [TAB_RECENT_ACTIVITY, "Recent Activity"],
+    [TAB_NOTIFICATIONS, "Notifications"],
+    [TAB_TOKENS, "Tokens"],
+  ].forEach(([tabName, tabTitle]) => {
+    defaultNav.data[tabName] = {
+      id: tabName,
+      urls: [makeUrl(tabName, { title: tabTitle, props: {} })],
+      ref: tabName === "balances" ? "tokens" : undefined,
+    };
+  });
+  return defaultNav;
+}
 
 function setSearchParam(url: string, key: string, value: string): string {
   const [path, search] = url.split("?");
