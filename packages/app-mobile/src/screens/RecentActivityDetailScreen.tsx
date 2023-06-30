@@ -28,6 +28,11 @@ function Container({
     },
   });
 
+  const date = new Date(data.timestamp);
+  const formattedDate = `${date.toLocaleString("default", {
+    month: "long",
+  })} ${date.getDate()}, ${date.getFullYear()}`;
+
   return (
     <Screen>
       <YGroup
@@ -39,7 +44,7 @@ function Container({
         separator={<Separator />}
       >
         <YGroup.Item>
-          <ListItemLabelValue label="Date" value={data.timestamp} />
+          <ListItemLabelValue label="Date" value={formattedDate} />
         </YGroup.Item>
         <YGroup.Item>
           <ListItemLabelValue label="Type" value={data.type} />
