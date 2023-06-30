@@ -104,18 +104,12 @@ export class Helius extends RESTDataSource {
     until?: string,
     mint?: string
   ): Promise<EnrichedTransaction[]> {
-    let isNativeTransferFilter = false;
     let target = address;
-
-    if (mint) {
-      if (mint !== SystemProgram.programId.toBase58()) {
-        target = getATAAddressSync({
-          mint: new PublicKey(mint),
-          owner: new PublicKey(address),
-        }).toBase58();
-      } else {
-        isNativeTransferFilter = true;
-      }
+    if (mint && mint !== SystemProgram.programId.toBase58()) {
+      target = getATAAddressSync({
+        mint: new PublicKey(mint),
+        owner: new PublicKey(address),
+      }).toBase58();
     }
 
     return this.get(`/v0/addresses/${target}/transactions`, {
@@ -124,12 +118,6 @@ export class Helius extends RESTDataSource {
         commitment: "confirmed",
         before,
         until,
-        ...(isNativeTransferFilter
-          ? {
-              source: Source.SYSTEM_PROGRAM,
-              type: TransactionType.TRANSFER,
-            }
-          : undefined),
       },
     });
   }
