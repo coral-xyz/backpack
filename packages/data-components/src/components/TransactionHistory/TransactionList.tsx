@@ -15,7 +15,7 @@ import type { ProviderId } from "../../apollo/graphql";
 
 import type { ParseTransactionDetails } from "./parsing";
 import { TransactionListItem } from "./TransactionListItem";
-import type { ResponseTransaction, TransactionGroup } from "./utils";
+import type { ResponseTransaction,TransactionGroup } from "./utils";
 
 export type TransactionListProps = {
   blockchain: ProviderId;
