@@ -21,7 +21,6 @@ export function SendNavigator(): JSX.Element {
   return (
     <Stack.Navigator
       screenOptions={{
-        // headerShown: false,
         headerTintColor: theme.custom.colors.fontColor,
         headerBackTitleVisible: false,
       }}

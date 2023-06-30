@@ -1,3 +1,5 @@
+import { Image } from "expo-image";
+
 import { StyledText, XStack } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
 import {
@@ -16,6 +18,20 @@ export function HeaderButton({ name, tintColor, ...rest }: HeaderButtonProps) {
   return (
     <PlatformPressable {...rest}>
       <MaterialIcons name={name} size={32} color={tintColor} />
+    </PlatformPressable>
+  );
+}
+
+export function HeaderCloseButton({
+  tintColor,
+  ...rest
+}: HeaderBackButtonProps) {
+  return (
+    <PlatformPressable {...rest}>
+      <Image
+        source={require("~src/images/icons/close.png")}
+        style={{ width: 20, height: 20 }}
+      />
     </PlatformPressable>
   );
 }

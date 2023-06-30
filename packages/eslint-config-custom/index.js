@@ -7,6 +7,7 @@ module.exports = {
     // "plugin:workspaces/recommended",
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
+
     "plugin:import/recommended",
     "plugin:import/typescript",
   ],
@@ -32,7 +33,16 @@ module.exports = {
         ignoreIIFE: true,
       },
     ],
-    "@typescript-eslint/no-unused-vars": "warn",
+    "@typescript-eslint/no-unused-vars": [
+      "warn",
+      {
+        vars: "all",
+        args: "none",
+        ignoreRestSiblings: true,
+        caughtErrors: "all",
+        argsIgnorePattern: "^_",
+      },
+    ],
     "@typescript-eslint/no-non-null-assertion": "off",
     "import/default": "off",
     "import/export": "off",
@@ -68,7 +78,7 @@ module.exports = {
       },
     ],
     "simple-import-sort/imports": [
-      "warn",
+      "warn",shared/typ
       {
         groups: [
           // Packages `react` related packages come first.

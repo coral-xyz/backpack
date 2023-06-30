@@ -1,4 +1,4 @@
-import { useState, useLayoutEffect, Suspense, useTransition } from "react";
+import { useState, useLayoutEffect, useTransition } from "react";
 import { View, Pressable, ActivityIndicator, Keyboard } from "react-native";
 
 import {
@@ -24,7 +24,6 @@ import {
   useTheme as useTamaguiTheme,
 } from "@coral-xyz/tamagui";
 import { ethers, FixedNumber } from "ethers";
-import { ErrorBoundary } from "react-error-boundary";
 
 import { InputFieldMaxLabel } from "~components/Form";
 import {
@@ -38,9 +37,15 @@ import {
 import { SearchableTokenList } from "./components/Balances";
 
 import { IconButton } from "~src/components/Icon";
+import { ScreenDataContainer } from "~src/components/Screen";
 import { TokenInputField } from "~src/components/TokenInputField";
 import { formatAmount, approximateAmount } from "~src/lib/CurrencyUtils";
 import { useSession } from "~src/lib/SessionProvider";
+import {
+  SwapTokenConfirmScreenProps,
+  SwapTokenListScreenProps,
+  SwapTokenScreenProps,
+} from "~src/navigation/SwapNavigator";
 import { Token } from "~types/types";
 
 export enum Direction {
@@ -248,7 +253,7 @@ function SwapForm({ navigation }) {
 
   const handleChangeToken = (direction: Direction) => {
     Keyboard.dismiss();
-    navigation.push("SwapTokenList", { direction });
+    navigation.push("SwapTokenListScreen", { direction });
   };
 
   const onPressSwitchTokens = () => {
@@ -372,7 +377,9 @@ function SwapInfo() {
   );
 }
 
-export function SwapTokenConfirmScreen({ navigation }): JSX.Element {
+export function SwapTokenConfirmScreen({
+  navigation,
+}: SwapTokenConfirmScreenProps): JSX.Element {
   const { executeSwap, toToken, toAmount, fromAmount, fromToken } =
     useSwapContext();
   const [swapState, setSwapState] = useState(SwapState.CONFIRMATION);
@@ -434,7 +441,7 @@ export function SwapTokenConfirmScreen({ navigation }): JSX.Element {
   const fromDisplayValue = formatAmount(fromAmount, fromToken?.decimals);
 
   return (
-    <Screen style={{ justifyContent: "space-between" }}>
+    <Screen jc="space-between">
       <YStack f={1} space={8}>
         <BoxContainer>
           <YStack space={4}>
@@ -509,7 +516,10 @@ function ConfirmSwapButton({ onPress }: { onPress: () => void }): JSX.Element {
   );
 }
 
-export function SwapTokenListScreen({ navigation, route }): JSX.Element {
+export function SwapTokenListScreen({
+  navigation,
+  route,
+}: SwapTokenListScreenProps): JSX.Element {
   const { direction } = route.params;
   const { activeWallet } = useSession();
   const { setFromMint, setToMint, fromToken } = useSwapContext();
@@ -563,30 +573,25 @@ export function SwapTokenListScreen({ navigation, route }): JSX.Element {
   );
 }
 
-function Container({ navigation }) {
+export function SwapTokenScreen({ navigation }: SwapTokenScreenProps) {
   return (
-    <Screen>
-      <YStack space={6} f={1} jc="space-between">
-        <YStack space={6}>
-          <SwapForm navigation={navigation} />
-          <SwapInfo />
+    <ScreenDataContainer
+      Loading={<ScreenLoading />}
+      Error={ScreenErrorFallback}
+    >
+      <Screen>
+        <YStack space={6} f={1} jc="space-between">
+          <YStack space={6}>
+            <SwapForm navigation={navigation} />
+            <SwapInfo />
+          </YStack>
+          <ConfirmSwapButton
+            onPress={() => {
+              navigation.push("SwapTokenConfirmScreen");
+            }}
+          />
         </YStack>
-        <ConfirmSwapButton
-          onPress={() => {
-            navigation.push("SwapTokenConfirm");
-          }}
-        />
-      </YStack>
-    </Screen>
-  );
-}
-
-export function SwapTokenScreen({ navigation, route }): JSX.Element {
-  return (
-    <ErrorBoundary FallbackComponent={ScreenErrorFallback}>
-      <Suspense fallback={<ScreenLoading />}>
-        <Container navigation={navigation} route={route} />
-      </Suspense>
-    </ErrorBoundary>
+      </Screen>
+    </ScreenDataContainer>
   );
 }

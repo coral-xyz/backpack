@@ -72,6 +72,7 @@ module.exports = {
             args: "none",
             ignoreRestSiblings: true,
             caughtErrors: "all",
+            argsIgnorePattern: "^_",
           },
         ],
 

@@ -1,20 +1,14 @@
-import { View } from "react-native";
-
-import { Blockchain, toTitleCase } from "@coral-xyz/common";
-import { SwapProvider } from "@coral-xyz/recoil";
+import { Blockchain } from "@coral-xyz/common";
 import { useTheme as useTamaguiTheme } from "@coral-xyz/tamagui";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import {
   createStackNavigator,
   StackScreenProps,
 } from "@react-navigation/stack";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { BottomSheetViewOptions } from "~components/BottomSheetViewOptions";
 import { IconCloseModal } from "~components/Icon";
 import { WalletSwitcherButton } from "~components/WalletSwitcherButton";
-import { useTheme } from "~hooks/useTheme";
 import { WINDOW_WIDTH } from "~lib/index";
 import {
   HeaderAvatarButton,
@@ -35,13 +29,8 @@ import { SendCollectibleSendRecipientScreen } from "~screens/Unlocked/SendCollec
 
 import { OnboardingNavigator } from "~src/navigation/OnboardingNavigator";
 import { SendNavigator } from "~src/navigation/SendNavigator";
+import { SwapNavigator } from "~src/navigation/SwapNavigator";
 import { RecentActivityDetailScreen } from "~src/screens/RecentActivityDetailScreen";
-import {
-  Direction,
-  SwapTokenScreen,
-  SwapTokenConfirmScreen,
-  SwapTokenListScreen,
-} from "~src/screens/Unlocked/SwapTokenScreen";
 
 function OnboardScreen() {
   return <OnboardingNavigator onStart={console.log} />;
@@ -272,10 +261,6 @@ export function WalletsNavigator(): JSX.Element {
           name="DepositSingle"
           component={ReceiveTokenScreen}
         />
-        <Stack.Group screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="SendSelectTokenModal" component={SendNavigator} />
-          <Stack.Screen name="SwapModal" component={SwapNavigator} />
-        </Stack.Group>
         <Stack.Screen
           name="SendCollectibleSelectRecipient"
           component={SendCollectibleSendRecipientScreen}
@@ -287,63 +272,15 @@ export function WalletsNavigator(): JSX.Element {
           }}
         />
       </Stack.Group>
+      <Stack.Group
+        screenOptions={{
+          presentation: "modal",
+          headerShown: false,
+        }}
+      >
+        <Stack.Screen name="SendSelectTokenModal" component={SendNavigator} />
+        <Stack.Screen name="SwapModal" component={SwapNavigator} />
+      </Stack.Group>
     </Stack.Navigator>
-  );
-}
-
-type SwapStackParamList = {
-  SwapToken: {
-    title?: string;
-    address: string;
-    blockchain: Blockchain;
-  };
-  SwapTokenList: {
-    direction: Direction;
-  };
-  SwapTokenConfirm: {
-    title?: string;
-    address: string;
-    blockchain: Blockchain;
-  };
-};
-
-const SwapStack = createNativeStackNavigator<SwapStackParamList>();
-function SwapNavigator(): JSX.Element {
-  const insets = useSafeAreaInsets();
-  const theme = useTheme();
-  return (
-    <View style={{ flex: 1, marginBottom: insets.bottom }}>
-      <SwapProvider>
-        <SwapStack.Navigator
-          screenOptions={{
-            headerShown: true,
-            headerTintColor: theme.custom.colors.fontColor,
-            headerBackTitleVisible: false,
-          }}
-        >
-          <SwapStack.Screen
-            name="SwapToken"
-            component={SwapTokenScreen}
-            options={{ title: "Swap Token" }}
-          />
-          <SwapStack.Screen
-            name="SwapTokenConfirm"
-            component={SwapTokenConfirmScreen}
-            options={{ title: "Review Order" }}
-          />
-          <SwapStack.Screen
-            name="SwapTokenList"
-            component={SwapTokenListScreen}
-            options={({ route }) => {
-              const title =
-                route.params.direction === Direction.From ? "From" : "To";
-              return {
-                title: `Select ${title}`,
-              };
-            }}
-          />
-        </SwapStack.Navigator>
-      </SwapProvider>
-    </View>
   );
 }
