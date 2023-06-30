@@ -1,11 +1,5 @@
 import { useState, useLayoutEffect, Suspense, useTransition } from "react";
-import {
-  ScrollView,
-  View,
-  Pressable,
-  ActivityIndicator,
-  Keyboard,
-} from "react-native";
+import { View, Pressable, ActivityIndicator, Keyboard } from "react-native";
 
 import {
   Blockchain,
@@ -31,7 +25,6 @@ import {
 } from "@coral-xyz/tamagui";
 import { ethers, FixedNumber } from "ethers";
 import { ErrorBoundary } from "react-error-boundary";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { InputFieldMaxLabel } from "~components/Form";
 import {
@@ -42,7 +35,7 @@ import {
   ScreenErrorFallback,
 } from "~components/index";
 
-import { SearchableTokenList, TokenTables } from "./components/Balances";
+import { SearchableTokenList } from "./components/Balances";
 
 import { IconButton } from "~src/components/Icon";
 import { TokenInputField } from "~src/components/TokenInputField";
