@@ -62,7 +62,7 @@ function ApproveOnLedger({
       <StyledText
         textAlign="center"
         marginTop="$8"
-        size="$6xl"
+        fontSize="$6xl"
         color="$baseTextHighEmphasis"
       >
         {status}
