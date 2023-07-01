@@ -17,11 +17,14 @@ export function convertTransactionDataToSectionList(
 ): Section[] {
   // Group transactions by timestamp
   const groups = transactions.reduce((acc, transaction) => {
-    const date = new Date(transaction.node.timestamp).toLocaleDateString();
-    if (acc[date]) {
-      acc[date].push(transaction.node);
+    const date = new Date(transaction.node.timestamp);
+    const formattedDate = `${date.toLocaleString("default", {
+      month: "long",
+    })} ${date.getDate()}, ${date.getFullYear()}`;
+    if (acc[formattedDate]) {
+      acc[formattedDate].push(transaction.node);
     } else {
-      acc[date] = [transaction.node];
+      acc[formattedDate] = [transaction.node];
     }
     return acc;
   }, {});
@@ -52,22 +55,43 @@ function parseTokenName(name: string) {
   return formatWalletAddress(name);
 }
 
+function parseAmountIfUsdc(amount: string, token: string): string {
+  if (token.includes("USDC")) {
+    const num = parseFloat(amount);
+    const result = num.toFixed(2);
+    return result;
+  } else {
+    const num = parseFloat(amount);
+    const result = num.toFixed(5);
+    return result;
+  }
+}
+
 export function parseSwap(str: string) {
   // "EcxjN4mea6Ah9WSqZhLtSJJCZcxY73Vaz6UVHFZZ5Ttz swapped 0.001 SOL for 0.022 USDC"
   try {
     const [sent, received] = str.split("swapped ")[1].split(" for ");
     const sentToken = parseTokenName(sent.split(" ")[1]);
-    const receivedToken = parseTokenName(received.split(" ")[1]);
+    const [receivedAmount, rawToken] = received.split(" ");
+    const receivedToken = parseTokenName(rawToken);
+
     return {
       sent: `-${sent}`,
-      received: `+${received}`,
+      received: `+${parseAmountIfUsdc(
+        receivedAmount,
+        receivedToken
+      )} ${receivedToken}`,
       display: `${sentToken} -> ${receivedToken}`,
+      sentToken,
+      receivedToken,
     };
-  } catch (_err) {
+  } catch (_) {
     return {
       sent: "",
       received: "",
       display: "",
+      sentToken: "",
+      receivedToken: "",
     };
   }
 }
@@ -78,10 +102,11 @@ export function parseTransfer(str: string) {
     const _to = str.split("to ");
     const to = _to[1]; // remove period at the end
     const amount = _to[0].split("transferred ")[1].trim();
+    const token = amount.split(" ")[1];
     const action = "Sent"; // TODO sent/received, pass down publickey
-    return { to: formatWalletAddress(to), amount, action };
+    return { to: formatWalletAddress(to), amount, action, token };
   } catch (_err) {
-    return { to: "", amount: "", action: "Sent" };
+    return { to: "", amount: "", action: "Sent", token: null };
   }
 }
 

@@ -29,6 +29,7 @@ import {
   RoundedContainerGroup,
   SecondaryButton,
   StyledText,
+  StyledTextProps,
   TwoButtonFooter,
   XStack,
   Stack,
@@ -61,6 +62,7 @@ export {
   RoundedContainerGroup,
   SecondaryButton,
   StyledText,
+  StyledTextProps,
   TwoButtonFooter,
   UserAvatar,
 };

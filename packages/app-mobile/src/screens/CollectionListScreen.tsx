@@ -1,5 +1,5 @@
 import { Suspense, useMemo, useCallback } from "react";
-import { View, Text, FlatList } from "react-native";
+import { View, Text } from "react-native";
 
 import * as Linking from "expo-linking";
 
@@ -8,8 +8,7 @@ import { useActiveWallet } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
 import { ErrorBoundary } from "react-error-boundary";
 
-import { BaseListItem } from "~components/CollectionListItem";
-import { ItemSeparator } from "~components/ListItem";
+import { BaseListItem, ITEM_HEIGHT } from "~components/CollectionListItem";
 import { EmptyState, FullScreenLoading } from "~components/index";
 import {
   convertNftDataToFlatlist,
@@ -17,6 +16,11 @@ import {
 } from "~lib/CollectionUtils";
 import { CollectionListScreenProps } from "~navigation/types";
 
+import {
+  ListSpacer,
+  PaddedFlatList,
+  ListStyles,
+} from "~src/components/PaddedFlatList";
 import { gql } from "~src/graphql/__generated__";
 
 function NoNFTsEmptyState() {
@@ -89,20 +93,20 @@ function Container({ navigation }: CollectionListScreenProps): JSX.Element {
     [handlePressItem]
   );
 
-  const gap = 12;
-
   return (
-    <FlatList
-      style={{ paddingTop: 16, paddingHorizontal: 16 }}
-      contentContainerStyle={{ gap, paddingBottom: 32 }}
+    <PaddedFlatList
       data={rows}
       numColumns={2}
-      ItemSeparatorComponent={ItemSeparator}
-      ListEmptyComponent={NoNFTsEmptyState}
       keyExtractor={keyExtractor}
       renderItem={renderItem}
-      columnWrapperStyle={{ gap }}
-      showsVerticalScrollIndicator={false}
+      columnWrapperStyle={ListStyles.columnGap}
+      ItemSeparatorComponent={ListSpacer}
+      ListEmptyComponent={NoNFTsEmptyState}
+      getItemLayout={(_, index: number) => ({
+        length: ITEM_HEIGHT,
+        offset: ITEM_HEIGHT * index,
+        index,
+      })}
     />
   );
 }

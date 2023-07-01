@@ -48,6 +48,9 @@ export const red500 = "rgba(23, 80, 80, 1)"; // previously #FF6269
 export const red600 = "rgba(234, 56, 59, 1)"; // previously #f13236
 export const red700 = "rgba(210, 0, 36, 1)"; // previously #d20024
 
+export const blue100 = "rgba(219, 234, 254, 1)"; // (#DBEAFE)
+export const blue800 = "rgba(30, 64, 175, 1)"; // (#1E40AF)
+
 // Light Mode /////////////////////////////////////////////////////
 
 // export const lightNeutralBackgroundAppBackground = "linear-gradient(to bottom, #f8f8f9 0%,#f0f0f2 100%)";

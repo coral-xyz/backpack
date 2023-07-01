@@ -10,33 +10,44 @@ export type ListItemProps = any;
 
 export function ListItem({
   item,
-  handlePress,
+  getTokenUrl,
+  onPress,
 }: {
   item: ListItemProps;
-  handlePress: (item: ListItemProps) => void;
+  getTokenUrl: any;
+  onPress: any;
 }): JSX.Element {
   switch (item.type) {
     case "SWAP": {
-      const { sent, received, display } = parseTransactionDescription(item);
+      const { sent, received, display, receivedToken, sentToken } =
+        parseTransactionDescription(item);
+      const sentTokenUrl = getTokenUrl(sentToken);
+      const receivedTokenUrl = getTokenUrl(receivedToken);
       return (
         <ListItemTokenSwap
           grouped
+          onPress={onPress}
           title="Token Swap"
           caption={display}
           sent={sent}
           received={received}
+          sentTokenUrl={sentTokenUrl.logo}
+          receivedTokenUrl={receivedTokenUrl.logo}
         />
       );
     }
     case "TRANSFER": {
-      const { to, amount, action } = parseTransactionDescription(item);
+      const { to, amount, action, token } = parseTransactionDescription(item);
+      const tokenUrl = getTokenUrl(token);
       return (
         <ListItemSentReceived
           grouped
+          onPress={onPress}
           address={to}
           action={action}
           amount={amount}
-          iconUrl="https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png"
+          iconUrl={tokenUrl?.logo}
+          showSuccessIcon={!tokenUrl?.logo}
         />
       );
     }
@@ -45,13 +56,13 @@ export function ListItem({
       return (
         <ListItemActivity
           grouped
-          onPress={console.log}
+          onPress={onPress}
           topLeftText={nft}
           bottomLeftText={`Listed on ${marketplace}`}
           bottomRightText={amount} // TODO amount in USD
           topRightText={amount}
-          // nft image sold
-          iconUrl="https://swr.xnfts.dev/1min/https://madlist-images.s3.us-west-2.amazonaws.com/backpack_dev.png"
+          showSuccessIcon={!item.transactionError}
+          showErrorIcon={item.transactionError}
         />
       );
     }
@@ -60,13 +71,13 @@ export function ListItem({
       return (
         <ListItemActivity
           grouped
-          onPress={console.log}
+          onPress={onPress}
           topLeftText={nft}
           bottomLeftText={`Sold on ${marketplace}`}
           bottomRightText={amount} // TODO amount in USD
           topRightText={amount}
-          // nft image sold
-          iconUrl="https://swr.xnfts.dev/1min/https://madlist-images.s3.us-west-2.amazonaws.com/backpack_dev.png"
+          showSuccessIcon={!item.transactionError}
+          showErrorIcon={item.transactionError}
         />
       );
     }
@@ -75,7 +86,7 @@ export function ListItem({
       return (
         <ListItemActivity
           grouped
-          onPress={console.log}
+          onPress={onPress}
           topLeftText="App Interaction"
           bottomLeftText={formatWalletAddress(item.hash)}
           bottomRightText=""

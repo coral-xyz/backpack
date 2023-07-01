@@ -1,21 +1,25 @@
 // TODO(peter) one thing we might need to make sure is that when we wrap these FlatLists in a ScrollView, we can't nest virtualized lists.
 // This means we might just use the scrollview directly from within a flatlist by using ListHeaderComponent and ListFooterComponent
-import type { Blockchain } from "@coral-xyz/common";
 import type { useBlockchainTokensSorted } from "@coral-xyz/recoil";
 import type { Token, PublicKey } from "~types/types";
 
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import {
   StyleProp,
   ViewStyle,
   FlatList,
   Pressable,
-  StyleSheet,
   Text,
   View,
 } from "react-native";
 
-import { formatUsd } from "@coral-xyz/common";
+import {
+  toDisplayBalance,
+  Blockchain,
+  UNKNOWN_ICON_SRC,
+  formatUsd,
+  formatWalletAddress,
+} from "@coral-xyz/common";
 import {
   blockchainBalancesSorted,
   allWalletsDisplayed,
@@ -28,13 +32,21 @@ import { ExpandCollapseIcon } from "~components/Icon";
 import {
   ListRowSeparator,
   Margin,
-  ProxyImage,
   Row,
   StyledTextInput,
 } from "~components/index";
 import { useTheme } from "~hooks/useTheme";
 
 import { TableHeader } from "./index";
+
+import {
+  ListItemRow,
+  ListItemStyledText,
+  ListItemWrapper,
+  ListItemSide,
+  ListItemIcon,
+} from "~src/components/ListItem";
+import { ResponseTokenBalance } from "~src/screens/TokenListScreen";
 
 export function SearchableTokenTables({
   onPressRow,
@@ -292,8 +304,82 @@ export function WalletPickerButton({
   );
 }
 
-// Renders the individual token row
-export function TokenRow({
+function TextUsdBalance({ usdBalance }: { usdBalance?: number }): JSX.Element {
+  const value = usdBalance ? formatUsd(usdBalance) : "-";
+  return (
+    <ListItemStyledText fontSize="$lg" color="$baseTextHighEmphasis">
+      {value}
+    </ListItemStyledText>
+  );
+}
+
+const displayFormat = new Intl.NumberFormat("en-US", {
+  currency: "USD",
+  maximumFractionDigits: 5,
+});
+
+function formatDisplayBalance(value: string) {
+  try {
+    return displayFormat.format(Number(value));
+  } catch (err) {
+    return "";
+  }
+}
+
+function TextAmountBalance({
+  displayBalance,
+  ticker,
+}: {
+  displayBalance?: string;
+  ticker: string;
+}): JSX.Element {
+  const subtitle = displayBalance
+    ? `${formatDisplayBalance(displayBalance)} ${ticker}`
+    : ticker;
+  return (
+    <ListItemStyledText color="$baseTextMedEmphasis">
+      {subtitle}
+    </ListItemStyledText>
+  );
+}
+
+export function ListItemTokenBalance({
+  balance,
+  onPressRow,
+}: {
+  balance: ResponseTokenBalance;
+  onPressRow: (b: ResponseTokenBalance) => void;
+}): JSX.Element {
+  const name =
+    balance.tokenListEntry?.name ?? formatWalletAddress(balance.token);
+  const iconUrl = balance.tokenListEntry?.logo || UNKNOWN_ICON_SRC;
+
+  return (
+    <ListItemWrapper
+      grouped
+      onPress={() => onPressRow(balance)}
+      icon={<ListItemIcon source={{ uri: iconUrl }} />}
+    >
+      <ListItemRow>
+        <ListItemSide side="left">
+          <ListItemStyledText fontSize="$lg">{name}</ListItemStyledText>
+          <TextAmountBalance
+            displayBalance={balance.displayAmount}
+            ticker={balance.tokenListEntry?.symbol ?? ""}
+          />
+        </ListItemSide>
+        <ListItemSide side="right">
+          <TextUsdBalance usdBalance={balance.marketData?.value} />
+          <TextPercentChanged
+            percentChange={balance.marketData?.percentChange ?? 0}
+          />
+        </ListItemSide>
+      </ListItemRow>
+    </ListItemWrapper>
+  );
+}
+// old token row
+function TokenRow({
   onPressRow,
   token,
   blockchain,
@@ -308,81 +394,27 @@ export function TokenRow({
   blockchain: Blockchain;
   walletPublicKey: string;
 }): JSX.Element {
-  const theme = useTheme();
   const { name, recentUsdBalanceChange, logo: iconUrl } = token;
 
-  let subtitle = token.ticker;
-  if (token.displayBalance) {
-    subtitle = `${token.displayBalance.toLocaleString()} ${subtitle}`;
-  }
-
   return (
-    <Pressable
+    <ListItemWrapper
+      grouped
       onPress={() => onPressRow(blockchain, token, walletPublicKey)}
-      style={styles.rowContainer}
+      icon={<ListItemIcon source={{ uri: iconUrl }} />}
     >
-      <View style={{ flexDirection: "row" }}>
-        {iconUrl ? (
-          <Margin right={12}>
-            <ProxyImage size={50} style={styles.rowLogo} src={iconUrl} />
-          </Margin>
-        ) : null}
-        <View>
-          <Text
-            style={[styles.tokenName, { color: theme.custom.colors.fontColor }]}
-          >
-            {name}
-          </Text>
-          <Text
-            style={[
-              styles.tokenAmount,
-              { color: theme.custom.colors.secondary },
-            ]}
-          >
-            {subtitle}
-          </Text>
-        </View>
-      </View>
-      <View style={{ alignItems: "flex-end" }}>
-        <Text
-          style={[
-            styles.tokenBalance,
-            { color: theme.custom.colors.fontColor },
-          ]}
-        >
-          {formatUsd(token.usdBalance)}
-        </Text>
-        <TextPercentChanged percentChange={recentUsdBalanceChange} />
-      </View>
-    </Pressable>
+      <ListItemRow>
+        <ListItemSide side="left">
+          <ListItemStyledText fontSize="$lg">{name}</ListItemStyledText>
+          <TextAmountBalance
+            displayBalance={token.displayBalance}
+            ticker={token.ticker}
+          />
+        </ListItemSide>
+        <ListItemSide side="right">
+          <TextUsdBalance usdBalance={token.usdBalance} />
+          <TextPercentChanged percentChange={recentUsdBalanceChange} />
+        </ListItemSide>
+      </ListItemRow>
+    </ListItemWrapper>
   );
 }
-
-const styles = StyleSheet.create({
-  rowContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    padding: 12,
-    overflow: "hidden",
-  },
-  rowLogo: {
-    borderRadius: 25,
-  },
-  tokenName: {
-    height: 24,
-    fontWeight: "500",
-    fontSize: 16,
-    lineHeight: 24,
-  },
-  tokenAmount: {
-    fontWeight: "500",
-    fontSize: 14,
-    lineHeight: 20,
-  },
-  tokenBalance: {
-    fontWeight: "500",
-    fontSize: 16,
-    lineHeight: 24,
-  },
-});

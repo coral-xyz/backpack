@@ -1,11 +1,9 @@
-import { Suspense, useState } from "react";
-import { View, StyleSheet } from "react-native";
+import { Suspense } from "react";
 
 import { Blockchain } from "@coral-xyz/common";
-import { UsdBalanceAndPercentChange, Stack } from "@coral-xyz/tamagui";
+import { UsdBalanceAndPercentChange, YStack } from "@coral-xyz/tamagui";
 import { ErrorBoundary } from "react-error-boundary";
 
-import { RecentActivityList } from "~components/RecentActivityList";
 import { TransferWidget } from "~components/Unlocked/Balances/TransferWidget";
 import {
   TokenAmountHeader,
@@ -13,13 +11,15 @@ import {
   ScreenError,
 } from "~components/index";
 import {
-  useActiveEthereumWallet,
   useBlockchainTokenData,
   useBlockchainActiveWallet,
 } from "~hooks/recoil";
 import type { TokenDetailScreenProps } from "~navigation/WalletsNavigator";
 
-import { NavTokenAction, NavTokenOptions } from "~types/types";
+import { TransactionSectionList } from "./RecentActivityScreen";
+
+import { useSession } from "~src/lib/SessionProvider";
+import { NavTokenOptions } from "~types/types";
 
 function TokenHeader({
   blockchain,
@@ -28,7 +28,7 @@ function TokenHeader({
 }: {
   blockchain: Blockchain;
   address: string;
-  onPressOption: (route: NavTokenAction, options: NavTokenOptions) => void;
+  onPressOption: (route: string, options: NavTokenOptions) => void;
 }) {
   const { data: wallet } = useBlockchainActiveWallet(blockchain);
   const { data: token, loading } = useBlockchainTokenData({
@@ -37,13 +37,13 @@ function TokenHeader({
     tokenAddress: address,
   });
 
-  if (!token || loading) {
-    return <ScreenLoading />;
+  if (loading) {
+    return null;
   }
 
   return (
-    <Stack mb={24}>
-      <View>
+    <YStack space={24} mb={24}>
+      <YStack>
         <TokenAmountHeader
           token={token}
           amount={token.nativeBalance}
@@ -53,21 +53,19 @@ function TokenHeader({
           usdBalance={token.usdBalance}
           recentPercentChange={token.recentPercentChange}
         />
-      </View>
-      <View style={styles.tokenHeaderButtonContainer}>
-        <TransferWidget
-          swapEnabled
-          token={token}
-          blockchain={blockchain}
-          address={address}
-          onPressOption={onPressOption}
-          rampEnabled={
-            (blockchain === Blockchain.SOLANA && token.ticker === "SOL") ||
-            (blockchain === Blockchain.ETHEREUM && token.ticker === "ETH")
-          }
-        />
-      </View>
-    </Stack>
+      </YStack>
+      <TransferWidget
+        swapEnabled
+        token={token}
+        blockchain={blockchain}
+        address={address}
+        onPressOption={onPressOption}
+        rampEnabled={
+          (blockchain === Blockchain.SOLANA && token.ticker === "SOL") ||
+          (blockchain === Blockchain.ETHEREUM && token.ticker === "ETH")
+        }
+      />
+    </YStack>
   );
 }
 
@@ -75,53 +73,33 @@ function Container({
   route,
   navigation,
 }: TokenDetailScreenProps): JSX.Element | null {
-  const { blockchain, tokenAddress } = route.params;
+  const { activeWallet } = useSession();
+  const { tokenMint, address, providerId } = route.params;
 
-  // We only use ethereumWallet here, even though its shared on the Solana side too.
-  const { data: ethereumWallet, loading } = useActiveEthereumWallet();
-  if (!blockchain || !tokenAddress || loading) {
-    return null;
-  }
-
-  const activityAddress =
-    blockchain === Blockchain.ETHEREUM
-      ? ethereumWallet.publicKey
-      : tokenAddress;
-  const contractAddresses =
-    blockchain === Blockchain.ETHEREUM ? [tokenAddress] : undefined;
+  const ListHeader = (
+    <TokenHeader
+      blockchain={activeWallet?.blockchain}
+      address={address}
+      onPressOption={(route: string, options: NavTokenOptions) => {
+        navigation.push(route, options);
+      }}
+    />
+  );
 
   return (
-    <RecentActivityList
-      ListHeaderComponent={
-        <TokenHeader
-          blockchain={blockchain}
-          address={tokenAddress}
-          onPressOption={(route: string, options: NavTokenOptions) => {
-            navigation.push(route, options);
-          }}
-        />
-      }
-      style={{ paddingTop: 16, paddingHorizontal: 16 }}
-      contentContainerStyle={{ paddingBottom: 32 }}
-      blockchain={blockchain}
-      address={activityAddress}
-      contractAddresses={contractAddresses}
-      minimize
+    <TransactionSectionList
+      ListHeaderComponent={ListHeader}
+      providerId={providerId}
+      address={address}
+      tokenMint={tokenMint}
     />
   );
 }
 
-const styles = StyleSheet.create({
-  tokenHeaderButtonContainer: {
-    justifyContent: "space-between",
-    marginTop: 24,
-  },
-});
-
 export function TokenDetailScreen({
   route,
   navigation,
-}: TokenDetailScreenProps): JSX.Element | null {
+}: TokenDetailScreenProps) {
   return (
     <ErrorBoundary
       fallbackRender={({ error }) => <ScreenError error={error} />}

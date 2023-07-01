@@ -1,48 +1,86 @@
-import type { Blockchain } from "@coral-xyz/common";
-import type { Token, NavTokenOptions } from "~types/types";
+import type { NavTokenOptions } from "~types/types";
 
-import { Suspense, useCallback } from "react";
-import { FlatList } from "react-native";
+import { Suspense, useCallback, useMemo } from "react";
+import { ListRenderItem } from "react-native";
 
-import { blockchainBalancesSorted } from "@coral-xyz/recoil";
-import { Box } from "@coral-xyz/tamagui";
+import { useSuspenseQuery } from "@apollo/client";
+import { formatWalletAddress } from "@coral-xyz/common";
+import { Stack } from "@coral-xyz/tamagui";
 import { ErrorBoundary } from "react-error-boundary";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useRecoilValue } from "recoil";
 
 import { TransferWidget } from "~components/Unlocked/Balances/TransferWidget";
 import { RoundedContainerGroup, ScreenError } from "~components/index";
 import { TokenListScreenProps } from "~navigation/types";
-import { BalanceSummaryWidget } from "~screens/Unlocked/components/BalanceSummaryWidget";
-import { TokenRow } from "~screens/Unlocked/components/Balances";
+import { ListItemTokenBalance } from "~screens/Unlocked/components/Balances";
 
+import { BalanceSummaryWidget } from "~src/components/BalanceSummaryWidget";
 import { ScreenListLoading } from "~src/components/LoadingStates";
+import { PaddedFlatList } from "~src/components/PaddedFlatList";
+import { gql } from "~src/graphql/__generated__";
+import {
+  GetTokenBalancesQuery,
+  ProviderId,
+} from "~src/graphql/__generated__/graphql";
 import { useSession } from "~src/lib/SessionProvider";
 
-function Container({ navigation, route }: TokenListScreenProps): JSX.Element {
+const QUERY_TOKEN_BALANCES = gql(`
+  query GetTokenBalances($address: String!, $providerId: ProviderID!) {
+    wallet(address: $address, providerId: $providerId) {
+      id
+      balances {
+        id
+        tokens {
+          edges {
+            node {
+              ...TokenBalanceFragment
+            }
+          }
+        }
+      }
+    }
+  }
+`);
+
+export type ResponseTokenBalance = NonNullable<
+  NonNullable<
+    NonNullable<NonNullable<GetTokenBalancesQuery["wallet"]>>["balances"]
+  >["tokens"]
+>["edges"][number]["node"];
+
+function Container({ navigation }: TokenListScreenProps): JSX.Element {
   const { activeWallet } = useSession();
-  const { blockchain, publicKey } = route.params;
-  const insets = useSafeAreaInsets();
-  const balances = useRecoilValue(
-    blockchainBalancesSorted({
-      blockchain: (activeWallet?.blockchain as Blockchain) || blockchain,
-      publicKey: activeWallet?.publicKey || publicKey,
-    })
+
+  const providerId = activeWallet?.blockchain.toUpperCase() as ProviderId;
+  const address = activeWallet?.publicKey as string;
+  const { data } = useSuspenseQuery(QUERY_TOKEN_BALANCES, {
+    variables: {
+      address,
+      providerId,
+    },
+  });
+
+  const balances = useMemo(
+    () => data.wallet?.balances?.tokens?.edges.map((e) => e.node) ?? [],
+    [data]
   );
 
   const onPressToken = useCallback(
-    (blockchain: Blockchain, token: Token) => {
+    (balance: ResponseTokenBalance) => {
+      const title =
+        balance.tokenListEntry?.name ?? formatWalletAddress(balance.token);
       navigation.push("TokenDetail", {
-        blockchain,
-        tokenAddress: token.address,
-        tokenTicker: token.ticker,
+        address,
+        providerId,
+        tokenMint: balance.token,
+        title,
       });
     },
-    [navigation]
+    [navigation, address, providerId]
   );
 
-  const renderItem = useCallback(
-    ({ item: token, index }: { item: Token; index: number }) => {
+  const keyExtractor = (item: ResponseTokenBalance) => item.id;
+  const renderItem: ListRenderItem<ResponseTokenBalance> = useCallback(
+    ({ item, index }) => {
       const isFirst = index === 0;
       const isLast = index === balances.length - 1;
 
@@ -50,41 +88,36 @@ function Container({ navigation, route }: TokenListScreenProps): JSX.Element {
         <RoundedContainerGroup
           disableTopRadius={!isFirst}
           disableBottomRadius={!isLast}
+          borderRadius={16}
         >
-          <TokenRow
-            onPressRow={onPressToken}
-            blockchain={blockchain}
-            token={token}
-            walletPublicKey={publicKey}
-          />
+          <ListItemTokenBalance balance={item} onPressRow={onPressToken} />
         </RoundedContainerGroup>
       );
     },
-    [balances.length, onPressToken, blockchain, publicKey]
+    [balances.length, onPressToken]
+  );
+
+  const ListHeader = (
+    <>
+      <BalanceSummaryWidget hideChange />
+      <Stack mt={18} mb={24}>
+        <TransferWidget
+          swapEnabled
+          rampEnabled={false}
+          onPressOption={(route: string, options: NavTokenOptions) => {
+            navigation.push(route, options);
+          }}
+        />
+      </Stack>
+    </>
   );
 
   return (
-    <FlatList
-      style={{ paddingTop: 16, paddingHorizontal: 16 }}
-      contentContainerStyle={{ paddingBottom: insets.bottom + 16 }}
+    <PaddedFlatList
       data={balances}
-      keyExtractor={(item) => item.address}
+      keyExtractor={keyExtractor}
       renderItem={renderItem}
-      showsVerticalScrollIndicator={false}
-      ListHeaderComponent={
-        <>
-          <BalanceSummaryWidget />
-          <Box marginVertical={12}>
-            <TransferWidget
-              swapEnabled
-              rampEnabled={false}
-              onPressOption={(route: string, options: NavTokenOptions) => {
-                navigation.push(route, options);
-              }}
-            />
-          </Box>
-        </>
-      }
+      ListHeaderComponent={ListHeader}
     />
   );
 }

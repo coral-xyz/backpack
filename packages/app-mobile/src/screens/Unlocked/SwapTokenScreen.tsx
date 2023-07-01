@@ -1,11 +1,5 @@
 import { useState, useLayoutEffect, Suspense, useTransition } from "react";
-import {
-  ScrollView,
-  View,
-  Pressable,
-  ActivityIndicator,
-  Keyboard,
-} from "react-native";
+import { View, Pressable, ActivityIndicator, Keyboard } from "react-native";
 
 import {
   Blockchain,
@@ -41,7 +35,7 @@ import {
   ScreenErrorFallback,
 } from "~components/index";
 
-import { SearchableTokenList, TokenTables } from "./components/Balances";
+import { SearchableTokenList } from "./components/Balances";
 
 import { IconButton } from "~src/components/Icon";
 import { TokenInputField } from "~src/components/TokenInputField";

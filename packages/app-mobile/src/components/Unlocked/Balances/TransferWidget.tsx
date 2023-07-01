@@ -1,13 +1,11 @@
-import { Pressable, Text, View } from "react-native";
+import { Pressable } from "react-native";
 
 import { Blockchain } from "@coral-xyz/common";
-import { XStack } from "@coral-xyz/tamagui";
+import { Circle, StyledText, XStack } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
 
-import { Margin } from "~components/index";
-import { useTheme } from "~hooks/useTheme";
-
-import { Token, NavTokenOptions } from "~types/types";
+import { useTheme } from "~src/hooks/useTheme";
+import { Token, NavTokenOptions } from "~src/types/types";
 
 export function TransferWidget({
   address,
@@ -24,7 +22,7 @@ export function TransferWidget({
   token?: Token;
 }): JSX.Element {
   return (
-    <XStack space={10} ai="center" alignSelf="center" jc="center">
+    <XStack space={24} ai="center" alignSelf="center" jc="center">
       <TransferButton
         label="Receive"
         icon="arrow-downward"
@@ -78,37 +76,26 @@ function TransferButton({
       onPress={onPress}
       style={{ alignItems: "center", opacity: disabled ? 0.5 : 1 }}
     >
-      <Margin bottom={8}>
-        <View
-          style={{
-            width: 50,
-            height: 50,
-            borderRadius: 25,
-            borderColor: theme.custom.colors.borderFull,
-            backgroundColor: theme.custom.colors.nav,
-            borderWidth: 2,
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <MaterialIcons
-            name={icon}
-            size={24}
-            color={theme.custom.colors.fontColor}
-          />
-        </View>
-      </Margin>
-      <Text
-        style={{
-          color: theme.custom.colors.secondary,
-          fontSize: 14,
-          fontWeight: "500",
-          lineHeight: 20,
-          textAlign: "center",
+      <Circle
+        mb={8}
+        bg="$card"
+        borderColor="$borderFull"
+        borderWidth={1}
+        size={56}
+        shadowRadius={1}
+        shadowColor="rgba(0, 0, 0, 0.02)"
+        shadowOffset={{
+          width: 1,
+          height: 1,
         }}
       >
-        {label}
-      </Text>
+        <MaterialIcons
+          name={icon}
+          size={24}
+          color={theme.custom.colors.fontColor}
+        />
+      </Circle>
+      <StyledText color="$baseTextMedEmphasis">{label}</StyledText>
     </Pressable>
   );
 }

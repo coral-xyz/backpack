@@ -1,5 +1,5 @@
 import { Suspense, useCallback, useMemo } from "react";
-import { FlatList, Text } from "react-native";
+import { Text } from "react-native";
 
 import { useFragment } from "@apollo/client";
 import { useActiveWallet } from "@coral-xyz/recoil";
@@ -9,6 +9,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BaseListItem } from "~components/CollectionListItem";
 import { FullScreenLoading } from "~components/index";
 
+import { PaddedFlatList } from "~src/components/PaddedFlatList";
 import { NftNodeFragment } from "~src/graphql/fragments";
 
 function ListItem({ id, onPress }: { id: string; onPress: any }): JSX.Element {
@@ -61,17 +62,12 @@ function Container({ navigation, route }: any): JSX.Element {
   const gap = 12;
 
   return (
-    <FlatList
+    <PaddedFlatList
       data={nftIds}
       numColumns={2}
       keyExtractor={keyExtractor}
       renderItem={renderItem}
       columnWrapperStyle={{ gap }}
-      showsVerticalScrollIndicator={false}
-      style={{
-        paddingTop: 16,
-        paddingHorizontal: 16,
-      }}
       contentContainerStyle={{
         gap,
         paddingBottom: insets.bottom + 32,

@@ -1,5 +1,5 @@
 import { Image } from "react-native";
-import type { Blockchain} from "@coral-xyz/common";
+import type { Blockchain } from "@coral-xyz/common";
 import { BLOCKCHAIN_COMMON } from "@coral-xyz/common";
 
 function getBlockchainLogo(blockchain: Blockchain) {

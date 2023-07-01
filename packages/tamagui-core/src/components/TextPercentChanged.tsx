@@ -1,14 +1,12 @@
-import { StyleSheet, Text } from "react-native";
 import { formatUsd } from "@coral-xyz/common";
 
-import { useCustomTheme as useTheme } from "../hooks";
+import { StyledText } from "./StyledText";
 
 export function TextPercentChanged({
   percentChange,
 }: {
   percentChange: number;
 }): JSX.Element {
-  const theme = useTheme();
   const positive = !!(percentChange && percentChange > 0);
   const negative = !!(percentChange && percentChange < 0);
   const neutral = !!(percentChange && percentChange === 0);
@@ -16,52 +14,20 @@ export function TextPercentChanged({
   return (
     <>
       {percentChange !== undefined && positive ? (
-        <Text
-          style={[
-            styles.tokenBalanceChangePositive,
-            { color: theme.custom.colors.positive },
-          ]}
-        >
+        <StyledText fontWeight="500" color="$positive">
           +{formatUsd(percentChange.toLocaleString())}
-        </Text>
+        </StyledText>
       ) : null}
       {percentChange !== undefined && negative ? (
-        <Text
-          style={[
-            styles.tokenBalanceChangeNegative,
-            { color: theme.custom.colors.negative },
-          ]}
-        >
+        <StyledText fontWeight="500" color="$negative">
           {formatUsd(percentChange.toLocaleString())}
-        </Text>
+        </StyledText>
       ) : null}
       {percentChange !== undefined && neutral ? (
-        <Text
-          style={[
-            styles.tokenBalanceChangeNeutral,
-            { color: theme.custom.colors.secondary },
-          ]}
-        >
+        <StyledText fontWeight="500" color="$secondary">
           {formatUsd(percentChange.toLocaleString())}
-        </Text>
+        </StyledText>
       ) : null}
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  tokenBalanceChangeNeutral: {
-    fontWeight: "500",
-    fontSize: 14,
-    lineHeight: 20,
-  },
-  tokenBalanceChangePositive: {
-    fontWeight: "500",
-    fontSize: 14,
-    lineHeight: 20,
-  },
-  tokenBalanceChangeNegative: {
-    fontWeight: "500",
-    fontSize: 12,
-  },
-});

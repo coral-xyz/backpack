@@ -41,42 +41,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@apollo/client@npm:3.8.0-beta.3":
-  version: 3.8.0-beta.3
-  resolution: "@apollo/client@npm:3.8.0-beta.3"
-  dependencies:
-    "@graphql-typed-document-node/core": ^3.1.1
-    "@wry/context": ^0.7.3
-    "@wry/equality": ^0.5.6
-    "@wry/trie": ^0.4.3
-    graphql-tag: ^2.12.6
-    hoist-non-react-statics: ^3.3.2
-    optimism: ^0.17.4
-    prop-types: ^15.7.2
-    response-iterator: ^0.2.6
-    symbol-observable: ^4.0.0
-    ts-invariant: ^0.10.3
-    tslib: ^2.3.0
-    zen-observable-ts: ^1.2.5
-  peerDependencies:
-    graphql: ^14.0.0 || ^15.0.0 || ^16.0.0
-    graphql-ws: ^5.5.5
-    react: ^16.8.0 || ^17.0.0 || ^18.0.0
-    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
-    subscriptions-transport-ws: ^0.9.0 || ^0.11.0
-  peerDependenciesMeta:
-    graphql-ws:
-      optional: true
-    react:
-      optional: true
-    react-dom:
-      optional: true
-    subscriptions-transport-ws:
-      optional: true
-  checksum: 12a87b529ca7aeb2ddf60a46553cf2fda14b940fa1e1dee8d6cb43fe77827becd94c823dd824126453347cfbb8bd8542f77527b83884a32d52bc206886126e38
-  languageName: node
-  linkType: hard
-
 "@apollo/client@npm:3.8.0-beta.5":
   version: 3.8.0-beta.5
   resolution: "@apollo/client@npm:3.8.0-beta.5"
@@ -3861,7 +3825,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@coral-xyz/app-mobile@workspace:packages/app-mobile"
   dependencies:
-    "@apollo/client": 3.8.0-beta.3
+    "@apollo/client": 3.8.0-beta.5
     "@babel/core": ^7.19.3
     "@cardinal/payment-manager": ^1.7.9
     "@cardinal/token-manager": ^1.7.9
