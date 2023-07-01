@@ -303,7 +303,9 @@ function UserListItem({
                 }}
               >
                 {formatUsername(user.username, 15)}{" "}
-                {Object.values(user.searched.blockchains).filter((bool) => bool)
+                {user.searched &&
+                user.searched.blockchains &&
+                Object.values(user.searched.blockchains).filter((bool) => bool)
                   .length > 0
                   ? formatWalletAddress(user.searched.usernamePrefix!, 2)
                   : ""}
