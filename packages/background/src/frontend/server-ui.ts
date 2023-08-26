@@ -25,15 +25,14 @@ import {
   UI_RPC_METHOD_APPROVED_ORIGINS_READ,
   UI_RPC_METHOD_APPROVED_ORIGINS_UPDATE,
   UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
+  UI_RPC_METHOD_CONNECTION_URL_READ,
+  UI_RPC_METHOD_CONNECTION_URL_UPDATE,
   UI_RPC_METHOD_ETHEREUM_CHAIN_ID_READ,
   UI_RPC_METHOD_ETHEREUM_CHAIN_ID_UPDATE,
-  UI_RPC_METHOD_ETHEREUM_CONNECTION_URL_READ,
-  UI_RPC_METHOD_ETHEREUM_CONNECTION_URL_UPDATE,
-  UI_RPC_METHOD_ETHEREUM_EXPLORER_READ,
-  UI_RPC_METHOD_ETHEREUM_EXPLORER_UPDATE,
   UI_RPC_METHOD_ETHEREUM_SIGN_AND_SEND_TRANSACTION,
   UI_RPC_METHOD_ETHEREUM_SIGN_MESSAGE,
   UI_RPC_METHOD_ETHEREUM_SIGN_TRANSACTION,
+  UI_RPC_METHOD_EXPLORER_UPDATE,
   UI_RPC_METHOD_FIND_SERVER_PUBLIC_KEY_CONFLICTS,
   UI_RPC_METHOD_FIND_WALLET_DESCRIPTOR,
   UI_RPC_METHOD_GET_FEATURE_GATES,
@@ -87,10 +86,6 @@ import {
   UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
   UI_RPC_METHOD_SOLANA_COMMITMENT_READ,
   UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE,
-  UI_RPC_METHOD_SOLANA_CONNECTION_URL_READ,
-  UI_RPC_METHOD_SOLANA_CONNECTION_URL_UPDATE,
-  UI_RPC_METHOD_SOLANA_EXPLORER_READ,
-  UI_RPC_METHOD_SOLANA_EXPLORER_UPDATE,
   UI_RPC_METHOD_SOLANA_SIGN_ALL_TRANSACTIONS,
   UI_RPC_METHOD_SOLANA_SIGN_AND_SEND_TRANSACTION,
   UI_RPC_METHOD_SOLANA_SIGN_MESSAGE,
@@ -107,10 +102,10 @@ import {
   withContextPort,
 } from "@coral-xyz/common";
 import type { KeyringStoreState } from "@coral-xyz/recoil";
+import type { User } from "@coral-xyz/secure-background/legacyExport";
 import type { Commitment } from "@solana/web3.js";
 
 import type { Backend } from "../backend/core";
-import type { User } from "../backend/store";
 import type { Config, Handle, PublicKeyData } from "../types";
 
 const logger = getLogger("background-server-ui");
@@ -143,9 +138,6 @@ async function handle<T = any>(
 ): Promise<RpcResponse<T>> {
   logger.debug(`handle rpc ${msg.method}`, msg);
 
-  // User did something so restart the auto-lock countdown
-  ctx.backend.keyringStoreAutoLockCountdownRestart();
-
   /**
    * Enables or disables Auto-lock functionality to ensure
    * the wallet stays unlocked when an xNFT is being used
@@ -156,6 +148,12 @@ async function handle<T = any>(
     );
 
   const { method, params } = msg;
+
+  if (method !== UI_RPC_METHOD_KEYRING_STORE_STATE) {
+    // User did something so restart the auto-lock countdown
+    ctx.backend.keyringStoreAutoLockCountdownRestart();
+  }
+
   switch (method) {
     //
     // Keyring.
@@ -315,9 +313,9 @@ async function handle<T = any>(
     // Nicknames for keys.
     //
     case UI_RPC_METHOD_KEYNAME_READ:
-      return await handleKeynameRead(ctx, params[0]);
+      return await handleKeynameRead(ctx, params[0], params[1]);
     case UI_RPC_METHOD_KEYNAME_UPDATE:
-      return await handleKeynameUpdate(ctx, params[0], params[1]);
+      return await handleKeynameUpdate(ctx, params[0], params[1], params[2]);
     //
     // User.
     //
@@ -388,25 +386,15 @@ async function handle<T = any>(
       return await handleSolanaCommitmentRead(ctx, params[0]);
     case UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE:
       return await handleSolanaCommitmentUpdate(ctx, params[0]);
-    case UI_RPC_METHOD_SOLANA_EXPLORER_READ:
-      return await handleSolanaExplorerRead(ctx, params[0]);
-    case UI_RPC_METHOD_SOLANA_EXPLORER_UPDATE:
-      return await handleSolanaExplorerUpdate(ctx, params[0]);
-    case UI_RPC_METHOD_SOLANA_CONNECTION_URL_READ:
-      return await handleSolanaConnectionUrlRead(ctx, params[0]);
-    case UI_RPC_METHOD_SOLANA_CONNECTION_URL_UPDATE:
-      return await handleSolanaConnectionUrlUpdate(ctx, params[0]);
+    case UI_RPC_METHOD_EXPLORER_UPDATE:
+      return await handleExplorerUpdate(ctx, params[0], params[1]);
+    case UI_RPC_METHOD_CONNECTION_URL_READ:
+      return await handleConnectionUrlRead(ctx, params[0], params[1]);
+    case UI_RPC_METHOD_CONNECTION_URL_UPDATE:
+      return await handleConnectionUrlUpdate(ctx, params[0], params[1]);
     //
     // Ethereum
     //
-    case UI_RPC_METHOD_ETHEREUM_EXPLORER_READ:
-      return await handleEthereumExplorerRead(ctx, params[0]);
-    case UI_RPC_METHOD_ETHEREUM_EXPLORER_UPDATE:
-      return await handleEthereumExplorerUpdate(ctx, params[0]);
-    case UI_RPC_METHOD_ETHEREUM_CONNECTION_URL_READ:
-      return await handleEthereumConnectionUrlRead(ctx, params[0]);
-    case UI_RPC_METHOD_ETHEREUM_CONNECTION_URL_UPDATE:
-      return await handleEthereumConnectionUrlUpdate(ctx, params[0]);
     case UI_RPC_METHOD_ETHEREUM_CHAIN_ID_READ:
       return await handleEthereumChainIdRead(ctx);
     case UI_RPC_METHOD_ETHEREUM_CHAIN_ID_UPDATE:
@@ -546,18 +534,20 @@ async function handleKeyIsColdUpdate(
 
 async function handleKeynameRead(
   ctx: Context<Backend>,
-  pubkey: string
+  pubkey: string,
+  blockchain: Blockchain
 ): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.keynameRead(pubkey);
+  const resp = await ctx.backend.keynameRead(pubkey, blockchain);
   return [resp];
 }
 
 async function handleKeynameUpdate(
   ctx: Context<Backend>,
   pubkey: string,
-  newName: string
+  newName: string,
+  blockchain: Blockchain
 ): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.keynameUpdate(pubkey, newName);
+  const resp = await ctx.backend.keynameUpdate(pubkey, newName, blockchain);
   return [resp];
 }
 
@@ -875,19 +865,27 @@ async function handleAggregateWalletsUpdate(
   return [resp];
 }
 
-async function handleSolanaConnectionUrlRead(
+async function handleConnectionUrlRead(
   ctx: Context<Backend>,
-  uuid: string
+  uuid: string,
+  blockchain: string
 ): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.solanaConnectionUrlRead(uuid);
+  const resp = await ctx.backend.connectionUrlRead(
+    uuid,
+    blockchain as Blockchain
+  );
   return [resp];
 }
 
-async function handleSolanaConnectionUrlUpdate(
+async function handleConnectionUrlUpdate(
   ctx: Context<Backend>,
-  url: string
+  url: string,
+  blockchain: string
 ): Promise<RpcResponse<boolean>> {
-  const didChange = await ctx.backend.solanaConnectionUrlUpdate(url);
+  const didChange = await ctx.backend.connectionUrlUpdate(
+    url,
+    blockchain as Blockchain
+  );
   return [didChange];
 }
 
@@ -909,19 +907,12 @@ async function handleSolanaCommitmentUpdate(
   return [resp];
 }
 
-async function handleSolanaExplorerRead(
+async function handleExplorerUpdate(
   ctx: Context<Backend>,
-  uuid: string
+  url: string,
+  blockchain: string
 ): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.solanaExplorerRead(uuid);
-  return [resp];
-}
-
-async function handleSolanaExplorerUpdate(
-  ctx: Context<Backend>,
-  url: string
-): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.solanaExplorerUpdate(url);
+  const resp = await ctx.backend.explorerUpdate(url, blockchain as Blockchain);
   return [resp];
 }
 
@@ -967,38 +958,6 @@ async function handleSolanaSignAndSendTransaction(
   walletAddress: string
 ): Promise<RpcResponse<string>> {
   const resp = await ctx.backend.solanaSignAndSendTx(tx, walletAddress);
-  return [resp];
-}
-
-async function handleEthereumExplorerRead(
-  ctx: Context<Backend>,
-  uuid: string
-): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.ethereumExplorerRead(uuid);
-  return [resp];
-}
-
-async function handleEthereumExplorerUpdate(
-  ctx: Context<Backend>,
-  url: string
-): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.ethereumExplorerUpdate(url);
-  return [resp];
-}
-
-async function handleEthereumConnectionUrlRead(
-  ctx: Context<Backend>,
-  uuid: string
-): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.ethereumConnectionUrlRead(uuid);
-  return [resp];
-}
-
-async function handleEthereumConnectionUrlUpdate(
-  ctx: Context<Backend>,
-  url: string
-): Promise<RpcResponse<boolean>> {
-  const resp = await ctx.backend.ethereumConnectionUrlUpdate(url);
   return [resp];
 }
 

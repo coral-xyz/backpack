@@ -1,0 +1,12 @@
+schema: "../../backend/native/backpack-api/src/schema.graphql"
+documents: ["src/**/*.tsx", "src/graphql/fragments.ts"]
+ignoreNoDocuments: true
+generates:
+  "./src/graphql/__generated__/":
+    preset: "client"
+    presetConfig:
+      gqlTagName: "gql"
+    config:
+      scalars:
+        JSONObject: "{ data: string } | Record<string, any>"
+      useTypeImports: true

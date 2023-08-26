@@ -1,16 +1,17 @@
 /* eslint-disable react/jsx-no-useless-fragment */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useContext, useEffect, useState } from "react";
+import type { Blockchain } from "@coral-xyz/common";
 import {
-  Blockchain,
+  formatWalletAddress,
   UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
-  walletAddressDisplay,
 } from "@coral-xyz/common";
 import {
   HardwareIcon,
   List,
   ListItem,
   MnemonicIcon,
+  ProxyImage,
   SecretKeyIcon,
 } from "@coral-xyz/react-common";
 import {
@@ -19,19 +20,16 @@ import {
   useAllWallets,
   useBackgroundClient,
   useDehydratedWallets,
+  useFeatureGates,
   usePrimaryWallets,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { Add, ExpandMore, MoreHoriz } from "@mui/icons-material";
-import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import InfoIcon from "@mui/icons-material/Info";
 import { Box, Button, Grid, Tooltip, Typography } from "@mui/material";
 import type { SxProps, Theme } from "@mui/material/styles";
 
-import {
-  EthereumIconOnboarding as EthereumIcon,
-  SolanaIconOnboarding as SolanaIcon,
-} from "../common/Icon";
+import { BLOCKCHAIN_COMPONENTS } from "../common/Blockchains";
 import { ActionCard } from "../common/Layout/ActionCard";
 import { useDrawerContext, WithMiniDrawer } from "../common/Layout/Drawer";
 import {
@@ -62,7 +60,6 @@ import {
 } from "../Unlocked/Settings/YourAccount/ShowPrivateKey";
 
 import { Scrollbar } from "./Layout/Scrollbar";
-import { WithCopyTooltip } from "./WithCopyTooltip";
 
 const useStyles = styles((theme) => ({
   addressButton: {
@@ -84,19 +81,25 @@ const useStyles = styles((theme) => ({
 export function WalletDrawerButton({
   wallet,
   style,
+  buttonStyle,
+  showIcon = true,
 }: {
   wallet: { name: string; publicKey: string };
   style?: React.CSSProperties;
+  buttonStyle?: React.CSSProperties;
+  showIcon?: boolean;
 }) {
   const { setOpen } = useWalletDrawerContext();
   return (
     <WalletButton
-      wallet={wallet}
+      wallet={wallet as any}
       onClick={(e: any) => {
         e.stopPropagation();
         setOpen(true);
       }}
       style={style}
+      buttonStyle={buttonStyle}
+      showIcon={showIcon}
     />
   );
 }
@@ -105,14 +108,19 @@ function WalletButton({
   wallet,
   onClick,
   style,
+  buttonStyle,
+  showIcon = true,
 }: {
-  wallet: { name: string; publicKey: string };
+  wallet: { name: string; publicKey: string; blockchain: Blockchain };
   onClick: (e: any) => void;
   style?: React.CSSProperties;
+  buttonStyle?: React.CSSProperties;
+  showIcon?: boolean;
 }) {
   const classes = useStyles();
   const theme = useCustomTheme();
   const [tooltipOpen, setTooltipOpen] = useState(false);
+  const iconUrl = getBlockchainLogo(wallet.blockchain);
 
   const onCopy = async () => {
     setTooltipOpen(true);
@@ -126,12 +134,51 @@ function WalletButton({
         flex: 1,
         display: "flex",
         justifyContent: "space-between",
-        marginLeft: "8px",
+        //        marginLeft: "8px",
         ...style,
       }}
     >
-      <Button disableRipple className={classes.addressButton} onClick={onClick}>
-        {wallet.name}
+      <Button
+        disableRipple
+        className={classes.addressButton}
+        onClick={onClick}
+        style={{
+          border: theme.custom.colors.borderFull,
+          background: theme.custom.colors.nav,
+          padding: "5px",
+          paddingLeft: "8px",
+          borderRadius: "30px",
+          ...buttonStyle,
+        }}
+      >
+        {showIcon ? (
+          <div
+            style={{
+              width: "15px",
+              marginRight: "6px",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+            }}
+          >
+            {" "}
+            <ProxyImage
+              noSkeleton
+              src={iconUrl}
+              style={{
+                width: "15px",
+              }}
+            />
+          </div>
+        ) : null}
+        <Typography
+          style={{
+            fontSize: "14px",
+            fontWeight: 500,
+          }}
+        >
+          {wallet.name}
+        </Typography>
         <ExpandMore
           style={{
             width: "18px",
@@ -139,6 +186,7 @@ function WalletButton({
           }}
         />
       </Button>
+      {/*
       <WithCopyTooltip tooltipOpen={tooltipOpen}>
         <Button
           disableRipple
@@ -160,6 +208,7 @@ function WalletButton({
           />
         </Button>
       </WithCopyTooltip>
+			*/}
     </div>
   );
 }
@@ -352,6 +401,8 @@ function WalletSettingsButton() {
 
 export function WalletListBlockchainSelector() {
   const nav = useNavigation();
+  const gates = useFeatureGates();
+
   useEffect(() => {
     nav.setOptions({ headerTitle: "Select a network" });
   }, [nav]);
@@ -365,20 +416,17 @@ export function WalletListBlockchainSelector() {
   return (
     <Box style={{ padding: "0 16px 16px", marginTop: 12 }}>
       <Grid container spacing={1.5}>
-        <Grid item xs={6}>
-          <ActionCard
-            icon={<EthereumIcon />}
-            text="Ethereum"
-            onClick={() => onClick(Blockchain.ETHEREUM)}
-          />
-        </Grid>
-        <Grid item xs={6}>
-          <ActionCard
-            icon={<SolanaIcon />}
-            text="Solana"
-            onClick={() => onClick(Blockchain.SOLANA)}
-          />
-        </Grid>
+        {Object.entries(BLOCKCHAIN_COMPONENTS)
+          .filter(([, Component]) => Component.Enabled)
+          .map(([blockchain, Component]) => (
+            <Grid item xs={6}>
+              <ActionCard
+                icon={<Component.Icon />}
+                text={Component.Name}
+                onClick={() => onClick(blockchain as Blockchain)}
+              />
+            </Grid>
+          ))}
       </Grid>
     </Box>
   );
@@ -545,7 +593,7 @@ function _WalletList({
   );
 }
 
-export function WalletList({
+function WalletList({
   wallets,
   clickWallet,
   style,
@@ -606,7 +654,7 @@ export function WalletList({
   );
 }
 
-export function WalletListItem({
+function WalletListItem({
   wallet,
   isSelected,
   isFirst,
@@ -633,7 +681,10 @@ export function WalletListItem({
   inverted?: boolean;
 }) {
   const primaryWallets = usePrimaryWallets();
-  const isPrimary = primaryWallets.find((x) => x.publicKey === wallet.publicKey)
+  const isPrimary = primaryWallets.find(
+    (x) =>
+      x.publicKey === wallet.publicKey && x.blockchain === wallet.blockchain
+  )
     ? true
     : false;
   const theme = useCustomTheme();
@@ -882,7 +933,7 @@ function RecoverButton({
   );
 }
 
-export function StackedWalletAddress({
+function StackedWalletAddress({
   publicKey,
   name,
   type,
@@ -961,7 +1012,7 @@ export function StackedWalletAddress({
               fontSize: "14px",
             }}
           >
-            {walletAddressDisplay(publicKey)}
+            {formatWalletAddress(publicKey)}
           </Typography>
         </div>
       </div>
@@ -1050,7 +1101,7 @@ export function WalletDrawerProvider({ children }: any) {
   );
 }
 
-export function useWalletDrawerContext(): WalletDrawerContext {
+function useWalletDrawerContext(): WalletDrawerContext {
   const ctx = useContext(_WalletDrawerContext);
   if (ctx === null) {
     throw new Error("Context not available");

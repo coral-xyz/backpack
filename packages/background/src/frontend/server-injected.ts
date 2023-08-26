@@ -27,14 +27,12 @@ import {
   EthereumChainIds,
   EthereumConnectionUrl,
   getLogger,
-  NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED,
+  NOTIFICATION_ACTIVE_WALLET_UPDATED,
+  NOTIFICATION_CONNECTION_URL_UPDATED,
   NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED,
   NOTIFICATION_ETHEREUM_CONNECTED,
-  NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
   NOTIFICATION_ETHEREUM_DISCONNECTED,
-  NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_SOLANA_CONNECTED,
-  NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
   NOTIFICATION_SOLANA_DISCONNECTED,
   openApprovalPopupWindow,
   openApproveAllTransactionsPopupWindow,
@@ -58,6 +56,7 @@ import {
   withContextPort,
 } from "@coral-xyz/common";
 import type { SendOptions } from "@solana/web3.js";
+import { PublicKey } from "@solana/web3.js";
 
 import type { Backend } from "../backend/core";
 import { SUCCESS_RESPONSE } from "../backend/core";
@@ -70,6 +69,7 @@ const whitelistedOrigins = [
   /^https:\/\/one-nft\.vercel\.app$/,
   /^https:\/\/xnft\.wao\.gg$/,
   /^https:\/\/one\.xnfts\.dev$/,
+  /^https:\/\/madlads\.com$/,
   /^https:\/\/rafffle\.famousfoxes\.com$/,
 ];
 
@@ -103,12 +103,6 @@ export function start(cfg: Config, events: EventEmitter, b: Backend): Handle {
       case NOTIFICATION_ETHEREUM_DISCONNECTED:
         ethereumNotificationsInjected.sendMessageActiveTab(notification);
         break;
-      case NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED:
-        ethereumNotificationsInjected.sendMessageActiveTab(notification);
-        break;
-      case NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED:
-        ethereumNotificationsInjected.sendMessageActiveTab(notification);
-        break;
       case NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED:
         ethereumNotificationsInjected.sendMessageActiveTab(notification);
         break;
@@ -118,10 +112,14 @@ export function start(cfg: Config, events: EventEmitter, b: Backend): Handle {
       case NOTIFICATION_SOLANA_DISCONNECTED:
         solanaNotificationsInjected.sendMessageActiveTab(notification);
         break;
-      case NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED:
+      case NOTIFICATION_ACTIVE_WALLET_UPDATED:
+        // TODO: generalize this some more.
         solanaNotificationsInjected.sendMessageActiveTab(notification);
+        ethereumNotificationsInjected.sendMessageActiveTab(notification);
         break;
-      case NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED:
+      case NOTIFICATION_CONNECTION_URL_UPDATED:
+        // TODO: generalize this some more.
+        ethereumNotificationsInjected.sendMessageActiveTab(notification);
         solanaNotificationsInjected.sendMessageActiveTab(notification);
         break;
       default:
@@ -307,8 +305,9 @@ async function handleConnect(
     const user = await ctx.backend.userRead();
     const publicKey = ctx.backend.activeWalletForBlockchain(blockchain);
     if (blockchain === Blockchain.ETHEREUM) {
-      const connectionUrl = await ctx.backend.ethereumConnectionUrlRead(
-        user.uuid
+      const connectionUrl = await ctx.backend.connectionUrlRead(
+        user.uuid,
+        Blockchain.ETHEREUM
       );
       const chainId = await ctx.backend.ethereumChainIdRead();
       const data = {
@@ -322,8 +321,9 @@ async function handleConnect(
       });
       return [data];
     } else if (blockchain === Blockchain.SOLANA) {
-      const connectionUrl = await ctx.backend.solanaConnectionUrlRead(
-        user.uuid
+      const connectionUrl = await ctx.backend.connectionUrlRead(
+        user.uuid,
+        Blockchain.SOLANA
       );
       const data = { publicKey, connectionUrl };
       ctx.events.emit(BACKEND_EVENT, {
@@ -586,6 +586,13 @@ async function handleSolanaOpenXnft(
   ctx: Context<Backend>,
   xnftAddress: string
 ): Promise<RpcResponse<string>> {
+  // Validate the xnftAddress.
+  try {
+    new PublicKey(xnftAddress);
+  } catch (err) {
+    throw new Error("invalid xnft address");
+  }
+
   const url = `xnft/${xnftAddress}`;
   await ctx.backend.navigationPush(url, TAB_XNFT);
   await openPopupWindow(`popup.html`);
@@ -633,7 +640,7 @@ async function handleEthereumSwitchChain(
   try {
     // Only sign if the user clicked approve.
     if (didApprove) {
-      await ctx.backend.ethereumConnectionUrlUpdate(url);
+      await ctx.backend.connectionUrlUpdate(url, Blockchain.ETHEREUM);
       resp = await ctx.backend.ethereumChainIdUpdate(chainId);
     }
   } catch (err) {

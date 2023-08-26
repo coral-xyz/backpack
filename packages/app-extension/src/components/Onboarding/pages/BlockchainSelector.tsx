@@ -1,14 +1,10 @@
-import { Blockchain } from "@coral-xyz/common";
+import type { Blockchain } from "@coral-xyz/common";
 import { PrimaryButton } from "@coral-xyz/react-common";
-import { Box, Grid, Typography } from "@mui/material";
+import { useFeatureGates } from "@coral-xyz/recoil";
+import { Box, Grid } from "@mui/material";
 
 import { Header, SubtextParagraph } from "../../common";
-import {
-  BscIcon,
-  EthereumIconOnboarding as EthereumIcon,
-  PolygonIcon,
-  SolanaIconOnboarding as SolanaIcon,
-} from "../../common/Icon";
+import { BLOCKCHAIN_COMPONENTS } from "../../common/Blockchains";
 import { ActionCard } from "../../common/Layout/ActionCard";
 
 export const BlockchainSelector = ({
@@ -22,6 +18,7 @@ export const BlockchainSelector = ({
   onNext: () => void;
   isRecovery?: boolean;
 }) => {
+  const gates = useFeatureGates();
   return (
     <Box
       sx={{
@@ -59,34 +56,20 @@ export const BlockchainSelector = ({
         </Box>
         <Box style={{ padding: "0 16px 16px" }}>
           <Grid container spacing={1.5}>
-            <Grid item xs={6}>
-              <ActionCard
-                icon={<EthereumIcon />}
-                text="Ethereum"
-                textAdornment={
-                  selectedBlockchains.includes(Blockchain.ETHEREUM) ? (
-                    <CheckBadge />
-                  ) : (
-                    ""
-                  )
-                }
-                onClick={() => onClick(Blockchain.ETHEREUM)}
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <ActionCard
-                icon={<SolanaIcon />}
-                text="Solana"
-                textAdornment={
-                  selectedBlockchains.includes(Blockchain.SOLANA) ? (
-                    <CheckBadge />
-                  ) : (
-                    ""
-                  )
-                }
-                onClick={() => onClick(Blockchain.SOLANA)}
-              />
-            </Grid>
+            {Object.entries(BLOCKCHAIN_COMPONENTS)
+              .filter(([, Component]) => Component.Enabled)
+              .map(([blockchain, Component]) => (
+                <Grid item xs={6}>
+                  <ActionCard
+                    icon={<Component.Icon />}
+                    checked={selectedBlockchains.includes(
+                      blockchain as Blockchain
+                    )}
+                    text={Component.Name}
+                    onClick={() => onClick(blockchain as Blockchain)}
+                  />
+                </Grid>
+              ))}
           </Grid>
         </Box>
       </Box>
@@ -101,57 +84,31 @@ export const BlockchainSelector = ({
   );
 };
 
-function CheckBadge() {
-  return (
-    <div
-      style={{
-        display: "inline-block",
-        position: "relative",
-        top: "4px",
-        left: "5px",
-      }}
-    >
-      <svg
-        width="18"
-        height="18"
-        viewBox="0 0 18 18"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          d="M9 1.5C4.86 1.5 1.5 4.86 1.5 9C1.5 13.14 4.86 16.5 9 16.5C13.14 16.5 16.5 13.14 16.5 9C16.5 4.86 13.14 1.5 9 1.5ZM6.9675 12.2175L4.275 9.525C3.9825 9.2325 3.9825 8.76 4.275 8.4675C4.5675 8.175 5.04 8.175 5.3325 8.4675L7.5 10.6275L12.66 5.4675C12.9525 5.175 13.425 5.175 13.7175 5.4675C14.01 5.76 14.01 6.2325 13.7175 6.525L8.025 12.2175C7.74 12.51 7.26 12.51 6.9675 12.2175Z"
-          fill="#42C337"
-        />
-      </svg>
-    </div>
-  );
-}
-
-function SoonBadge() {
-  return (
-    <div
-      style={{
-        paddingLeft: "8px",
-        paddingRight: "8px",
-        paddingTop: "2px",
-        paddingBottom: "2px",
-        backgroundColor: "rgb(206, 121, 7, 0.15)",
-        height: "20px",
-        borderRadius: "10px",
-        display: "inline-block",
-        marginLeft: "4px",
-      }}
-    >
-      <Typography
-        style={{
-          color: "#EFA411",
-          fontSize: "12px",
-          lineHeight: "16px",
-          fontWeight: 600,
-        }}
-      >
-        soon
-      </Typography>
-    </div>
-  );
-}
+// function SoonBadge() {
+//   return (
+//     <div
+//       style={{
+//         paddingLeft: "8px",
+//         paddingRight: "8px",
+//         paddingTop: "2px",
+//         paddingBottom: "2px",
+//         backgroundColor: "rgb(206, 121, 7, 0.15)",
+//         height: "20px",
+//         borderRadius: "10px",
+//         display: "inline-block",
+//         marginLeft: "4px",
+//       }}
+//     >
+//       <Typography
+//         style={{
+//           color: "#EFA411",
+//           fontSize: "12px",
+//           lineHeight: "16px",
+//           fontWeight: 600,
+//         }}
+//       >
+//         soon
+//       </Typography>
+//     </div>
+//   );
+// }

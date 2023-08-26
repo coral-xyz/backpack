@@ -1,8 +1,8 @@
+import { BLOCKCHAIN_COMMON } from "@coral-xyz/common";
 import type { Hono } from "hono";
 import stripe from "stripe";
 
 import { createSession, getSession, updateSession } from "./db";
-import { validatePublicKey } from "./validate";
 import type { BlockChain } from "./zodTypes";
 import { CreateSessionRequest } from "./zodTypes";
 
@@ -46,7 +46,7 @@ export const registerOnRampHandlers = (app: Hono) => {
       return c.json({ message: "invalid input" }, 411);
     }
 
-    if (!validatePublicKey(publicKey, chain)) {
+    if (!BLOCKCHAIN_COMMON[chain.toString()].validatePublicKey(publicKey)) {
       return c.json({ message: "invalid public key" }, 411);
     }
     try {

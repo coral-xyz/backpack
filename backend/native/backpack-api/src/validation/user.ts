@@ -1,6 +1,6 @@
-import { PublicKey } from "@solana/web3.js";
-import { ethers } from "ethers";
 import { z } from "zod";
+
+import { BLOCKCHAINS_NATIVE } from "../blockchains";
 
 export const BaseCreateUser = z.object({
   username: z
@@ -21,54 +21,18 @@ export const BaseCreateUser = z.object({
 //
 // Public key / blockchain
 //
-
-export const SolanaPublicKey = z.object({
-  publicKey: z.string().refine((str) => {
-    try {
-      new PublicKey(str);
-      return true;
-    } catch {
-      // Pass
-    }
-    return false;
-  }, "must be a valid Solana public key"),
-  blockchain: z.literal("solana"),
-});
-
-export const EthereumPublicKey = z.object({
-  publicKey: z.string().refine((str) => {
-    try {
-      ethers.utils.getAddress(str);
-      return true;
-    } catch {
-      // Pass
-    }
-    return false;
-  }, "must be a valid Ethereum public key"),
-  blockchain: z.literal("ethereum"),
-});
-
-export const BlockchainPublicKey = z.discriminatedUnion("blockchain", [
-  SolanaPublicKey,
-  EthereumPublicKey,
-]);
+export const BlockchainPublicKey = z.discriminatedUnion(
+  "blockchain",
+  Object.values(BLOCKCHAINS_NATIVE).map((native) => native.ZodPublicKey())
+);
 
 //
 // User creation
 //
-
-export const CreateEthereumPublicKey = EthereumPublicKey.extend({
-  signature: z.string(),
-});
-
-export const CreateSolanaPublicKey = SolanaPublicKey.extend({
-  signature: z.string(),
-});
-
-export const CreatePublicKeys = z.discriminatedUnion("blockchain", [
-  CreateEthereumPublicKey,
-  CreateSolanaPublicKey,
-]);
+export const CreatePublicKeys = z.discriminatedUnion(
+  "blockchain",
+  Object.values(BLOCKCHAINS_NATIVE).map((native) => native.ZodCreatePublicKey())
+);
 
 export const CreateUserWithPublicKeys = BaseCreateUser.extend({
   blockchainPublicKeys: CreatePublicKeys.array(),

@@ -144,7 +144,7 @@ export function TokenTables({
   );
 }
 
-export function WalletTokenTable({
+function WalletTokenTable({
   onClickRow,
   tokenAccounts,
   wallet,
@@ -204,7 +204,6 @@ export function WalletTokenTable({
 
   return (
     <BalancesTable style={tableStyle}>
-      <BalancesTableHead wallet={wallet} />
       <BalancesTableContent
         style={
           useVirtualization ? { height: `calc(100% - ${headerHeight}px)` } : {}
@@ -256,7 +255,7 @@ export function WalletTokenTable({
   );
 }
 
-const SkeletonRows = () => {
+export const SkeletonRows = () => {
   const classes = useStyles();
   return (
     <BalancesTableRow>
@@ -270,8 +269,8 @@ const SkeletonRows = () => {
       >
         <Skeleton
           variant="circular"
-          width={40}
-          height={40}
+          width={44}
+          height={44}
           className={classes.skeleton}
         />
         <div style={{ marginLeft: "5px", width: "50%" }}>
@@ -320,7 +319,7 @@ const WindowedTokenRowRenderer = ({
 //
 // Displays an individual token row in the table
 //
-export function TokenRow({
+function TokenRow({
   onClick,
   token,
   style,

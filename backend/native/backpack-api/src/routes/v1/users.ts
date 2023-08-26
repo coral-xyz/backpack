@@ -1,7 +1,7 @@
-import type { RemoteUserData } from "@coral-xyz/common";
+import type { Blockchain, RemoteUserData } from "@coral-xyz/common";
 import {
   AVATAR_BASE_URL,
-  Blockchain,
+  BLOCKCHAIN_COMMON,
   getAddMessage,
   getCreateMessage,
 } from "@coral-xyz/common";
@@ -14,6 +14,7 @@ import {
   extractUserId,
 } from "../../auth/middleware";
 import { clearCookie, setJWTCookie, validateJwt } from "../../auth/util";
+import { BLOCKCHAINS_NATIVE } from "../../blockchains";
 import { REFERRER_COOKIE_NAME } from "../../config";
 import { getFriendshipStatus } from "../../db/friendships";
 import { getPublicKeyDetails, updatePublicKey } from "../../db/publicKey";
@@ -32,8 +33,6 @@ import {
 } from "../../db/users";
 import { getOrcreateXnftSecret } from "../../db/xnftSecrets";
 import { logger } from "../../logger";
-import { validatePublicKey } from "../../validation/publicKey";
-import { validateSignature } from "../../validation/signature";
 import {
   BlockchainPublicKey,
   CreatePublicKeys,
@@ -50,18 +49,36 @@ router.get("/", extractUserId, async (req, res) => {
   // @ts-ignore
   const limit: number = req.query.limit ? parseInt(req.query.limit) : 20;
 
-  const isSolPublicKey = validatePublicKey(usernamePrefix, "solana");
-  const isEthPublicKey = validatePublicKey(usernamePrefix, "ethereum");
-
-  let users;
-  if (isSolPublicKey) {
-    users = await getUserByPublicKeyAndChain(usernamePrefix, Blockchain.SOLANA);
-  } else if (isEthPublicKey) {
-    users = await getUserByPublicKeyAndChain(
-      usernamePrefix,
-      Blockchain.ETHEREUM
+  //
+  // Maps blockchain -> boolean, where true if the usernamePrefix is a valid
+  // pubkey for that chian.
+  //
+  const blockchainsToSearch: { [blockchain: string]: boolean } =
+    Object.fromEntries(
+      new Map(
+        Object.entries(BLOCKCHAIN_COMMON).map(([blockchain, native]) => {
+          return [blockchain, native.validatePublicKey(usernamePrefix)];
+        })
+      )
     );
-  } else {
+
+  //
+  // The users found for that key (should only be one).
+  //
+  let users = (
+    await Promise.all(
+      Object.entries(blockchainsToSearch)
+        .filter(([, isValid]) => isValid)
+        .map(([blockchain]) =>
+          getUserByPublicKeyAndChain(usernamePrefix, blockchain as Blockchain)
+        )
+    )
+  ).reduce((accumulator, users) => accumulator.concat(users), []);
+
+  //
+  // Not a pubkey so assume it's a username.
+  //
+  if (users.length === 0) {
     users = await getUsersByPrefix({ usernamePrefix, uuid, limit });
   }
 
@@ -87,8 +104,12 @@ router.get("/", extractUserId, async (req, res) => {
         requested: friendship?.requested || false,
         remoteRequested: friendship?.remoteRequested || false,
         areFriends: friendship?.areFriends || false,
-        searchedSolPubKey: isSolPublicKey ? usernamePrefix : undefined,
-        searchedEthPubKey: isEthPublicKey ? usernamePrefix : undefined,
+        searched: {
+          usernamePrefix,
+          blockchains: {
+            ...blockchainsToSearch,
+          },
+        },
         // TODO: fix the disambiguation with snake_case and camelCase in API responses
         public_keys: public_keys.map((pk) => ({
           ...pk,
@@ -116,42 +137,43 @@ router.get("/jwt/xnft", extractUserId, async (req, res) => {
  * Create a new user.
  */
 router.post("/", async (req, res) => {
-  const { username, waitlistId, blockchainPublicKeys } =
-    CreateUserWithPublicKeys.parse(req.body);
+  try {
+    const { username, waitlistId, blockchainPublicKeys } =
+      CreateUserWithPublicKeys.parse(req.body);
 
-  // Validate all the signatures
-  for (const blockchainPublicKey of blockchainPublicKeys) {
-    const signedMessage = getCreateMessage(blockchainPublicKey.publicKey);
-    if (
-      !validateSignature(
-        Buffer.from(signedMessage, "utf-8"),
-        blockchainPublicKey.blockchain as Blockchain,
-        blockchainPublicKey.signature,
-        blockchainPublicKey.publicKey
-      )
-    ) {
-      return res
-        .status(400)
-        .json({ msg: `Invalid ${blockchainPublicKey.blockchain} signature` });
+    // Validate all the signatures
+    for (const blockchainPublicKey of blockchainPublicKeys) {
+      const signedMessage = getCreateMessage(blockchainPublicKey.publicKey);
+      if (
+        !BLOCKCHAINS_NATIVE[
+          blockchainPublicKey.blockchain as Blockchain
+        ].validateSignature(
+          Buffer.from(signedMessage, "utf-8"),
+          blockchainPublicKey.signature,
+          blockchainPublicKey.publicKey
+        )
+      ) {
+        return res
+          .status(400)
+          .json({ msg: `Invalid ${blockchainPublicKey.blockchain} signature` });
+      }
     }
-  }
 
-  // Check for conflicts
-  const conflictingUsers = await getUsersByPublicKeys(
-    blockchainPublicKeys.map((b) => ({
-      blockchain: b.blockchain as Blockchain,
-      publicKey: b.publicKey,
-    }))
-  );
-  if (conflictingUsers.length > 0) {
-    // Another user already uses this public key
-    return res.status(409).json({
-      msg: "Wallet address is used by another Backpack account",
-    });
-  }
+    // Check for conflicts
+    const conflictingUsers = await getUsersByPublicKeys(
+      blockchainPublicKeys.map((b) => ({
+        blockchain: b.blockchain as Blockchain,
+        publicKey: b.publicKey,
+      }))
+    );
+    if (conflictingUsers.length > 0) {
+      // Another user already uses this public key
+      return res.status(409).json({
+        msg: "Wallet address is used by another Backpack account",
+      });
+    }
 
-  const referrerId = await (async () => {
-    try {
+    const referrerId = await (async () => {
       if (req.cookies[REFERRER_COOKIE_NAME]) {
         // Store the referrer if the cookie is valid
         return (await getUser(req.cookies[REFERRER_COOKIE_NAME]))?.id as string;
@@ -166,61 +188,64 @@ router.post("/", async (req, res) => {
           }
         }
       }
-    } catch (err) {
-      // TODO: log this failed referral
-    }
-    return undefined;
-  })();
+      return undefined;
+    })();
 
-  const user = await createUser(
-    username,
-    blockchainPublicKeys.map((b) => ({
-      ...b,
-      // Cast blockchain to correct type
-      blockchain: b.blockchain as Blockchain,
-    })),
-    waitlistId,
-    referrerId
-  );
+    const user = await createUser(
+      username,
+      blockchainPublicKeys.map((b) => ({
+        ...b,
+        // Cast blockchain to correct type
+        blockchain: b.blockchain as Blockchain,
+      })),
+      waitlistId,
+      referrerId
+    );
 
-  user?.public_keys.map(async ({ blockchain, id }) => {
-    //TODO: make a bulk, single call here
-    await updatePublicKey({
-      userId: user.id,
-      blockchain,
-      publicKeyId: id,
-    });
-  });
-  let jwt: string;
-  if (user) {
-    jwt = await setJWTCookie(req, res, user.id as string);
-  } else {
-    return res.status(500).json({ msg: "Error creating user account" });
-  }
-
-  if (process.env.SLACK_WEBHOOK_URL) {
-    try {
-      const publicKeyStr = blockchainPublicKeys
-        .map((b) => `${b.blockchain.substring(0, 3)}: ${b.publicKey}`)
-        .join(", ");
-      await fetch(process.env.SLACK_WEBHOOK_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          text: [username, publicKeyStr].join("\n"),
-          icon_url: `${AVATAR_BASE_URL}/${username}`,
-        }),
+    user?.public_keys.map(async ({ blockchain, id }) => {
+      //TODO: make a bulk, single call here
+      await updatePublicKey({
+        userId: user.id,
+        blockchain,
+        publicKeyId: id,
       });
-    } catch (err) {
-      console.error({ slackWebhook: err });
+    });
+    let jwt: string;
+    if (user) {
+      jwt = await setJWTCookie(req, res, user.id as string);
+    } else {
+      return res.status(500).json({ msg: "Error creating user account" });
     }
+
+    if (process.env.SLACK_WEBHOOK_URL) {
+      try {
+        const publicKeyStr = blockchainPublicKeys
+          .map((b) => `${b.blockchain.substring(0, 3)}: ${b.publicKey}`)
+          .join(", ");
+        await fetch(process.env.SLACK_WEBHOOK_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            text: [username, publicKeyStr].join("\n"),
+            icon_url: `${AVATAR_BASE_URL}/${username}`,
+          }),
+        });
+      } catch (err) {
+        console.error({ slackWebhook: err });
+      }
+    }
+
+    clearCookie(res, REFERRER_COOKIE_NAME);
+
+    return res.json({ id: user.id, msg: "ok", jwt });
+  } catch (err) {
+    console.error("ERROR", err);
+    return res
+      .status(500)
+      .json({ status: "error", msg: (err as Error).message });
   }
-
-  clearCookie(res, REFERRER_COOKIE_NAME);
-
-  return res.json({ id: user.id, msg: "ok", jwt });
 });
 
 /**
@@ -245,29 +270,6 @@ router.get("/me", extractUserId, async (req: Request, res: Response) => {
     }
   }
   return res.status(404).json({ msg: "User not found" });
-});
-
-router.get("/primarySolPubkey/:username", async (req, res) => {
-  const username = req.params.username;
-  try {
-    const user = await getUserByUsername(username);
-    if (!user) {
-      return res.status(411).json({ msg: "User not found" });
-    }
-    const pubKey = user.publicKeys.find(
-      (x) => x.blockchain === Blockchain.SOLANA && x.primary
-    );
-    if (!pubKey)
-      return res
-        .status(411)
-        .json({ msg: "No active pubkey on SOL for this user" });
-
-    return res.json({
-      publicKey: pubKey.publicKey,
-    });
-  } catch (e) {
-    return res.status(411).json({ msg: "User not found" });
-  }
 });
 
 /**
@@ -318,9 +320,8 @@ router.post(
     const signedMessage = getAddMessage(publicKey);
 
     if (
-      !validateSignature(
+      !BLOCKCHAINS_NATIVE[blockchain as Blockchain].validateSignature(
         Buffer.from(signedMessage, "utf-8"),
-        blockchain as Blockchain,
         signature,
         publicKey
       )

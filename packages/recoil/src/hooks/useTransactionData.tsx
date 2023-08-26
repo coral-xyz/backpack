@@ -58,28 +58,23 @@ type TransactionOverrides = {
   maxPriorityFeePerGas: BigNumber | undefined;
 };
 
+const blockchainTxDataHooks = {
+  [Blockchain.ETHEREUM]: useEthereumTxData,
+  [Blockchain.SOLANA]: useSolanaTxData,
+} as const;
+
 export function useTransactionData(
   blockchain: Blockchain,
   transaction: any
 ): TransactionData {
-  // FIXME: remove lint blocker
-  return blockchain === Blockchain.ETHEREUM
-    ? // eslint-disable-next-line react-hooks/rules-of-hooks
-      useEthereumTxData(transaction)
-    : // eslint-disable-next-line react-hooks/rules-of-hooks
-      useSolanaTxData(transaction);
+  return blockchainTxDataHooks[blockchain](transaction);
 }
 
 export function useMultipleTransactionsData(
   blockchain: Blockchain,
   transactions: string[]
 ): TransactionData[] {
-  // FIXME: remove lint blocker
-  return blockchain === Blockchain.ETHEREUM
-    ? // eslint-disable-next-line react-hooks/rules-of-hooks
-      transactions.map((tx) => useEthereumTxData(tx))
-    : // eslint-disable-next-line react-hooks/rules-of-hooks
-      transactions.map((tx) => useSolanaTxData(tx));
+  return transactions.map((tx) => blockchainTxDataHooks[blockchain](tx));
 }
 
 //

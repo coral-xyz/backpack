@@ -16,8 +16,6 @@ import { Fade } from "@mui/material";
 
 import PopoverMenu from "../../common/PopoverMenu";
 
-import { useStyles } from "./styles";
-
 export const MessageOptions = () => {
   const { props }: any = useDecodedSearchParams();
   const userId = props.userId;
@@ -28,7 +26,6 @@ export const MessageOptions = () => {
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
-  const classes = useStyles();
   const handleClick = (event: any) => {
     setAnchorEl(event.currentTarget);
   };

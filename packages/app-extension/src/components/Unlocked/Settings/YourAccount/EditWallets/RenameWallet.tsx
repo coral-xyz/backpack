@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import type { Blockchain } from "@coral-xyz/common";
 import { UI_RPC_METHOD_KEYNAME_UPDATE } from "@coral-xyz/common";
 import {
   PrimaryButton,
@@ -11,10 +12,11 @@ import { Typography } from "@mui/material";
 
 import { useNavigation } from "../../../../common/Layout/NavStack";
 
-export const RenameWallet: React.FC<{ publicKey: string; name: string }> = ({
-  publicKey,
-  name,
-}) => {
+export const RenameWallet: React.FC<{
+  publicKey: string;
+  name: string;
+  blockchain: Blockchain;
+}> = ({ publicKey, name, blockchain }) => {
   const [walletName, setWalletName] = useState(name);
   const nav = useNavigation();
   const theme = useCustomTheme();
@@ -32,7 +34,7 @@ export const RenameWallet: React.FC<{ publicKey: string; name: string }> = ({
     e.preventDefault();
     await background.request({
       method: UI_RPC_METHOD_KEYNAME_UPDATE,
-      params: [publicKey, walletName],
+      params: [publicKey, walletName, blockchain],
     });
     nav.pop();
   };

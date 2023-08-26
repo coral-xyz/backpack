@@ -1,0 +1,34 @@
+{
+  "name": "@coral-xyz/secure-client",
+  "version": "0.1.0",
+  "description": "",
+  "license": "ISC",
+  "module": "dist/esm/index.js",
+  "source": "index.ts",
+  "react-native": "dist/esm/index.js",
+  "types": "index.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -b",
+    "dev": "tsc --watch",
+    "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx --cache",
+    "lint:fix": "yarn run lint --fix",
+    "build:publish": "cd ../common; yarn build; cd ../secure-background; yarn build; cd ../secure-client; yarn build; cd ../background; yarn build; cd ../app-extension; yarn build;"
+  },
+  "dependencies": {
+    "@coral-xyz/common": "*",
+    "@coral-xyz/secure-background": "*",
+    "@coral-xyz/tamagui": "*",
+    "@ledgerhq/hw-app-eth": "^6.33.6",
+    "@ledgerhq/hw-app-solana": "^7.0.10",
+    "@ledgerhq/hw-transport-webhid": "^6.27.16",
+    "recoil": "^0.7.7",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "eslint-config-custom": "*",
+    "typescript": "~4.9.3"
+  }
+}

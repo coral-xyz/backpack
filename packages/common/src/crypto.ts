@@ -1,18 +1,13 @@
 import BIPPath from "bip32-path";
 
+import { BLOCKCHAIN_COMMON } from "./blockchains";
 import { LOAD_PUBLIC_KEY_AMOUNT } from "./constants";
 import { Blockchain } from "./types";
 
 export const HARDENING = 0x80000000;
 
-// TODO could use SLIP44
-export const blockchainCoinType = {
-  [Blockchain.ETHEREUM]: 60,
-  [Blockchain.SOLANA]: 501,
-};
-
 export const getCoinType = (blockchain: Blockchain) => {
-  const coinType = blockchainCoinType[blockchain];
+  const coinType = BLOCKCHAIN_COMMON[blockchain].bip44CoinType;
   if (!coinType) {
     throw new Error("Invalid blockchain");
   }

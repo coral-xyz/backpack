@@ -1,39 +1,45 @@
 import { Suspense, useCallback, useRef } from "react";
-import { StyleSheet, Text, View, Platform } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
 import Constants from "expo-constants";
-import * as Device from "expo-device";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
+import * as Updates from "expo-updates";
 
 import {
   BACKGROUND_SERVICE_WORKER_READY,
   useStore,
   WEB_VIEW_EVENTS,
 } from "@coral-xyz/common";
-import { NotificationsProvider } from "@coral-xyz/recoil";
-import { TamaguiProvider, config } from "@coral-xyz/tamagui";
-import { ActionSheetProvider } from "@expo/react-native-action-sheet";
-import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import { ErrorBoundary } from "react-error-boundary";
 import { WebView } from "react-native-webview";
 import { RecoilRoot } from "recoil";
 
-import { ErrorBoundary } from "~components/ErrorBoundary";
 import { useTheme } from "~hooks/useTheme";
 import { maybeParseLog } from "~lib/helpers";
 
+import { Providers } from "./Providers";
+import { FullScreenLoading } from "./components";
 import { useLoadedAssets } from "./hooks/useLoadedAssets";
 import { RootNavigation } from "./navigation/RootNavigator";
 
 SplashScreen.preventAutoHideAsync();
 
 export function App(): JSX.Element {
+  const renderError = useCallback(
+    ({ error }: { error: { message: string } }) => (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <Text>{error.message}</Text>
+      </View>
+    ),
+    []
+  );
+
   return (
-    <ErrorBoundary>
-      <Suspense fallback={null}>
+    <ErrorBoundary fallbackRender={renderError}>
+      <BackgroundHiddenWebView />
+      <Suspense fallback={<FullScreenLoading />}>
         <RecoilRoot>
-          <BackgroundHiddenWebView />
           <Main />
         </RecoilRoot>
       </Suspense>
@@ -41,118 +47,73 @@ export function App(): JSX.Element {
   );
 }
 
-function Providers({ children }: { children: JSX.Element }): JSX.Element {
-  const theme = useTheme();
-  return (
-    <TamaguiProvider config={config} defaultTheme={theme.colorScheme}>
-      <SafeAreaProvider>
-        <NotificationsProvider>
-          <ActionSheetProvider>
-            <BottomSheetModalProvider>{children}</BottomSheetModalProvider>
-          </ActionSheetProvider>
-        </NotificationsProvider>
-      </SafeAreaProvider>
-    </TamaguiProvider>
-  );
-}
-
-function ServiceWorkerErrorScreen({ onLayoutRootView }: any): JSX.Element {
-  return (
-    <View
-      onLayout={onLayoutRootView}
-      style={{
-        backgroundColor: "#8b0000",
-        flex: 1,
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
-      <Text>The service worker failed to load.</Text>
-      <Text>
-        {JSON.stringify(
-          { uri: Constants?.expoConfig?.extra?.webviewUrl },
-          null,
-          2
-        )}
-      </Text>
-    </View>
-  );
-}
-
 function Main(): JSX.Element | null {
   const theme = useTheme();
   const appLoadingStatus = useLoadedAssets();
+  const webviewLoaded = useStore((state) => state.injectJavaScript);
 
   const onLayoutRootView = useCallback(async () => {
-    // If the service worker isn't running, show an error screen.
-    if (appLoadingStatus === "error" || appLoadingStatus === "ready") {
-      // This tells the splash screen to hide immediately! If we call this after
-      // `setAppIsReady`, then we may see a blank screen while the app is
-      // loading its initial state and rendering its first pixels. So instead,
-      // we hide the splash screen once we know the root view has already
-      // performed layout!
+    if (appLoadingStatus === "ready") {
       await SplashScreen.hideAsync();
     }
   }, [appLoadingStatus]);
-
-  if (appLoadingStatus === "error") {
-    return <ServiceWorkerErrorScreen onLayoutRootView={onLayoutRootView} />;
-  }
 
   if (appLoadingStatus === "loading") {
     return null;
   }
 
+  const serviceWorkerUrl = Constants.expoConfig?.extra?.serviceWorkerUrl;
+  const loadingLabel = `${Updates.channel} ${serviceWorkerUrl}`;
+
   return (
-    <Providers>
-      <View
-        onLayout={onLayoutRootView}
-        style={[
-          styles.container,
-          {
-            backgroundColor: theme.custom.colors.background,
-          },
-        ]}
-      >
-        <StatusBar />
-        <RootNavigation colorScheme={theme.colorScheme as "dark" | "light"} />
-      </View>
-    </Providers>
+    <View
+      onLayout={onLayoutRootView}
+      style={[
+        styles.container,
+        {
+          backgroundColor: theme.custom.colors.background,
+        },
+      ]}
+    >
+      {webviewLoaded ? (
+        <Providers>
+          <StatusBar style="dark" />
+          <RootNavigation colorScheme={theme.colorScheme as "dark" | "light"} />
+        </Providers>
+      ) : (
+        <FullScreenLoading label={loadingLabel} />
+      )}
+    </View>
   );
 }
-
-const getWebviewUrl = () => {
-  const { localWebViewUrl, remoteWebViewUrl } =
-    Constants?.expoConfig?.extra || {};
-
-  if (process.env.NODE_ENV === "development" && Platform.OS === "android") {
-    return remoteWebViewUrl;
-  }
-
-  return Device.isDevice ? remoteWebViewUrl : localWebViewUrl;
-};
 
 function BackgroundHiddenWebView(): JSX.Element {
   const setInjectJavaScript = useStore(
     (state: any) => state.setInjectJavaScript
   );
   const ref = useRef(null);
-  const webviewUrl = getWebviewUrl();
+  const serviceWorkerUrl = Constants.expoConfig?.extra?.serviceWorkerUrl;
 
   return (
     <View style={styles.webview}>
       <WebView
         ref={ref}
-        // useWebView2
-        // originWhitelist={["*", "https://*", "https://backpack-api.xnfts.dev/*"]}
+        source={{ uri: serviceWorkerUrl }}
         cacheMode="LOAD_CACHE_ELSE_NETWORK"
         cacheEnabled
+        // NOTE: this MUST be true. Otherwise onMessage will not fire.
+        // https://github.com/react-native-webview/react-native-webview/issues/1956
         limitsNavigationsToAppBoundDomains
-        source={{
-          uri: webviewUrl,
-        }}
-        onError={(error) => console.log("WebView error:", error)}
-        onHttpError={(error) => console.log("WebView HTTP error:", error)}
+        // onError={(error) => console.log("WebView error:", error)}
+        // onHttpError={(error) => console.log("WebView HTTP error:", error)}
+        // onLoad={(event) => {
+        //   console.log("onLoad");
+        // }}
+        // onLoadEnd={(syntheticEvent) => {
+        //   // update component to be aware of loading status
+        //   // const { nativeEvent } = syntheticEvent;
+        //   console.log("onLoadEnd");
+        // }}
         onMessage={(event) => {
           const msg = JSON.parse(event.nativeEvent.data);
           maybeParseLog(msg);

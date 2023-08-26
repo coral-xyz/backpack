@@ -16,6 +16,7 @@ import {
 } from "@coral-xyz/common";
 import type { SubscriptionType } from "@coral-xyz/common/dist/esm/messages/toServer";
 import type WebSocket from "ws";
+const NSFW_VALIDATION_SERVER = "https://nsfw-check.xnfts.dev";
 
 import {
   getNftCollections,
@@ -23,6 +24,19 @@ import {
   validateCollectionOwnership,
 } from "../db/nfts";
 import { RedisSubscriptionManager } from "../subscriptions/RedisSubscriptionManager";
+
+function isValidURL(str: string): boolean {
+  const pattern = new RegExp(
+    "^(https?:\\/\\/)?" +
+      "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|" +
+      "((\\d{1,3}\\.){3}\\d{1,3}))" +
+      "(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*" +
+      "(\\?[;&a-z\\d%_.~+=-]*)?" +
+      "(\\#[-a-z\\d_]*)?$",
+    "i"
+  );
+  return !!pattern.test(str);
+}
 
 export class User {
   id: string;
@@ -72,6 +86,57 @@ export class User {
   private async handleMessage(message: ToServer) {
     switch (message.type) {
       case CHAT_MESSAGES:
+        let nsfwImage = false;
+        await Promise.all(
+          message.payload.messages.map(async (x) => {
+            // @ts-ignore
+            if (
+              x.message_kind === "media" &&
+              x.message_metadata?.media_kind === "image"
+            ) {
+              try {
+                if (
+                  !isValidURL(x.message_metadata?.media_link) ||
+                  !x.message_metadata?.media_link
+                    .lower()
+                    .endswith(
+                      (".jpg",
+                      ".jpeg",
+                      ".png",
+                      ".gif",
+                      ".bmp",
+                      ".tif",
+                      ".tiff",
+                      ".webp")
+                    )
+                ) {
+                  nsfwImage = true;
+                }
+                const res = await fetch(`${NSFW_VALIDATION_SERVER}/validate`, {
+                  method: "post",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({
+                    // @ts-ignore
+                    url: x.message_metadata?.media_link,
+                  }),
+                });
+                const json = await res.json();
+                if (json.success === false) {
+                  nsfwImage = true;
+                }
+              } catch (e) {
+                console.error("nsfw server down?");
+              }
+            }
+          })
+        );
+
+        if (nsfwImage) {
+          return;
+        }
+
         const subscription = this.subscriptions.find(
           (x) =>
             x.room === message.payload.room && x.type === message.payload.type

@@ -1,3 +1,18 @@
+import { IS_MOBILE } from "@coral-xyz/common";
+import {
+  extensionDB,
+  KeyringStore,
+  secureStore,
+} from "@coral-xyz/secure-background/legacyExport";
+import {
+  BackendNotificationBroadcaster,
+  combineTransportReceivers,
+  FromContentScriptTransportReceiver,
+  FromExtensionTransportReceiver,
+  ToSecureUITransportSender,
+} from "@coral-xyz/secure-client";
+import { startSecureService } from "@coral-xyz/secure-client/service";
+import type { SECURE_EVENTS } from "@coral-xyz/secure-client/types";
 import { EventEmitter } from "eventemitter3";
 
 import * as coreBackend from "./backend/core";
@@ -10,8 +25,6 @@ import * as serverUi from "./frontend/server-ui";
 import * as solanaConnection from "./frontend/solana-connection";
 import type { Background, Config } from "./types";
 
-export * from "./backend/keyring";
-
 //
 // Entry: Starts the background service.
 //
@@ -22,7 +35,8 @@ export function start(cfg: Config): Background {
   // Backends.
   const solanaB = solanaConnectionBackend.start(events);
   const ethereumB = ethereumConnectionBackend.start(events);
-  const coreB = coreBackend.start(events, solanaB, ethereumB);
+  const keyringStore = new KeyringStore(events, secureStore);
+  const coreB = coreBackend.start(events, keyringStore, solanaB, ethereumB);
 
   // Frontend.
   const _serverInjected = serverInjected.start(cfg, events, coreB);
@@ -30,7 +44,54 @@ export function start(cfg: Config): Background {
   const _solanaConnection = solanaConnection.start(cfg, events, solanaB);
   const _ethereumConnection = ethereumConnection.start(cfg, events, ethereumB);
 
+  if (!cfg.isMobile) {
+    const notificationBroadcaster = new BackendNotificationBroadcaster(events);
+    const contentScriptReceiver = new FromContentScriptTransportReceiver();
+    const extensionReceiver = new FromExtensionTransportReceiver();
+    const secureUISender = new ToSecureUITransportSender<
+      SECURE_EVENTS,
+      "uiResponse"
+    >({
+      address: "secure-background",
+      name: "Backpack",
+      context: "background",
+    });
+
+    // New secure service
+    startSecureService(
+      {
+        notificationBroadcaster,
+        secureUIClient: secureUISender,
+        secureServer: combineTransportReceivers(
+          contentScriptReceiver,
+          extensionReceiver
+        ),
+        secureDB: extensionDB,
+      },
+      keyringStore
+    );
+  }
   initPushNotificationHandlers();
+
+  if (!IS_MOBILE) {
+    if (chrome && chrome?.runtime?.id) {
+      // Keep alive for Manifest V3 service worker
+      chrome.runtime.onInstalled.addListener(() => {
+        chrome.alarms.get("keep-alive", (a) => {
+          if (!a) {
+            chrome.alarms.create("keep-alive", { periodInMinutes: 0.1 });
+          }
+        });
+      });
+    }
+
+    // Add a noop listener to the alarm. Without this, the service worker seems
+    // to be deemed as idle by Chrome and will be killed after 30s.
+    chrome.alarms.onAlarm.addListener(() => {
+      // Noop
+      Function.prototype();
+    });
+  }
 
   return {
     _serverUi,

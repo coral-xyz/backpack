@@ -26,5 +26,5 @@
     "192": "anchor.png",
     "512": "anchor.png"
   },
-  "permissions": ["storage"]
+  "permissions": ["alarms", "storage", "background"]
 }

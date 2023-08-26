@@ -10,8 +10,6 @@
       - database_url:
           from_env: READONLY_DATABASE_URL
         isolation_level: read-committed
-        pool_settings:
-          connection_lifetime: 600
         use_prepared_statements: false
   customization:
     naming_convention: hasura-default

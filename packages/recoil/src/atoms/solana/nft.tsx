@@ -1,7 +1,7 @@
 import type {
   Nft,
   NftCollection,
-  SolanaTokenAccountWithKeyString,
+  SolanaTokenAccountWithKeyAndProgramIdString,
   TokenMetadataString,
 } from "@coral-xyz/common";
 import {
@@ -16,6 +16,7 @@ import { PublicKey } from "@solana/web3.js";
 import { selectorFamily } from "recoil";
 
 import { equalSelectorFamily } from "../../equals";
+import { isPromise } from "../../utils";
 
 import { customSplTokenAccounts } from "./token";
 import { anchorContext } from "./wallet";
@@ -86,8 +87,13 @@ const solanaMetadataMap = selectorFamily<
           publicKey,
           metadata: nftMap,
         };
-      } catch (e) {
-        console.error(e);
+      } catch (errorOrPromise) {
+        if (isPromise(errorOrPromise)) {
+          const promise = errorOrPromise;
+          throw promise;
+        }
+        const error = errorOrPromise;
+        console.error(error);
         return null;
       }
     },
@@ -260,7 +266,7 @@ type MetadataMap = {
   metadata: {
     [metadataPublicKey: string]: {
       metadataPublicKey: string;
-      nftToken: SolanaTokenAccountWithKeyString;
+      nftToken: SolanaTokenAccountWithKeyAndProgramIdString;
       nftTokenMetadata: TokenMetadataString | null;
     };
   };

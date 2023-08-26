@@ -46,8 +46,11 @@ config.cacheStores = [
 // If your monorepo tooling can give you the list of monorepo workspaces linked
 // in your app workspace, you can automate this list instead of hardcoding them.
 const monorepoPackages = {
+  "@coral-xyz/chat-xplat": path.resolve(workspaceRoot, "packages/chat-xplat"),
   "@coral-xyz/common": path.resolve(workspaceRoot, "packages/common"),
   "@coral-xyz/recoil": path.resolve(workspaceRoot, "packages/recoil"),
+  "@coral-xyz/tamagui": path.resolve(workspaceRoot, "packages/tamagui-core"),
+  "@coral-xyz/themes": path.resolve(workspaceRoot, "packages/themes"),
 };
 
 // Add the monorepo workspaces as `extraNodeModules` to Metro.

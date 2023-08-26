@@ -1,0 +1,1001 @@
+schema {
+  mutation: Mutation
+  query: Query
+}
+
+"""
+Custom scalar to handle the parsing of arbitrary JSON object data.
+"""
+scalar JSONObject
+
+"""
+Definition of cache control directive for Apollo to leverage with the plugin.
+"""
+directive @cacheControl(
+  maxAge: Int
+  scope: CacheControlScope
+  inheritMaxAge: Boolean
+) on FIELD_DEFINITION | OBJECT | INTERFACE | UNION
+
+"""
+Root level mutation type.
+"""
+type Mutation {
+  """
+  Authenticate a user and set the JWT in their cookies.
+  """
+  authenticate(
+    providerId: ProviderID!
+    message: String!
+    publicKey: String!
+    signature: String!
+  ): String!
+
+  """
+  Deauthenticate the current user and clear their JWT cookie.
+  """
+  deauthenticate: String!
+
+  """
+  Attempt to add a new wallet public key to the user account.
+  """
+  importPublicKey(
+    providerId: ProviderID!
+    address: String!
+    signature: String!
+  ): Boolean
+
+  """
+  Set the `viewed` status of the argued notification IDs are `true`.
+  """
+  markNotificationsAsRead(ids: [Int!]!): Int!
+
+  """
+  Deletes a public key registered to the active user account.
+  """
+  removePublicKey(providerId: ProviderID!, address: String!): Boolean!
+
+  """
+  Allows users to send friend requests to another remote user.
+  """
+  sendFriendRequest(otherUserId: String!, accept: Boolean!): Boolean
+
+  """
+  Set a user's avatar to a new image.
+  """
+  setAvatar(providerId: ProviderID!, nft: String!): Boolean!
+}
+
+"""
+Root level query type.
+"""
+type Query {
+  """
+  Get the entire or a specific entry of a token list.
+  """
+  tokenList(
+    providerId: ProviderID!
+    filters: TokenListEntryFiltersInput
+  ): [TokenListEntry]! @cacheControl(maxAge: 600)
+
+  """
+  Fetch a user by their Backpack account username. The username is inferred by the
+  presence of a valid and verified JWT.
+  """
+  user: User @cacheControl(maxAge: 60, scope: PRIVATE)
+
+  """
+  Fetching a wallet and it's assets by the public key address and associated `ProviderID`.
+  """
+  wallet(providerId: ProviderID!, address: String!): Wallet
+    @deprecated(
+      reason: "Should use the user entrypoint for authentication identities."
+    )
+    @cacheControl(maxAge: 60)
+}
+
+"""
+Scope enum for cache control.
+"""
+enum CacheControlScope {
+  PUBLIC
+  PRIVATE
+}
+
+"""
+Provider ID enum variants for the supported blockchains or wallet types in the API.
+"""
+enum ProviderID {
+  BITCOIN
+  ECLIPSE
+  ETHEREUM
+  POLYGON
+  SOLANA
+}
+
+"""
+Enum for associating a friend request with the direction of how it was sent.
+"""
+enum FriendRequestType {
+  RECEIVED
+  SENT
+}
+
+"""
+Enum for specifying the direction of sorting a list of items.
+"""
+enum SortDirection {
+  ASC
+  DESC
+}
+
+"""
+Input filter type for fetching wallet balances.
+"""
+input BalanceFiltersInput {
+  """
+  If requested, only provide balances for non-native tokens that are listed on CoinGecko.
+  """
+  marketListedTokensOnly: Boolean
+}
+
+"""
+Input filter type for fetching user wallet NFTs.
+"""
+input NftFiltersInput {
+  """
+  A list of mint or contract addresses to filter the response.
+  """
+  addresses: [String!]
+}
+
+"""
+Input filter type for fetching user notifications.
+"""
+input NotificationFiltersInput {
+  """
+  The limit for number of items desired in the response.
+  """
+  limit: Int
+
+  """
+  The direction to sort the timestamps by.
+  """
+  sortDirection: SortDirection
+
+  """
+  Flag to filter for only unread notifications of the user.
+  """
+  unreadOnly: Boolean
+}
+
+"""
+Input filter type for fetching a specific entry from a token list.
+"""
+input TokenListEntryFiltersInput {
+  """
+  The mint or contract address of the token.
+  """
+  addresses: [String!]
+
+  """
+  The market listing name of the token.
+  """
+  name: String
+
+  """
+  The market listing symbol of the token.
+  """
+  symbols: [String!]
+}
+
+"""
+Input filter type for fetching transaction history.
+"""
+input TransactionFiltersInput {
+  """
+  Block hash or signature to search after.
+  """
+  after: String
+
+  """
+  Block hash or signature to search before.
+  """
+  before: String
+
+  """
+  Used for transaction pagination for a Bitcoin provider wallet.
+  """
+  offset: Int
+
+  """
+  A token mint or contract address to filter for.
+  """
+  token: String
+}
+
+"""
+Input filter type for fetching user wallets and their data.
+"""
+input WalletFiltersInput {
+  """
+  Flag to filter for only the primary wallets for each registered blockchain of the user.
+  """
+  primaryOnly: Boolean
+
+  """
+  A `ProviderID` value to filter for all of the public keys of the user for a given blockchain.
+  """
+  providerId: ProviderID
+
+  """
+  A list of public keys to filter in the response.
+  """
+  pubkeys: [String!]
+}
+
+"""
+Interface to enforce the implementation of an `id` field on a type.
+"""
+interface Node {
+  """
+  Globally unique identifier.
+  """
+  id: ID!
+}
+
+"""
+Relay specification for a connection's page information.
+"""
+type PageInfo {
+  """
+  Flag to indicate if the connection has another page of edges.
+  """
+  hasNextPage: Boolean!
+
+  """
+  Flag to indicate if the connection has a previous page of edges.
+  """
+  hasPreviousPage: Boolean!
+
+  """
+  Cursor for the first edge in the page.
+  """
+  startCursor: String
+
+  """
+  Cursor for the last edge in the page.
+  """
+  endCursor: String
+}
+
+"""
+Top-level type for providing wallet balance information.
+Should provide details about native and non-native token balances with aggregation details.
+"""
+type Balances implements Node {
+  """
+  Globally unique identifier for a wallet's balances data.
+  """
+  id: ID!
+
+  """
+  The numerical value representing the aggregated market value of all fungible assets in the wallet.
+  """
+  aggregate: BalanceAggregate!
+
+  """
+  The Relay connection of token account balances and market data for tokens owned by the wallet.
+  """
+  tokens: TokenBalanceConnection @cacheControl(inheritMaxAge: true)
+}
+
+"""
+The aggregate market balance data for all balances in a wallet.
+"""
+type BalanceAggregate implements Node {
+  """
+  Globally unique identifier for the balance aggregate.
+  """
+  id: ID!
+
+  """
+  The aggregate percentage of change.
+  """
+  percentChange: Float!
+
+  """
+  The aggregate USD value of all balance holdings.
+  """
+  value: Float!
+
+  """
+  The aggregate change in USD value.
+  """
+  valueChange: Float!
+}
+
+"""
+`Nft` collection sub-type definition.
+"""
+type Collection implements Node {
+  """
+  Globally unique identifier for an NFT collection object.
+  """
+  id: ID!
+
+  """
+  The mint or contract address of the collection, presenting an NFT's parental entity.
+  """
+  address: String!
+
+  """
+  The image link for the collection or parental contract entity.
+  """
+  image: String
+
+  """
+  The name of the collection or parental contract entity.
+  """
+  name: String
+
+  """
+  Flag to indicate whether or not it has been verified by the relevant ecosystem standards.
+  """
+  verified: Boolean!
+}
+
+"""
+Represents a friend reference for the parent `User`.
+"""
+type Friend implements Node {
+  """
+  Globally unique identifier for a friend of a user.
+  """
+  id: ID!
+
+  """
+  The image link for a friend's user avatar.
+  """
+  avatar: String!
+
+  """
+  The primary wallets associated with the user.
+  """
+  primaryWallets: [FriendPrimaryWallet!]!
+
+  """
+  The Backpack username of the friend.
+  """
+  username: String!
+}
+
+"""
+Abbreviated wallet information for the primary wallet(s) of a friend.
+"""
+type FriendPrimaryWallet implements Node {
+  """
+  Globally unique identifier for the friend's primary wallet.
+  """
+  id: ID!
+
+  """
+  The public key of the wallet.
+  """
+  address: String!
+
+  """
+  The ID of the provider associated with the wallet.
+  """
+  provider: Provider!
+}
+
+"""
+Friend request data for a user.
+"""
+type FriendRequest implements Node {
+  """
+  Globally unique identifier for a single friend request entity.
+  """
+  id: ID!
+
+  """
+  The type of friend request to indicate whether it was sent or received by the user.
+  """
+  type: FriendRequestType!
+
+  """
+  The recipient or sending Backpack user ID of the request.
+  """
+  userId: String!
+}
+
+"""
+Wrapper type for all user friendship data.
+"""
+type Friendship {
+  """
+  A list of Backpack friends of the user.
+  """
+  friends: [Friend!] @cacheControl(maxAge: 60, scope: PRIVATE)
+
+  """
+  A list of pending Backpack friend requests related to the user.
+  """
+  requests: [FriendRequest!] @cacheControl(maxAge: 60, scope: PRIVATE)
+}
+
+"""
+NFT listing data pulling from marketplaces.
+"""
+type Listing implements Node {
+  """
+  Globally unique identifier for an NFT marketplace listing.
+  """
+  id: ID!
+
+  """
+  The display amount of the current listing price.
+  """
+  amount: String!
+
+  """
+  The marketplace or platform that the NFT is currently listing on.
+  """
+  source: String!
+
+  """
+  A link to the NFT's listing on the marketplace.
+  """
+  url: String!
+}
+
+"""
+Coingecko and computed market and price data for a token.
+"""
+type MarketData implements Node {
+  """
+  Globally unqiue identifier for the token's market data.
+  """
+  id: ID!
+
+  """
+  A timestamp of the last date of when the market data was updated.
+  """
+  lastUpdatedAt: String!
+
+  """
+  The percentage of change since the latest market data update.
+  """
+  percentChange: Float!
+
+  """
+  The current USD price of the token according to the market data.
+  """
+  price: Float!
+
+  """
+  Time series price data for the token to be used for creating a sparkline.
+  """
+  sparkline: [Float!]!
+
+  """
+  The numerical amount change in USD since the latest market data update.
+  """
+  usdChange: Float!
+
+  """
+  The value of the wallet's currently holdings of the token in USD.
+  """
+  value: Float!
+
+  """
+  The value change in USD of the wallet's holdings of the token is USD.
+  """
+  valueChange: Float!
+}
+
+"""
+Generic NFT object type definition to provide on-chain and off-chain metadata.
+"""
+type Nft implements Node {
+  """
+  Globally unique identifier for an NFT.
+  """
+  id: ID!
+
+  """
+  The mint or contract address of the item.
+  """
+  address: String!
+
+  """
+  The list of attributes or traits found in the item's metadata.
+  """
+  attributes: [NftAttribute!] @cacheControl(inheritMaxAge: true)
+
+  """
+  The collection or contract parental entity of the item.
+  """
+  collection: Collection @cacheControl(inheritMaxAge: true)
+
+  """
+  Whether or not the NFT is using on-chain compression.
+  """
+  compressed: Boolean!
+
+  """
+  The description of the NFT found in the metadata.
+  """
+  description: String
+
+  """
+  The image link of the NFT found in the metadata.
+  """
+  image: String
+
+  """
+  Possible marketplace or platform listing data for the NFT for sale.
+  """
+  listing: Listing @cacheControl(maxAge: 60)
+
+  """
+  The link to the off-chain metadata.
+  """
+  metadataUri: String
+
+  """
+  The name of the NFT found in the metadata.
+  """
+  name: String
+
+  """
+  The owning wallet's public key.
+  """
+  owner: String!
+
+  """
+  The associated token account address or contract token ID of the individual item.
+  """
+  token: String!
+}
+
+"""
+NFT `attributes` list sub-type definition.
+"""
+type NftAttribute {
+  """
+  The trait name of the attribute.
+  """
+  trait: String!
+
+  """
+  The item's value for the specified trait type.
+  """
+  value: String!
+}
+
+"""
+Relay connection specification for `Nft` edges.
+"""
+type NftConnection {
+  edges: [NftEdge!]!
+  pageInfo: PageInfo!
+}
+
+"""
+Relay edge specification for `Nft` nodes.
+"""
+type NftEdge {
+  cursor: String!
+  node: Nft!
+}
+
+"""
+Notification data type for user notification reads.
+"""
+type Notification implements Node {
+  """
+  Globally unique identifier for a specific notification.
+  """
+  id: ID!
+
+  """
+  Application identity information if the notification was from an xNFT.
+  """
+  app: NotificationApplicationData @cacheControl(maxAge: 180)
+
+  """
+  Arbitrary body data of the notification parsed as an object.
+  """
+  body: JSONObject!
+
+  """
+  The database unique integer identifier.
+  """
+  dbId: Int!
+
+  """
+  The emitting source of the notification.
+  """
+  source: String!
+
+  """
+  The timestamp that the notification was created.
+  """
+  timestamp: String!
+
+  """
+  The title of the notification.
+  """
+  title: String!
+
+  """
+  Flag to indicate whether it has been viewed or not by the user.
+  """
+  viewed: Boolean!
+}
+
+"""
+Identifying metadata for an xNFT application that triggered a notification.
+"""
+type NotificationApplicationData implements Node @cacheControl(maxAge: 900) {
+  """
+  Globally unique identifier for the node.
+  """
+  id: ID!
+
+  """
+  The public key string of the xNFT application
+  """
+  address: String!
+
+  """
+  The image link to the application's icon.
+  """
+  image: String!
+
+  """
+  The name of the application.
+  """
+  name: String!
+}
+
+"""
+Relay connection specification for `Notification` edges.
+"""
+type NotificationConnection {
+  """
+  The database integer ID of the last read notification of the user.
+  """
+  lastReadId: Int
+  edges: [NotificationEdge!]!
+  pageInfo: PageInfo!
+}
+
+"""
+Relay edge specification for `Notification` nodes.
+"""
+type NotificationEdge {
+  cursor: String!
+  node: Notification!
+}
+
+"""
+Schema exposure of the blockchain data provider used for a `Wallet`.
+"""
+type Provider implements Node {
+  """
+  Globally unique identifier for the node.
+  """
+  id: ID!
+
+  """
+  The logo URL of the provider.
+  """
+  logo: String!
+
+  """
+  The display name of the provider.
+  """
+  name: String!
+
+  """
+  The `ProviderID` enum variant associated with the data provider.
+  """
+  providerId: ProviderID!
+}
+
+"""
+Generic native or non-native token data and balance for a `Wallet`.
+"""
+type TokenBalance implements Node {
+  """
+  Globally unqiue identifier for the token balance object in a wallet.
+  """
+  id: ID!
+
+  """
+  The associated token account or wallet + contract address of the wallet.
+  """
+  address: String!
+
+  """
+  The unformated amount of tokens held for the specific contract or mint.
+  """
+  amount: String!
+
+  """
+  The number of decimals associated with the contract or mint.
+  """
+  decimals: Int!
+
+  """
+  The formatted display amount for the wallet's holdings of the token.
+  """
+  displayAmount: String!
+
+  """
+  Market price data for the token contract or mint.
+  """
+  marketData: MarketData @cacheControl(maxAge: 180)
+
+  """
+  The address of the token mint or contract.
+  """
+  token: String!
+
+  """
+  The possible entry in the token registry list for the mint or contract address.
+  """
+  tokenListEntry: TokenListEntry
+}
+
+"""
+Relay connection specification for `TokenBalance` edges.
+"""
+type TokenBalanceConnection {
+  edges: [TokenBalanceEdge!]!
+  pageInfo: PageInfo!
+}
+
+"""
+Relay edge specification for `TokenBalance` nodes.
+"""
+type TokenBalanceEdge {
+  cursor: String!
+  node: TokenBalance!
+}
+
+type TokenListEntry implements Node {
+  """
+  Globally unique identifier for the list entry.
+  """
+  id: ID!
+
+  """
+  The mint or contract address of the token.
+  """
+  address: String!
+
+  """
+  The Coingecko market listing ID.
+  """
+  coingeckoId: String
+
+  """
+  The logo associated with the token.
+  """
+  logo: String
+
+  """
+  The registered name of the token.
+  """
+  name: String!
+
+  """
+  The registered symbol of the token.
+  """
+  symbol: String!
+}
+
+"""
+Generic on-chain transaction details structure.
+"""
+type Transaction implements Node {
+  """
+  Globally unique identifier for a single transaction.
+  """
+  id: ID!
+
+  """
+  The semantic description of the transaction effects.
+  """
+  description: String
+
+  """
+  The block number or slot that the transaction was committed to.
+  """
+  block: Float!
+
+  """
+  The error message for the transaction if it failed.
+  """
+  error: String
+
+  """
+  The amount in fees that were paid for processing the transaction.
+  """
+  fee: String
+
+  """
+  The address of the wallet that paid the processing fees.
+  """
+  feePayer: String
+
+  """
+  The transaction hash or signature.
+  """
+  hash: String!
+
+  """
+  A list of NFT mints or contract + token IDs associated with the transaction.
+  """
+  nfts: [String]
+
+  """
+  The raw JSON data received from the index API response for the item.
+  """
+  raw: JSONObject!
+
+  """
+  The source or program that is associated with the transaction.
+  """
+  source: String
+
+  """
+  The timestamp of the execution or commitment of the transaction.
+  """
+  timestamp: String!
+
+  """
+  The category or type of transaction.
+  """
+  type: String!
+}
+
+"""
+Relay connection specification for `Transaction` edges.
+"""
+type TransactionConnection {
+  edges: [TransactionEdge!]!
+  pageInfo: PageInfo!
+}
+
+"""
+Relay edge specification for `Transaction` nodes.
+"""
+type TransactionEdge {
+  cursor: String!
+  node: Transaction!
+}
+
+"""
+Backpack user type definition so provide data about all of the user's
+assets, peripheral information, and social data.
+"""
+type User implements Node {
+  """
+  Globally unique identifier for a Backpack user.
+  """
+  id: ID!
+
+  """
+  The aggregate token balances and value for all wallets associated with the user.
+  """
+  allWalletsAggregate: Balances @cacheControl(maxAge: 60, scope: PRIVATE)
+
+  """
+  The image link for the avatar of the user.
+  """
+  avatar: String!
+
+  """
+  The timestamp of the creation of the user.
+  """
+  createdAt: String!
+
+  """
+  A grouping object of the friends and friend request data for the user.
+  """
+  friendship: Friendship @cacheControl(inheritMaxAge: true, scope: PRIVATE)
+
+  """
+  The Relay connection for the notifications received by the user.
+  """
+  notifications(filters: NotificationFiltersInput): NotificationConnection
+    @cacheControl(maxAge: 60, scope: PRIVATE)
+
+  """
+  The user's unique UUID from the database.
+  """
+  userId: String!
+
+  """
+  The user's Backpack username.
+  """
+  username: String!
+
+  """
+  Get a single wallet object for the argued public key address.
+  """
+  wallet(address: String!, providerId: ProviderID!): Wallet
+
+  """
+  The Relay connection for the wallet's and their data that are registered to the user.
+  """
+  wallets(filters: WalletFiltersInput): WalletConnection
+    @cacheControl(maxAge: 60, scope: PRIVATE)
+}
+
+"""
+Wallet definition to provide data about all assets owned by an address.
+"""
+type Wallet implements Node {
+  """
+  Globally unique identifier for a specific wallet on a blockchain.
+  """
+  id: ID!
+
+  """
+  The public key address of the wallet.
+  """
+  address: String!
+
+  """
+  The timestamp that the wallet was imported or registered to the Backpack user.
+  """
+  createdAt: String!
+
+  """
+  The detailed and aggregate balance data for the wallet.
+  """
+  balances(filters: BalanceFiltersInput): Balances @cacheControl(maxAge: 60)
+
+  """
+  Flag to indicate whether it is the user's primary wallet for the designated blockchain.
+  """
+  isPrimary: Boolean!
+
+  """
+  The Relay connection for all of the NFTs owned by the wallet.
+  """
+  nfts(filters: NftFiltersInput): NftConnection @cacheControl(maxAge: 60)
+
+  """
+  The blockchain enum variant that the wallet is associated with.
+  """
+  provider: Provider!
+
+  """
+  The Relay connection for all transactions initiated or associated with the wallet.
+  """
+  transactions(filters: TransactionFiltersInput): TransactionConnection
+    @cacheControl(maxAge: 30)
+}
+
+"""
+Relay connection specification for `Wallet` edges.
+"""
+type WalletConnection {
+  edges: [WalletEdge!]!
+  pageInfo: PageInfo!
+}
+
+"""
+Relay edge specification for `Wallet` nodes.
+"""
+type WalletEdge {
+  cursor: String!
+  node: Wallet!
+}

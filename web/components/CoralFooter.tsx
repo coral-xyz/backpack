@@ -1,5 +1,6 @@
 import { memo } from 'react';
 import Image from 'next/legacy/image';
+import Link from 'next/link';
 
 function CoralFooter() {
   return (
@@ -12,15 +13,21 @@ function CoralFooter() {
           </a>
         </p>
       </div>
-      <div className="flex">
+      <div className="flex items-center gap-4">
+        <Link className="text-sm text-zinc-400" href="/terms" target="_blank">
+          Terms
+        </Link>
+        <Link className="text-sm text-zinc-400" href="/privacy" target="_blank">
+          Privacy
+        </Link>
         <div className="flex flex-col justify-center">
           <a
             href="https://twitter.com/0xCoral"
-            className="mr-6 flex h-full w-5 flex-col justify-center"
+            className="flex h-full w-5 flex-col justify-center"
             target="_blank"
             rel="noreferrer"
           >
-            <Image alt="twitter-icon" src="/brands/twitter.png" width="20px" height="20px" />
+            <Image alt="twitter-icon" src="/brands/twitter.png" width={20} height={20} />
           </a>
         </div>
         <a
@@ -29,7 +36,7 @@ function CoralFooter() {
           target="_blank"
           rel="noreferrer"
         >
-          <Image alt="icon-github" src="/brands/github.png" width="20px" height="20px" />
+          <Image alt="icon-github" src="/brands/github.png" width={20} height={20} />
         </a>
       </div>
     </div>

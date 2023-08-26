@@ -4,9 +4,9 @@
 import { useEffect, useState } from "react";
 import type { ServerPublicKey, WalletDescriptor } from "@coral-xyz/common";
 import {
+  formatWalletAddress,
   getRecoveryPaths,
   UI_RPC_METHOD_PREVIEW_PUBKEYS,
-  walletAddressDisplay,
 } from "@coral-xyz/common";
 import { Loading, PrimaryButton } from "@coral-xyz/react-common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
@@ -81,7 +81,7 @@ export const MnemonicSearch = ({
           {serverPublicKeys.length === 1 ? (
             <>
               We couldn't find the public key{" "}
-              {walletAddressDisplay(serverPublicKeys[0].publicKey)} using your
+              {formatWalletAddress(serverPublicKeys[0].publicKey)} using your
               recovery phrase.
             </>
           ) : (

@@ -1,5 +1,12 @@
-import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import React, { useState } from "react";
+import { KeyboardAvoidingView, Platform, Text, View } from "react-native";
+
+import {
+  UI_RPC_METHOD_KEYNAME_UPDATE,
+  formatWalletAddress,
+} from "@coral-xyz/common";
+import { useBackgroundClient } from "@coral-xyz/recoil";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import {
   PrimaryButton,
@@ -8,62 +15,70 @@ import {
   StyledTextInput,
   TwoButtonFooter,
 } from "~components/index";
-import {
-  UI_RPC_METHOD_KEYNAME_UPDATE,
-  walletAddressDisplay,
-} from "@coral-xyz/common";
-import { useBackgroundClient } from "@coral-xyz/recoil";
 import { useTheme } from "~hooks/useTheme";
 
 export function RenameWalletScreen({ navigation, route }): JSX.Element {
+  const insets = useSafeAreaInsets();
   const background = useBackgroundClient();
   const theme = useTheme();
 
-  const { name, publicKey } = route.params;
+  const { name, publicKey, blockchain } = route.params;
   const [walletName, setWalletName] = useState(name);
 
   const isPrimaryDisabled = walletName.trim() === "";
 
+  const handleSaveName = async () => {
+    await background.request({
+      method: UI_RPC_METHOD_KEYNAME_UPDATE,
+      params: [publicKey, walletName, blockchain],
+    });
+
+    navigation.goBack();
+  };
+
   return (
-    <Screen style={{ justifyContent: "space-between" }}>
-      <View>
-        <StyledTextInput
-          autoFocus
-          value={walletName}
-          onChangeText={setWalletName}
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={72}
+    >
+      <Screen jc="space-between" style={{ marginBottom: insets.bottom }}>
+        <View>
+          <StyledTextInput
+            autoFocus
+            value={walletName}
+            onChangeText={setWalletName}
+            onSubmitEditing={handleSaveName}
+            returnKeyType="done"
+          />
+          <Text
+            style={{
+              marginTop: 12,
+              textAlign: "center",
+              color: theme.custom.colors.secondary,
+            }}
+          >
+            ({formatWalletAddress(publicKey)})
+          </Text>
+        </View>
+        <TwoButtonFooter
+          leftButton={
+            <SecondaryButton
+              label="Cancel"
+              onPress={() => {
+                navigation.goBack();
+              }}
+            />
+          }
+          rightButton={
+            <PrimaryButton
+              label="Update"
+              disabled={isPrimaryDisabled}
+              onPress={handleSaveName}
+            />
+          }
         />
-        <Text
-          style={{
-            marginTop: 12,
-            textAlign: "center",
-            color: theme.custom.colors.secondary,
-          }}
-        >
-          ({walletAddressDisplay(publicKey)})
-        </Text>
-      </View>
-      <TwoButtonFooter
-        leftButton={
-          <SecondaryButton
-            label="Cancel"
-            onPress={() => {
-              navigation.goBack();
-            }}
-          />
-        }
-        rightButton={
-          <PrimaryButton
-            label="Update"
-            disabled={isPrimaryDisabled}
-            onPress={async () => {
-              await background.request({
-                method: UI_RPC_METHOD_KEYNAME_UPDATE,
-                params: [publicKey, walletName],
-              });
-            }}
-          />
-        }
-      />
-    </Screen>
+      </Screen>
+    </KeyboardAvoidingView>
   );
 }

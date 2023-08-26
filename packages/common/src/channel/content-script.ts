@@ -98,7 +98,7 @@ export class ChannelServer {
   constructor(private name: string) {}
 
   public handler(
-    handlerFn: (message: any, sender: Sender) => Promise<RpcResponse>
+    handlerFn: (message: any, sender: Sender) => Promise<RpcResponse> | null
   ) {
     BrowserRuntimeCommon.addEventListenerFromAnywhere(
       // @ts-ignore
@@ -117,11 +117,11 @@ export class ChannelServer {
         if (msg.channel === this.name) {
           const id = msg.data.id;
           handlerFn(msg, sender)
-            .then(([result, error]) => {
+            ?.then((result) => {
               sendResponse({
                 id,
-                result,
-                error,
+                result: result[0],
+                error: result[1],
               });
             })
             .catch((err) => {

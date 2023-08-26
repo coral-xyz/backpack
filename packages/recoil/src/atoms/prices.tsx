@@ -25,6 +25,7 @@ const coingeckoIdOverride = {
   bSo13r4TkiE4KumL71LsHTPpL2euBYLFx6h9HP3piy1: "blazestake-staked-sol",
   "5yxNbU8DgYJZNi3mPD9rs4XLh9ckXrhPjJ5VCujUWg5H": "fronk",
   CvB1ztJvpYQPvdPBePtRzjL4aQidjydtUz61NWgcgQtP: "epics-token",
+  J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn: "jito-staked-sol",
 };
 
 // Coingecko API query for all Coingecko IDs (for Solana).

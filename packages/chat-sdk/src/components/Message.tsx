@@ -1,9 +1,14 @@
 import { useCallback, useEffect, useState } from "react";
 import {
+  refreshIndividualChatsFor,
+  SignalingManager,
+} from "@coral-xyz/chat-xplat";
+import {
   BACKEND_API_URL,
   BACKPACK_TEAM,
   Blockchain,
   DELETE_MESSAGE,
+  formatAmPm,
   NAV_COMPONENT_MESSAGE_PROFILE,
   NEW_COLORS,
 } from "@coral-xyz/common";
@@ -22,10 +27,6 @@ import {
   useNavigation,
   useUser,
 } from "@coral-xyz/recoil";
-import {
-  refreshIndividualChatsFor,
-  SignalingManager,
-} from "@coral-xyz/tamagui";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { GiphyFetch } from "@giphy/js-fetch-api";
 import { Gif as GifComponent } from "@giphy/react-components";
@@ -40,6 +41,7 @@ import { Skeleton, Tooltip } from "@mui/material";
 import { createStyles, makeStyles } from "@mui/styles";
 import { LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
 
+import { openWindow } from "../utils/open";
 import {
   cancel,
   getSecureTransferState,
@@ -99,12 +101,6 @@ const useStyles = makeStyles((theme: any) =>
       width: "100%",
       color: theme.custom.colors.fontColor2,
     },
-    avatarNothing: {
-      color: "transparent",
-      backgroundColor: "transparent",
-      width: theme.spacing(4),
-      height: theme.spacing(4),
-    },
     displayName: {
       fontWeight: 600,
       marginLeft: "10px",
@@ -116,12 +112,6 @@ const useStyles = makeStyles((theme: any) =>
       padding: "2px 12px",
       borderRadius: 12,
       cursor: "pointer",
-    },
-    roundBtn: {
-      padding: "2px",
-      height: 26,
-      width: 26,
-      borderRadius: "13px",
     },
     messageLeftContainer: {
       display: "flex",
@@ -226,16 +216,6 @@ export const MessageLine = (props) => {
   const classes = useStyles();
   const { setActiveReply } = useChatContext();
 
-  function formatAMPM(date) {
-    let hours = date.getHours();
-    let minutes = date.getMinutes();
-    let ampm = hours >= 12 ? "pm" : "am";
-    hours = hours % 12;
-    hours = hours ? hours : 12; // the hour '0' should be '12'
-    minutes = minutes < 10 ? "0" + minutes : minutes;
-    return hours + ":" + minutes + " " + ampm;
-  }
-
   const openProfilePage = (props: { uuid: string }) => {
     if (uuid === props.uuid) {
       return;
@@ -329,6 +309,7 @@ export const MessageLine = (props) => {
                         <NftStickerRender
                           uuid={props.uuid}
                           mint={props.metadata?.mint}
+                          displayName={displayName}
                         />
                       </div>
                     ) : (
@@ -503,6 +484,7 @@ export const MessageLine = (props) => {
                           <NftStickerRender
                             mint={props.metadata?.mint}
                             uuid={props.uuid}
+                            displayName={displayName}
                           />
                         </div>
                       ) : props.messageKind === "media" ? (
@@ -577,7 +559,7 @@ export const MessageLine = (props) => {
             </div>
             <div style={{ minWidth: 63 }}>
               <div className={classes.messageTimeStampRight}>
-                {formatAMPM(timestamp)}
+                {formatAmPm(timestamp)}
               </div>
               <div
                 style={{
@@ -901,7 +883,7 @@ function SecureTransferElement({
                 marginLeft: 10,
               }}
               onClick={() =>
-                window.open(
+                openWindow(
                   `https://explorer.solana.com/tx/${finalTxIdLocal}`,
                   "mywindow"
                 )

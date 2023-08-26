@@ -7,7 +7,7 @@ import {
   useBlockchainActiveWallet,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
-import { ExpandMore, Settings } from "@mui/icons-material";
+import { ExpandMore } from "@mui/icons-material";
 import _CheckIcon from "@mui/icons-material/Check";
 import {
   Button,
@@ -44,10 +44,8 @@ const useStyles = styles((theme) => ({
   listItemRoot: {
     alignItems: "start",
     borderRadius: "4px",
-    background: theme.custom.colors.nav,
     padding: "8px",
     marginBottom: "1px",
-    border: `${theme.custom.colors.borderFull}`,
   },
   listItemIconRoot: {
     minWidth: "inherit",
@@ -229,7 +227,7 @@ function WalletSelectorButton({
   );
 }
 
-function AvatarWithBlockchainImage({ blockchain }: { blockchain: Blockchain }) {
+function AvatarWithBlockchainImage(_props: { blockchain: Blockchain }) {
   const avatarUrl = useAvatarUrl(32);
   // TODO: use this blockchain icon here.
   return (

@@ -1,27 +1,14 @@
-import { forwardRef } from "react";
 import type { StyleProp, TextStyle, ViewStyle } from "react-native";
 
-import {
-  styled,
-  themeable,
-  TamaguiElement,
-  ListItemFrame,
-  ListItemText,
-  useListItem,
-  ListItemProps,
-  YGroup,
-} from "@coral-xyz/tamagui";
+import { YGroup, Separator, _ListItemOneLine } from "@coral-xyz/tamagui";
 
 import { IconPushDetail } from "./SettingsRow";
 
-export function SettingsList({
-  style,
-  menuItems,
-  textStyle,
-}: {
+type SettingsListProps = {
   style?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<TextStyle>;
   borderColor?: string;
+  children?: React.ReactNode;
   menuItems: {
     [key: string]: {
       onPress: () => void;
@@ -32,46 +19,30 @@ export function SettingsList({
       label?: string;
     };
   };
-}) {
+};
+
+export function SettingsList({ menuItems, children }: SettingsListProps) {
   return (
-    <YGroup als="center" bordered>
+    <YGroup
+      overflow="hidden"
+      borderWidth={2}
+      borderColor="$borderFull"
+      borderRadius="$container"
+      separator={<Separator />}
+    >
+      <YGroup.Item>{children}</YGroup.Item>
       {Object.entries(menuItems).map(
         ([key, { onPress, detail, icon, label }]) => (
           <YGroup.Item key={key}>
-            <ListItem
-              hoverTheme
-              pressTheme
+            <_ListItemOneLine
+              title={label ?? key}
               icon={icon}
-              iconAfter={detail ?? IconPushDetail}
-              onPress={() => onPress && onPress()}
-              style={style}
-            >
-              <CustomListItemText style={textStyle}>
-                {label ?? key}
-              </CustomListItemText>
-            </ListItem>
+              iconAfter={detail ?? <IconPushDetail />}
+              onPress={onPress}
+            />
           </YGroup.Item>
         )
       )}
     </YGroup>
   );
 }
-
-const CustomListItemFrame = styled(ListItemFrame, {
-  paddingHorizontal: 12,
-  height: "$container",
-});
-
-const CustomListItemText = styled(ListItemText, {
-  fontFamily: "Inter_500Medium",
-  fontSize: 16,
-  lineHeight: 24,
-});
-
-export const ListItem = themeable(
-  forwardRef<TamaguiElement, ListItemProps>((propsIn, ref) => {
-    const { props } = useListItem(propsIn);
-
-    return <CustomListItemFrame {...props} ref={ref} />;
-  })
-);

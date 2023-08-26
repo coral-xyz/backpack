@@ -1,17 +1,14 @@
 import type { BigNumber } from "ethers";
 
 import type { StyleProp, ViewStyle } from "react-native";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet } from "react-native";
 
+import { XStack, StyledText } from "@coral-xyz/tamagui";
 import { ethers } from "ethers";
 
 import { ProxyImage } from "~components/index";
-import { useTheme } from "~hooks/useTheme";
 
-//
-// Displays token amount header with logo.
-//
-export const TokenAmountHeader: React.FC<{
+type TokenAmountHeaderProps = {
   style?: StyleProp<ViewStyle>;
   token: {
     logo?: string;
@@ -20,60 +17,48 @@ export const TokenAmountHeader: React.FC<{
   };
   amount: BigNumber;
   displayLogo?: boolean;
-}> = ({ style, token, amount, displayLogo = true }) => {
-  const theme = useTheme();
+};
 
+export const TokenAmountHeader = ({
+  token,
+  amount,
+  displayLogo = true,
+}: TokenAmountHeaderProps): JSX.Element => {
   const formattedAmount = ethers.utils.formatUnits(amount, token.decimals);
-  const maxChars = displayLogo ? 10 : 12;
+  const maxChars = displayLogo ? 6 : 8;
   const maybeTruncatedAmount =
     formattedAmount.length > maxChars
-      ? formattedAmount.slice(0, maxChars) + "..."
+      ? formattedAmount.slice(0, maxChars)
       : formattedAmount;
 
   return (
-    <View style={[styles.container, style]}>
-      {displayLogo ? <ProxyImage src={token.logo} style={styles.logo} /> : null}
-      <View style={styles.container}>
-        <Text
-          style={[
-            styles.amountLabel,
-            {
-              color: theme.custom.colors.fontColor,
-            },
-          ]}
+    <XStack ai="center" als="center">
+      {displayLogo ? (
+        <ProxyImage size={32} src={token.logo!} style={styles.logo} />
+      ) : null}
+      <XStack ai="center" als="center" space={6}>
+        <StyledText
+          fontWeight="500"
+          fontSize="$4xl"
+          color="$baseTextHighEmphasis"
         >
           {maybeTruncatedAmount}
-        </Text>
-        <Text
-          style={[styles.tickerLabel, { color: theme.custom.colors.secondary }]}
+        </StyledText>
+        <StyledText
+          fontWeight="500"
+          fontSize="$4xl"
+          color="$baseTextMedEmphasis"
         >
-          {token.ticker}
-        </Text>
-      </View>
-    </View>
+          {token.ticker ?? ""}
+        </StyledText>
+      </XStack>
+    </XStack>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flexDirection: "row",
-    alignItems: "center",
-    alignSelf: "center",
-  },
   logo: {
-    width: 32,
-    height: 32,
     borderRadius: 16,
-    aspectRatio: 1,
     marginRight: 8,
-  },
-  amountLabel: {
-    fontWeight: "500",
-    fontSize: 30,
-  },
-  tickerLabel: {
-    marginLeft: 8,
-    fontWeight: "400",
-    fontSize: 30,
   },
 });

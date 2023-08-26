@@ -2,10 +2,7 @@ import React, { type ChangeEvent, useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import {
   Blockchain,
-  ETH_NATIVE_MINT,
   explorerUrl,
-  NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS,
-  SOL_NATIVE_MINT,
   toDisplayBalance,
   toTitleCase,
 } from "@coral-xyz/common";
@@ -23,17 +20,13 @@ import {
 } from "@coral-xyz/react-common";
 import type { TokenDataWithPrice } from "@coral-xyz/recoil";
 import {
-  blockchainTokenData,
-  useActiveWallet,
   useAnchorContext,
   useBlockchainConnectionUrl,
   useBlockchainExplorer,
-  useBlockchainTokenAccount,
   useDarkMode,
   useEthereumCtx,
   useFriendship,
   useIsValidAddress,
-  useLoader,
   useUser,
 } from "@coral-xyz/recoil";
 import { styles as makeStyles, useCustomTheme } from "@coral-xyz/themes";
@@ -41,15 +34,12 @@ import { Typography } from "@mui/material";
 import { BigNumber, ethers } from "ethers";
 
 import { ApproveTransactionDrawer } from "../../../common/ApproveTransactionDrawer";
+import { BLOCKCHAIN_COMPONENTS } from "../../../common/Blockchains";
 import { CopyablePublicKey } from "../../../common/CopyablePublicKey";
 import { useDrawerContext } from "../../../common/Layout/Drawer";
 import { useNavigation } from "../../../common/Layout/NavStack";
 import { TokenAmountHeader } from "../../../common/TokenAmountHeader";
 import { TokenInputField } from "../../../common/TokenInput";
-
-import { SendEthereumConfirmationCard } from "./Ethereum";
-import { SendSolanaConfirmationCard } from "./Solana";
-import { WithHeaderButton } from "./Token";
 
 export const useStyles = makeStyles((theme) => ({
   topImage: {
@@ -85,72 +75,6 @@ export const useStyles = makeStyles((theme) => ({
     },
   },
 }));
-
-export function SendButton({
-  publicKey,
-  blockchain,
-  address,
-}: {
-  blockchain: Blockchain;
-  address: string;
-  publicKey: string;
-}) {
-  // publicKey should only be undefined if the user is in single-wallet mode
-  // (rather than aggregate mode).
-  const activeWallet = useActiveWallet();
-  publicKey = publicKey ?? activeWallet.publicKey;
-
-  const token = useBlockchainTokenAccount({
-    publicKey,
-    blockchain,
-    tokenAddress: address,
-  });
-
-  return (
-    <WithHeaderButton
-      label="Send"
-      routes={[
-        {
-          name: "send",
-          component: (props: any) => <SendLoader {...props} />,
-          title: `${token?.ticker || ""} / Send`,
-          props: {
-            blockchain,
-            address,
-            publicKey,
-          },
-        },
-      ]}
-    />
-  );
-}
-
-export function SendLoader({
-  publicKey,
-  blockchain,
-  address,
-}: {
-  publicKey?: string;
-  blockchain: Blockchain;
-  address: string;
-}) {
-  // publicKey should only be undefined if the user is in single-wallet mode
-  // (rather than aggregate mode).
-  const activeWallet = useActiveWallet();
-  const publicKeyStr = publicKey ?? activeWallet.publicKey;
-
-  const [token] = useLoader(
-    blockchainTokenData({
-      publicKey: publicKeyStr,
-      blockchain,
-      tokenAddress: address,
-    }),
-    null
-  );
-
-  if (!token) return null;
-  return <Send blockchain={blockchain} token={token} />;
-}
 
 export function Send({
   blockchain,
@@ -202,25 +126,12 @@ export function Send({
 
   useEffect(() => {
     if (!token) return;
-    if (token.mint === SOL_NATIVE_MINT) {
-      // When sending SOL, account for the tx fee and rent exempt minimum.
-      setFeeOffset(
-        BigNumber.from(5000).add(
-          BigNumber.from(NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS)
-        )
-      );
-    } else if (token.address === ETH_NATIVE_MINT) {
-      // 21,000 GWEI for a standard ETH transfer
-      setFeeOffset(
-        BigNumber.from("21000")
-          .mul(ethereumCtx?.feeData.maxFeePerGas!)
-          .add(
-            BigNumber.from("21000").mul(
-              ethereumCtx?.feeData.maxPriorityFeePerGas!
-            )
-          )
-      );
-    }
+    setFeeOffset(
+      BLOCKCHAIN_COMPONENTS[blockchain].MaxFeeOffset(
+        { address: token.address, mint: token.mint },
+        ethereumCtx
+      )
+    );
   }, [blockchain, token]); // eslint-disable-line
 
   const amountSubFee = BigNumber.from(token!.nativeBalance).sub(feeOffset);
@@ -258,10 +169,8 @@ export function Send({
     drawer.close();
   };
 
-  const SendConfirmComponent = {
-    [Blockchain.SOLANA]: SendSolanaConfirmationCard,
-    [Blockchain.ETHEREUM]: SendEthereumConfirmationCard,
-  }[blockchain];
+  const SendConfirmComponent =
+    BLOCKCHAIN_COMPONENTS[blockchain].SendTokenConfirmationCard;
 
   return (
     <form
@@ -323,6 +232,8 @@ export function Send({
               to?.uuid !== uuid &&
               blockchain === Blockchain.SOLANA
             ) {
+              // Note: I don't know what this is used for, but if it's uncommented
+              //       out, we should generalize it to work for other SVM chains?
               // const client_generated_uuid = uuidv4();
               // createEmptyFriendship(uuid, to?.uuid, {
               //   last_message_sender: uuid,
@@ -549,23 +460,38 @@ function SendV2({
                 target: { value },
               }: ChangeEvent<HTMLInputElement>) => {
                 try {
-                  const parsedVal =
-                    value.length === 1 && value[0] === "." ? "0." : value;
+                  const maxDecimals = token.decimals ?? 9;
+
+                  const parsedVal = value
+                    // remove all characters except for 0-9 and .
+                    .replace(/[^\d.]/g, "")
+                    // prepend a 0 if . is the first character
+                    .replace(/^\.(\d+)?$/, "0.$1")
+                    // remove any periods after the first one
+                    .replace(/^(\d+\.\d*?)\./, "$1")
+                    // trim to the number of decimals allowed for the token
+                    .replace(
+                      new RegExp(`^(\\d+\\.\\d{${maxDecimals}}).+`),
+                      "$1"
+                    );
+
+                  if (!Number.isFinite(Number(parsedVal))) return;
 
                   setStrAmount(parsedVal);
 
-                  const num =
-                    parsedVal === "" || parsedVal === "0."
-                      ? 0.0
-                      : parseFloat(parsedVal);
-
-                  if (num >= 0) {
-                    setAmount(
-                      ethers.utils.parseUnits(num.toString(), token.decimals)
-                    );
+                  if (parsedVal.endsWith(".")) {
+                    // can't `throw new Error("trailing")` due to Error function
+                    throw "trailing .";
                   }
+
+                  const finalAmount = ethers.utils.parseUnits(
+                    parsedVal,
+                    maxDecimals
+                  );
+
+                  setAmount(finalAmount.isZero() ? null : finalAmount);
                 } catch (err) {
-                  // Do nothing.
+                  setAmount(null);
                 }
               }}
             />

@@ -1,58 +1,56 @@
 {
   "cli": {
     "appVersionSource": "remote",
-    "version": ">= 3.8.0"
+    "version": "^3.12.0",
+    "promptToConfigurePushNotifications": false
   },
   "build": {
     "monorepo": {
       "node": "18.15.0",
+      "resourceClass": "large",
       "ios": {
-        "resourceClass": "m-medium"
+        "image": "latest"
       },
-      "channel": "monorepo"
-    },
-    "production": {
-      "extends": "monorepo",
-      "autoIncrement": true,
-      "channel": "production"
-    },
-    "simulator": {
-      "extends": "monorepo",
-      "channel": "simulator",
-      "distribution": "internal",
-      "env": {
-        "APP_ENV": "production"
-      },
-      "ios": {
-        "simulator": true,
-        "resourceClass": "m-medium"
-      }
-    },
-    "preview": {
-      "extends": "monorepo",
-      "channel": "preview",
-      "distribution": "internal",
-      "env": {
-        "APP_ENV": "production"
-      },
-      "ios": {
-        "resourceClass": "m-medium"
+      "android": {
+        "image": "latest"
       }
     },
     "development": {
       "extends": "monorepo",
-      "channel": "internal",
       "developmentClient": true,
       "distribution": "internal",
-      "android": {
-        "buildType": "apk"
-      },
-      "ios": {
-        "simulator": true,
-        "resourceClass": "m-medium"
-      },
+      "channel": "development",
       "env": {
         "APP_ENV": "development"
+      }
+    },
+    "development-simulator": {
+      "extends": "monorepo",
+      "developmentClient": true,
+      "distribution": "internal",
+      "ios": {
+        "simulator": true
+      },
+      "channel": "development-simulator",
+      "env": {
+        "APP_ENV": "development"
+      }
+    },
+    "preview": {
+      "extends": "monorepo",
+      "distribution": "internal",
+      "channel": "staging",
+      "env": {
+        "APP_ENV": "production"
+      }
+    },
+    "production": {
+      "extends": "monorepo",
+      "channel": "production",
+      "distribution": "store",
+      "autoIncrement": true,
+      "env": {
+        "APP_ENV": "production"
       }
     }
   },

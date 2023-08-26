@@ -1,17 +1,30 @@
 // TODO(peter) one thing we might need to make sure is that when we wrap these FlatLists in a ScrollView, we can't nest virtualized lists.
 // This means we might just use the scrollview directly from within a flatlist by using ListHeaderComponent and ListFooterComponent
-import type { Token } from "@@types/types";
-import type { Blockchain } from "@coral-xyz/common";
 import type { useBlockchainTokensSorted } from "@coral-xyz/recoil";
+import type { Token, PublicKey } from "~types/types";
 
-import React, { useEffect, useState } from "react";
-import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
+import {
+  StyleProp,
+  ViewStyle,
+  FlatList,
+  Pressable,
+  Text,
+  View,
+} from "react-native";
 
-import { formatUSD } from "@coral-xyz/common";
+import {
+  toDisplayBalance,
+  Blockchain,
+  UNKNOWN_ICON_SRC,
+  formatUsd,
+  formatWalletAddress,
+} from "@coral-xyz/common";
 import {
   blockchainBalancesSorted,
   allWalletsDisplayed,
 } from "@coral-xyz/recoil";
+import { TextPercentChanged, RoundedContainerGroup } from "@coral-xyz/tamagui";
 import { useNavigation } from "@react-navigation/native";
 import { useRecoilValueLoadable } from "recoil";
 
@@ -19,13 +32,21 @@ import { ExpandCollapseIcon } from "~components/Icon";
 import {
   ListRowSeparator,
   Margin,
-  ProxyImage,
   Row,
   StyledTextInput,
 } from "~components/index";
 import { useTheme } from "~hooks/useTheme";
 
 import { TableHeader } from "./index";
+
+import {
+  ListItemRow,
+  ListItemStyledText,
+  ListItemWrapper,
+  ListItemSide,
+  ListItemIcon,
+} from "~src/components/ListItem";
+import { ResponseTokenBalance } from "~src/screens/TokenListScreen";
 
 export function SearchableTokenTables({
   onPressRow,
@@ -88,6 +109,77 @@ export function TokenTables({
         )
       )}
     </>
+  );
+}
+
+export function SearchableTokenList({
+  blockchain,
+  publicKey,
+  onPressRow,
+  searchFilter = "",
+  customFilter = () => true,
+  style,
+  contentContainerStyle,
+}: {
+  blockchain: Blockchain;
+  publicKey: PublicKey;
+  onPressRow: (blockchain: Blockchain, token: Token) => void;
+  tokenAccounts?: ReturnType<typeof useBlockchainTokensSorted>;
+  searchFilter?: string;
+  customFilter?: (token: Token) => boolean;
+  style?: StyleProp<ViewStyle>;
+  contentContainerStyle?: StyleProp<ViewStyle>;
+}): JSX.Element {
+  const rta = useRecoilValueLoadable(
+    blockchainBalancesSorted({
+      publicKey,
+      blockchain,
+    })
+  );
+
+  const rawTokenAccounts = rta.state === "hasValue" ? rta.contents : [];
+  const searchLower = searchFilter.toLowerCase();
+  const tokenAccountsFiltered = rawTokenAccounts
+    .filter(
+      (t: Token) =>
+        t?.name.toLowerCase().startsWith(searchLower) ||
+        t?.ticker.toLowerCase().startsWith(searchLower)
+    )
+    .filter(customFilter);
+
+  const keyExtractor = (item) => item.address;
+  const renderItem = useCallback(
+    ({ item: token, index }: { item: Token; index: number }) => {
+      const isFirst = index === 0;
+      const isLast = index === tokenAccountsFiltered.length - 1;
+
+      return (
+        <RoundedContainerGroup
+          disableTopRadius={!isFirst}
+          disableBottomRadius={!isLast}
+        >
+          <TokenRow
+            onPressRow={onPressRow}
+            blockchain={blockchain}
+            token={token}
+            walletPublicKey={publicKey}
+          />
+        </RoundedContainerGroup>
+      );
+    },
+    [blockchain, onPressRow, publicKey, tokenAccountsFiltered.length]
+  );
+
+  return (
+    <FlatList
+      style={style}
+      contentInsetAdjustmentBehavior="automatic"
+      contentContainerStyle={contentContainerStyle}
+      data={tokenAccountsFiltered}
+      showsVerticalScrollIndicator={false}
+      keyExtractor={keyExtractor}
+      renderItem={renderItem}
+    />
   );
 }
 
@@ -162,7 +254,7 @@ function WalletTokenTable({
 
       {expanded ? (
         <FlatList
-          scrollEnabled={false}
+          scrollEnabled
           data={tokenAccountsFiltered}
           keyExtractor={(item) => item.address}
           ItemSeparatorComponent={ListRowSeparator}
@@ -212,91 +304,81 @@ export function WalletPickerButton({
   );
 }
 
-// Used for each individual row  of Balances
-function TextPercentChanged({ percentChange }: { percentChange: number }) {
-  const theme = useTheme();
-  const positive = !!(percentChange && percentChange > 0);
-  const negative = !!(percentChange && percentChange < 0);
-  const neutral = !!(percentChange && percentChange === 0);
-
+function TextUsdBalance({ usdBalance }: { usdBalance?: number }): JSX.Element {
+  const value = usdBalance ? formatUsd(usdBalance) : "-";
   return (
-    <>
-      {percentChange !== undefined && positive ? (
-        <Text
-          style={[
-            styles.tokenBalanceChangePositive,
-            { color: theme.custom.colors.positive },
-          ]}
-        >
-          +{formatUSD(percentChange.toLocaleString())}
-        </Text>
-      ) : null}
-      {percentChange !== undefined && negative ? (
-        <Text
-          style={[
-            styles.tokenBalanceChangeNegative,
-            { color: theme.custom.colors.negative },
-          ]}
-        >
-          {formatUSD(percentChange.toLocaleString())}
-        </Text>
-      ) : null}
-      {percentChange !== undefined && neutral ? (
-        <Text
-          style={[
-            styles.tokenBalanceChangeNeutral,
-            { color: theme.custom.colors.secondary },
-          ]}
-        >
-          {formatUSD(percentChange.toLocaleString())}
-        </Text>
-      ) : null}
-    </>
+    <ListItemStyledText fontSize="$lg" color="$baseTextHighEmphasis">
+      {value}
+    </ListItemStyledText>
   );
 }
 
-// Used in BalanceDetail TokenHeader, slightly diff than the other one
-function RecentPercentChange({
-  recentPercentChange,
-}: {
-  recentPercentChange: number | undefined;
-}): JSX.Element {
-  const theme = useTheme();
-  const color =
-    recentPercentChange === undefined
-      ? ""
-      : recentPercentChange > 0
-      ? theme.custom.colors.positive
-      : theme.custom.colors.negative;
+const displayFormat = new Intl.NumberFormat("en-US", {
+  currency: "USD",
+  maximumFractionDigits: 5,
+});
 
-  return <Text style={{ color }}>{recentPercentChange}%</Text>;
+function formatDisplayBalance(value: string) {
+  try {
+    return displayFormat.format(Number(value));
+  } catch (err) {
+    return "";
+  }
 }
 
-// Used in BalanceDetail TokenHeader, slightly diff than other recent percent changes
-export function UsdBalanceAndPercentChange({
-  usdBalance,
-  recentPercentChange,
+function TextAmountBalance({
+  displayBalance,
+  ticker,
 }: {
-  usdBalance: number;
-  recentPercentChange: number | undefined;
+  displayBalance?: string;
+  ticker: string;
 }): JSX.Element {
-  const theme = useTheme();
+  const subtitle = displayBalance
+    ? `${formatDisplayBalance(displayBalance)} ${ticker}`
+    : ticker;
   return (
-    <View style={usdBalanceAndPercentChangeStyles.container}>
-      <Text
-        style={[
-          usdBalanceAndPercentChangeStyles.usdBalanceLabel,
-          { color: theme.custom.colors.secondary },
-        ]}
-      >
-        ${parseFloat(usdBalance.toFixed(2)).toLocaleString()}{" "}
-        <RecentPercentChange recentPercentChange={recentPercentChange} />
-      </Text>
-    </View>
+    <ListItemStyledText color="$baseTextMedEmphasis">
+      {subtitle}
+    </ListItemStyledText>
   );
 }
 
-// Renders the individual token row
+export function ListItemTokenBalance({
+  balance,
+  onPressRow,
+}: {
+  balance: ResponseTokenBalance;
+  onPressRow: (b: ResponseTokenBalance) => void;
+}): JSX.Element {
+  const name =
+    balance.tokenListEntry?.name ?? formatWalletAddress(balance.token);
+  const iconUrl = balance.tokenListEntry?.logo || UNKNOWN_ICON_SRC;
+
+  return (
+    <ListItemWrapper
+      grouped
+      onPress={() => onPressRow(balance)}
+      icon={<ListItemIcon source={{ uri: iconUrl }} />}
+    >
+      <ListItemRow>
+        <ListItemSide side="left">
+          <ListItemStyledText fontSize="$lg">{name}</ListItemStyledText>
+          <TextAmountBalance
+            displayBalance={balance.displayAmount}
+            ticker={balance.tokenListEntry?.symbol ?? ""}
+          />
+        </ListItemSide>
+        <ListItemSide side="right">
+          <TextUsdBalance usdBalance={balance.marketData?.value} />
+          <TextPercentChanged
+            percentChange={balance.marketData?.percentChange ?? 0}
+          />
+        </ListItemSide>
+      </ListItemRow>
+    </ListItemWrapper>
+  );
+}
+// old token row
 function TokenRow({
   onPressRow,
   token,
@@ -312,113 +394,27 @@ function TokenRow({
   blockchain: Blockchain;
   walletPublicKey: string;
 }): JSX.Element {
-  const theme = useTheme();
   const { name, recentUsdBalanceChange, logo: iconUrl } = token;
 
-  let subtitle = token.ticker;
-  if (token.displayBalance) {
-    subtitle = `${token.displayBalance.toLocaleString()} ${subtitle}`;
-  }
-
   return (
-    <Pressable
+    <ListItemWrapper
+      grouped
       onPress={() => onPressRow(blockchain, token, walletPublicKey)}
-      style={styles.rowContainer}
+      icon={<ListItemIcon source={{ uri: iconUrl }} />}
     >
-      <View style={{ flexDirection: "row" }}>
-        {iconUrl ? (
-          <Margin right={12}>
-            <ProxyImage style={styles.rowLogo} src={iconUrl} />
-          </Margin>
-        ) : null}
-        <View>
-          <Text
-            style={[styles.tokenName, { color: theme.custom.colors.fontColor }]}
-          >
-            {name}
-          </Text>
-          <Text
-            style={[
-              styles.tokenAmount,
-              { color: theme.custom.colors.secondary },
-            ]}
-          >
-            {subtitle}
-          </Text>
-        </View>
-      </View>
-      <View style={{ alignItems: "flex-end" }}>
-        <Text
-          style={[
-            styles.tokenBalance,
-            { color: theme.custom.colors.fontColor },
-          ]}
-        >
-          {formatUSD(token.usdBalance)}
-        </Text>
-        <TextPercentChanged percentChange={recentUsdBalanceChange} />
-      </View>
-    </Pressable>
+      <ListItemRow>
+        <ListItemSide side="left">
+          <ListItemStyledText fontSize="$lg">{name}</ListItemStyledText>
+          <TextAmountBalance
+            displayBalance={token.displayBalance}
+            ticker={token.ticker}
+          />
+        </ListItemSide>
+        <ListItemSide side="right">
+          <TextUsdBalance usdBalance={token.usdBalance} />
+          <TextPercentChanged percentChange={recentUsdBalanceChange} />
+        </ListItemSide>
+      </ListItemRow>
+    </ListItemWrapper>
   );
 }
-
-const styles = StyleSheet.create({
-  rowContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    padding: 12,
-    overflow: "hidden",
-  },
-  rowLogo: {
-    width: 50,
-    height: 50,
-    aspectRatio: 1,
-    borderRadius: 25,
-  },
-  tokenName: {
-    height: 24,
-    fontWeight: "500",
-    fontSize: 16,
-    lineHeight: 24,
-  },
-  tokenAmount: {
-    fontWeight: "500",
-    fontSize: 14,
-    lineHeight: 20,
-  },
-  tokenBalance: {
-    fontWeight: "500",
-    fontSize: 16,
-    lineHeight: 24,
-  },
-  tokenBalanceChangeNeutral: {
-    fontWeight: "500",
-    fontSize: 14,
-    lineHeight: 20,
-  },
-  tokenBalanceChangePositive: {
-    fontWeight: "500",
-    fontSize: 14,
-    lineHeight: 20,
-  },
-  tokenBalanceChangeNegative: {
-    fontWeight: "500",
-    fontSize: 12,
-  },
-});
-
-const usdBalanceAndPercentChangeStyles = StyleSheet.create({
-  container: {
-    flexDirection: "row",
-    alignItems: "center",
-    alignSelf: "center",
-  },
-  usdBalanceLabel: {
-    fontWeight: "500",
-    fontSize: 14,
-    textAlign: "center",
-    marginTop: 4,
-    lineHeight: 24,
-  },
-});

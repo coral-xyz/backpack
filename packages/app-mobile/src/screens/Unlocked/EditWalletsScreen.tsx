@@ -1,193 +1,115 @@
-import type { Blockchain } from "@coral-xyz/common";
+import type { Wallet } from "@coral-xyz/recoil";
 
-import { Pressable, SectionList, StyleSheet, Text, View } from "react-native";
+import { Suspense, useCallback, useMemo } from "react";
+import { FlatList } from "react-native";
 
+import { useSuspenseQuery } from "@apollo/client";
+import { PaddedListItemSeparator, Separator } from "@coral-xyz/tamagui";
+import { ErrorBoundary } from "react-error-boundary";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+import { ListItemEditWallet, ListItemWallet } from "~components/ListItem";
 import {
-  AddConnectWalletButton,
-  ImportTypeBadge,
-  Margin,
   RoundedContainerGroup,
-  Screen,
-  WalletAddressLabel,
+  ScreenError,
+  ScreenLoading,
 } from "~components/index";
-import { toTitleCase } from "@coral-xyz/common";
-import { useWalletPublicKeys } from "@coral-xyz/recoil";
-import { useTheme } from "~hooks/useTheme";
-import { IconPushDetail } from "~screens/Unlocked/Settings/components/SettingsRow"; // TODO(peter) move this icon to icons
 
-function buildSectionList(blockchainKeyrings: any) {
-  return Object.entries(blockchainKeyrings).map(([blockchain, keyring]) => ({
-    blockchain,
-    title: toTitleCase(blockchain),
-    data: [
-      ...keyring.hdPublicKeys.map((k: any) => ({ ...k, type: "derived" })),
-      ...keyring.importedPublicKeys.map((k: any) => ({
-        ...k,
-        type: "imported",
-      })),
-      ...keyring.ledgerPublicKeys.map((k: any) => ({
-        ...k,
-        type: "hardware",
-      })),
-    ],
-  }));
-}
+import { gql } from "~src/graphql/__generated__";
+import { useWallets } from "~src/hooks/wallets";
+import { coalesceWalletData } from "~src/lib/WalletUtils";
+import { EditWalletsScreenProps } from "~src/navigation/AccountSettingsNavigator";
 
-function SectionHeader({ title }: { title: string }): JSX.Element {
-  const theme = useTheme();
-  return (
-    <Text
-      style={[
-        styles.sectionHeaderTitle,
-        {
-          color: theme.custom.colors.fontColor,
-        },
-      ]}
-    >
-      {title}
-    </Text>
-  );
-}
-
-type Wallet = {
-  name: string;
-  publicKey: string;
-  type: string;
-};
-
-export function WalletListItem({
-  blockchain,
-  name,
-  publicKey,
-  type,
-  icon,
-  onPress,
-}: {
-  blockchain: Blockchain;
-  name: string;
-  publicKey: string;
-  type?: string;
-  icon?: JSX.Element | null;
-  onPress?: (blockchain: Blockchain, wallet: Wallet) => void;
-}): JSX.Element {
-  const theme = useTheme();
-  return (
-    <Pressable
-      onPress={() => {
-        if (onPress && type) {
-          onPress(blockchain, { name, publicKey, type });
+const QUERY_USER_WALLETS = gql(`
+  query BottomSheetUserWallets {
+    user {
+      id
+      wallets {
+        edges {
+          node {
+            ...WalletFragment
+          }
         }
-      }}
-      style={[
-        styles.listItem,
-        {
-          backgroundColor: theme.custom.colors.nav,
-        },
-      ]}
-    >
-      <View style={styles.listItemLeft}>
-        <WalletAddressLabel name={name} publicKey={publicKey} />
-        {type ? (
-          <Margin left={8}>
-            <ImportTypeBadge type={type} />
-          </Margin>
-        ) : null}
-      </View>
-      {icon ? icon : null}
-    </Pressable>
-  );
-}
+      }
+    }
+  }
+`);
 
-function WalletList({
-  onPressItem,
-  onPressAddWallet,
-}: {
-  onPressItem: (blockchain: Blockchain, wallet: Wallet) => void;
-  onPressAddWallet: (blockchain: Blockchain) => void;
-}): JSX.Element {
-  const blockchainKeyrings = useWalletPublicKeys();
-  const sections = buildSectionList(blockchainKeyrings);
+function Container({ navigation }: EditWalletsScreenProps) {
+  const { data } = useSuspenseQuery(QUERY_USER_WALLETS);
+  const { allWallets } = useWallets();
+  const insets = useSafeAreaInsets();
+
+  const wallets = useMemo(
+    () => coalesceWalletData(data, allWallets),
+    [data, allWallets]
+  );
+
+  const handlePressEdit = useCallback(
+    (wallet: Wallet) => {
+      navigation.navigate("edit-wallets-wallet-detail", {
+        name: wallet.name,
+        publicKey: wallet.publicKey,
+      });
+    },
+    [navigation]
+  );
+
+  const keyExtractor = (item: Wallet) => item.publicKey;
+  const renderItem = useCallback(
+    ({ item, index }) => {
+      const isFirst = index === 0;
+      const isLast = index === wallets.length - 1;
+
+      return (
+        <RoundedContainerGroup
+          disableTopRadius={!isFirst}
+          disableBottomRadius={!isLast}
+        >
+          <ListItemEditWallet
+            name={item.name}
+            type={item.type}
+            publicKey={item.publicKey}
+            blockchain={item.blockchain}
+            isCold={item.isCold}
+            primary={item.isPrimary}
+            onPress={handlePressEdit}
+          />
+        </RoundedContainerGroup>
+      );
+    },
+    [handlePressEdit, wallets.length]
+  );
 
   return (
-    <SectionList
-      sections={sections}
-      keyExtractor={(item, index) => item + index}
-      renderItem={({ section, item: wallet, index }) => {
-        const blockchain = section.blockchain as Blockchain;
-        const isFirst = index === 0;
-        const isLast = index === section.data.length - 1;
-        return (
-          <RoundedContainerGroup
-            disableTopRadius={!isFirst}
-            disableBottomRadius={!isLast}
-          >
-            <WalletListItem
-              name={wallet.name}
-              publicKey={wallet.publicKey}
-              type={wallet.type}
-              blockchain={blockchain}
-              onPress={onPressItem}
-              icon={<IconPushDetail />}
-            />
-          </RoundedContainerGroup>
-        );
+    <FlatList
+      data={wallets}
+      renderItem={renderItem}
+      keyExtractor={keyExtractor}
+      ItemSeparatorComponent={Separator}
+      style={{
+        paddingTop: 16,
+        paddingHorizontal: 16,
+        marginBottom: insets.bottom,
       }}
-      renderSectionHeader={({ section: { title } }) => (
-        <SectionHeader title={title} />
-      )}
-      renderSectionFooter={({ section }) => (
-        <Margin bottom={24} top={8}>
-          <AddConnectWalletButton
-            blockchain={section.blockchain}
-            onPress={onPressAddWallet}
-          />
-        </Margin>
-      )}
+      contentContainerStyle={{
+        paddingBottom: 32,
+      }}
     />
   );
 }
 
-export function EditWalletsScreen({ navigation }): JSX.Element {
-  const handlePressItem = (
-    blockchain: Blockchain,
-    { name, publicKey, type }: Wallet
-  ) => {
-    navigation.navigate("edit-wallets-wallet-detail", {
-      blockchain,
-      publicKey,
-      name,
-      type,
-    });
-  };
-
-  const handlePressAddWallet = (blockchain: Blockchain) => {
-    navigation.push("add-wallet", { blockchain });
-  };
-
+export function EditWalletsScreen({
+  navigation,
+  route,
+}: EditWalletsScreenProps): JSX.Element {
   return (
-    <Screen>
-      <WalletList
-        onPressItem={handlePressItem}
-        onPressAddWallet={handlePressAddWallet}
-      />
-    </Screen>
+    <ErrorBoundary
+      fallbackRender={({ error }) => <ScreenError error={error} />}
+    >
+      <Suspense fallback={<ScreenLoading />}>
+        <Container navigation={navigation} route={route} />
+      </Suspense>
+    </ErrorBoundary>
   );
 }
-
-const styles = StyleSheet.create({
-  sectionHeaderTitle: {
-    fontWeight: "500",
-    marginBottom: 8,
-  },
-  listItem: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingVertical: 10,
-    paddingHorizontal: 12,
-  },
-  listItemLeft: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-});

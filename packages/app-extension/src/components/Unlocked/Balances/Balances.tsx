@@ -1,7 +1,16 @@
 import React, { useState } from "react";
 import type { Blockchain } from "@coral-xyz/common";
-import { formatUSD, proxyImageUrl, toTitleCase } from "@coral-xyz/common";
-import { getBlockchainLogo, isAggregateWallets } from "@coral-xyz/recoil";
+import {
+  formatUsd,
+  proxyImageUrl,
+  toTitleCase,
+  UNKNOWN_ICON_SRC,
+} from "@coral-xyz/common";
+import {
+  getBlockchainLogo,
+  isAggregateWallets,
+  useActiveWallet,
+} from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import {
@@ -16,7 +25,6 @@ import {
 } from "@mui/material";
 import { useRecoilValue } from "recoil";
 
-import { UNKNOWN_ICON_SRC } from "../../common/Icon";
 import { WalletDrawerButton } from "../../common/WalletList";
 
 const useStyles = styles((theme) => ({
@@ -160,11 +168,11 @@ export function BalancesTableCell({ props }: any) {
   const changeLabel =
     polarity === "positive" ? (
       <Typography className={classes.tokenBalanceChangePositive}>
-        +{formatUSD(balanceChange.toLocaleString())}
+        +{formatUsd(balanceChange.toLocaleString())}
       </Typography>
     ) : polarity === "negative" ? (
       <Typography className={classes.tokenBalanceChangeNegative}>
-        {formatUSD(balanceChange.toLocaleString())}
+        {formatUsd(balanceChange.toLocaleString())}
       </Typography>
     ) : null;
 
@@ -188,7 +196,7 @@ export function BalancesTableCell({ props }: any) {
         <div className={classes.tokenListItemRow}>
           <Typography className={classes.tokenName}>{title}</Typography>
           <Typography className={classes.tokenBalance}>
-            {usdValue ? formatUSD(usdValue) : "-"}
+            {usdValue ? formatUsd(usdValue) : "-"}
           </Typography>
         </div>
         <div className={classes.tokenListItemRow}>
@@ -258,7 +266,6 @@ export function BalancesTableHead({
     <_BalancesTableHead
       blockchain={wallet.blockchain}
       disableToggle={disableToggle}
-      wallet={wallet}
       showContent={showContent}
       setShowContent={setShowContent}
     />
@@ -268,12 +275,10 @@ export function BalancesTableHead({
 export function _BalancesTableHead({
   blockchain,
   disableToggle,
-  wallet,
   showContent,
   setShowContent,
 }: {
   blockchain: Blockchain;
-  wallet: { name: string; publicKey: string };
   disableToggle?: boolean;
   showContent: boolean;
   setShowContent: (b: boolean) => void;
@@ -283,6 +288,7 @@ export function _BalancesTableHead({
   const title = toTitleCase(blockchain);
   const iconUrl = getBlockchainLogo(blockchain);
   const _isAggregateWallets = useRecoilValue(isAggregateWallets);
+  const wallet = useActiveWallet();
   return (
     <div
       style={{
@@ -323,7 +329,15 @@ export function _BalancesTableHead({
               >
                 {title}
               </Typography>
-              <WalletDrawerButton wallet={wallet} />
+              <WalletDrawerButton
+                showIcon={false}
+                wallet={wallet}
+                buttonStyle={{
+                  border: undefined,
+                  padding: 0,
+                  marginLeft: "5px",
+                }}
+              />
             </div>
             {_isAggregateWallets ? (
               <MuiButton

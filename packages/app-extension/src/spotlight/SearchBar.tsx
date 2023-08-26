@@ -1,4 +1,3 @@
-import * as React from "react";
 import { TextInput } from "@coral-xyz/react-common";
 import { useCustomTheme } from "@coral-xyz/themes";
 import SearchIcon from "@mui/icons-material/Search";

@@ -1,6 +1,7 @@
 {
   "name": "@coral-xyz/tamagui",
   "version": "1.0.0",
+  "license": "MIT",
   "types": "./types/index.d.ts",
   "main": "src/index.tsx",
   "module:jsx": "src",
@@ -13,27 +14,36 @@
   "sideEffects": [
     "*.css"
   ],
+  "scripts": {
+    "build": "tamagui-build",
+    "start": "tamagui-build --watch",
+    "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx --cache",
+    "lint:fix": "yarn run lint --fix"
+  },
   "dependencies": {
     "@coral-xyz/common": "*",
     "@coral-xyz/recoil": "*",
     "@coral-xyz/themes": "*",
-    "@tamagui/animations-react-native": "^1.14.3",
-    "@tamagui/babel-plugin": "^1.14.3",
-    "@tamagui/config": "^1.14.3",
-    "@tamagui/core": "^1.14.3",
-    "@tamagui/font-inter": "^1.14.3",
-    "@tamagui/lucide-icons": "^1.14.3",
-    "@tamagui/shorthands": "^1.14.3",
-    "@tamagui/theme-base": "^1.14.3",
-    "@tamagui/themes": "^1.14.3",
-    "tamagui": "^1.14.3"
-  },
-  "scripts": {
-    "build": "tamagui-build",
-    "start": "tamagui-build --watch"
+    "@expo/vector-icons": "^13.0.0",
+    "@tamagui/animations-react-native": "^1.28.1",
+    "@tamagui/babel-plugin": "^1.28.1",
+    "@tamagui/config": "^1.28.1",
+    "@tamagui/core": "^1.28.1",
+    "@tamagui/font-inter": "^1.28.1",
+    "@tamagui/lucide-icons": "^1.28.1",
+    "@tamagui/shorthands": "^1.28.1",
+    "@tamagui/theme-base": "^1.28.1",
+    "@tamagui/themes": "^1.28.1",
+    "expo-image": "~1.2.3",
+    "react-content-loader": "^6.2.1",
+    "react-error-boundary": "^4.0.9",
+    "react-native-svg": "13.4.0",
+    "tamagui": "^1.28.1"
   },
   "devDependencies": {
-    "@tamagui/build": "^1.14.3",
-    "@types/react-native": "^0.71.3"
+    "@tamagui/build": "^1.28.1",
+    "@types/react": "^18.2.6",
+    "@types/react-native": "~0.71.6",
+    "eslint-config-custom": "*"
   }
 }

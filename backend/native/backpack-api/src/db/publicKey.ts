@@ -1,3 +1,4 @@
+import type { Blockchain } from "@coral-xyz/common";
 import { Chain } from "@coral-xyz/zeus";
 
 import { HASURA_URL, JWT } from "../config";
@@ -12,7 +13,7 @@ export const getPublicKeyDetails = async ({
   publicKey,
 }: {
   publicKey: string;
-}): Promise<{ id: number; blockchain: "solana" | "ethereum" }> => {
+}): Promise<{ id: number; blockchain: Blockchain }> => {
   const publicKeyDetails = await chain("query")(
     {
       auth_public_keys: [
@@ -42,7 +43,7 @@ export const updatePublicKey = async ({
   onlyInsert,
 }: {
   userId: string;
-  blockchain: "solana" | "ethereum";
+  blockchain: Blockchain;
   publicKeyId: number;
   onlyInsert?: boolean;
 }) => {

@@ -1,7 +1,6 @@
 import { NAV_COMPONENT_MESSAGE_GROUP_CHAT } from "@coral-xyz/common";
 import { UserIcon } from "@coral-xyz/react-common";
 import { useNavigation } from "@coral-xyz/recoil";
-import { useCustomTheme } from "@coral-xyz/themes";
 
 import { GroupIdentifier } from "./GroupIdentifier";
 import { SpotlightCell } from "./SpotlightCell";
@@ -43,7 +42,7 @@ function SpotlightGroup({
   selected: boolean;
   setOpen: any;
 }) {
-  const { push, toRoot } = useNavigation();
+  const { push } = useNavigation();
 
   return (
     <SpotlightCell

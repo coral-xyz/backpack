@@ -5,18 +5,16 @@ import {
   CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST,
   CHANNEL_SOLANA_CONNECTION_INJECTED_RESPONSE,
   getLogger,
-  makeUrl,
+  InjectedRequestManager,
   PLUGIN_NOTIFICATION_CONNECT,
   PLUGIN_NOTIFICATION_ETHEREUM_PUBLIC_KEY_UPDATED,
   PLUGIN_NOTIFICATION_MOUNT,
   PLUGIN_NOTIFICATION_SOLANA_PUBLIC_KEY_UPDATED,
   PLUGIN_NOTIFICATION_UNMOUNT,
   PLUGIN_NOTIFICATION_UPDATE_METADATA,
-  PLUGIN_RPC_METHOD_CHAT_OPEN,
-  PLUGIN_RPC_METHOD_CLOSE_TO,
   PLUGIN_RPC_METHOD_PLUGIN_OPEN,
   PLUGIN_RPC_METHOD_POP_OUT,
-  PLUGIN_RPC_METHOD_WINDOW_OPEN,
+  PLUGIN_RPC_METHOD_RESIZE_EXTENSION_WINDOW,
 } from "@coral-xyz/common";
 import type {
   Commitment,
@@ -30,7 +28,6 @@ import type {
 
 import { PrivateEventEmitter } from "./common/PrivateEventEmitter";
 import type { ChainedRequestManager } from "./chained-request-manager";
-import { RequestManager } from "./request-manager";
 import { isValidEventOrigin } from ".";
 
 const logger = getLogger("provider-xnft-injection");
@@ -40,7 +37,7 @@ const logger = getLogger("provider-xnft-injection");
 //
 export class ProviderRootXnftInjection extends PrivateEventEmitter {
   #requestManager: ChainedRequestManager;
-  #connectionRequestManager: RequestManager;
+  #connectionRequestManager: InjectedRequestManager;
   #publicKeys: { [blockchain: string]: string };
   #connectionUrls: { [blockchain: string]: string | null };
 
@@ -62,7 +59,7 @@ export class ProviderRootXnftInjection extends PrivateEventEmitter {
       Object.freeze(this);
     }
     this.#requestManager = requestManager;
-    this.#connectionRequestManager = new RequestManager(
+    this.#connectionRequestManager = new InjectedRequestManager(
       CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST,
       CHANNEL_SOLANA_CONNECTION_INJECTED_RESPONSE
     );
@@ -71,48 +68,10 @@ export class ProviderRootXnftInjection extends PrivateEventEmitter {
     this.#setupChannels();
   }
 
-  public async openWindow(url: string) {
-    await this.#requestManager.request({
-      method: PLUGIN_RPC_METHOD_WINDOW_OPEN,
-      params: [url],
-    });
-  }
-
   public async openPlugin(xnftAddress: string) {
     await this.#requestManager.request({
       method: PLUGIN_RPC_METHOD_PLUGIN_OPEN,
       params: [xnftAddress],
-    });
-  }
-
-  public async openChat(chatId: string, mintAddress: string) {
-    await this.#requestManager.request({
-      method: PLUGIN_RPC_METHOD_CHAT_OPEN,
-      params: [chatId, mintAddress],
-    });
-  }
-
-  public async closePluginTo(
-    {
-      title,
-      componentId,
-      componentProps,
-      pushAboveRoot,
-    }: {
-      title: string;
-      componentId: string;
-      componentProps: any;
-      pushAboveRoot?: boolean;
-    },
-    tab?: string
-  ) {
-    const url = makeUrl(componentId, {
-      props: componentProps,
-      title,
-    });
-    await this.#requestManager.request({
-      method: PLUGIN_RPC_METHOD_CLOSE_TO,
-      params: [url, tab],
     });
   }
 
@@ -124,6 +83,13 @@ export class ProviderRootXnftInjection extends PrivateEventEmitter {
     await this.#requestManager.request({
       method: PLUGIN_RPC_METHOD_POP_OUT,
       params: [options],
+    });
+  }
+
+  public async resizeExtensionWindow(width: number, height: number) {
+    await this.#requestManager.request({
+      method: PLUGIN_RPC_METHOD_RESIZE_EXTENSION_WINDOW,
+      params: [{ width, height }],
     });
   }
 

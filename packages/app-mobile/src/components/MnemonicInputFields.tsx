@@ -1,88 +1,83 @@
+import { memo, useCallback, useRef, forwardRef } from "react";
 import { FlatList, StyleSheet, Text, TextInput, View } from "react-native";
 
 import { useTheme } from "~hooks/useTheme";
 
-function ItemTextInput({
-  word,
-  index,
-  onChangeText,
-}: {
+const ITEM_HEIGHT = 40;
+const ITEM_GAP = 6;
+
+type MnemonicWordInputProps = {
   word: string;
   index: number;
+  returnKeyType: "next" | "done";
   onChangeText: (word: string) => void;
-}) {
-  const theme = useTheme();
-  return (
-    <View
-      style={[
-        styles.container,
-        {
-          backgroundColor: theme.custom.colors.textBackground,
-          borderColor: theme.custom.colors.textInputBorderFull,
-        },
-      ]}
-    >
-      <Text
-        style={{
-          color: theme.custom.colors.secondary,
-        }}
-      >
-        {index + 1}
-      </Text>
-      <TextInput
-        onChangeText={onChangeText}
-        value={word}
+  onSubmitEditing: () => void;
+  onBlur: () => void;
+};
+
+const _MnemonicWordInput = forwardRef<TextInput, MnemonicWordInputProps>(
+  (props, ref) => {
+    const {
+      word,
+      index,
+      returnKeyType,
+      onChangeText,
+      onSubmitEditing,
+      onBlur,
+    } = props;
+    const theme = useTheme();
+    return (
+      <View
         style={[
-          styles.input,
+          styles.container,
           {
-            color: theme.custom.colors.fontColor,
+            backgroundColor: theme.custom.colors.textBackground,
+            borderColor: theme.custom.colors.textInputBorderFull,
           },
         ]}
-      />
-    </View>
-  );
-}
+      >
+        <Text
+          style={{
+            color: theme.custom.colors.secondary,
+          }}
+        >
+          {index + 1}
+        </Text>
+        <TextInput
+          ref={ref}
+          autoCapitalize="none"
+          autoComplete="off"
+          autoCorrect={false}
+          onChangeText={onChangeText}
+          clearButtonMode="while-editing"
+          numberOfLines={1}
+          inputMode="text"
+          returnKeyType={returnKeyType}
+          spellCheck={false}
+          scrollEnabled={false}
+          onSubmitEditing={onSubmitEditing}
+          onBlur={onBlur}
+          maxLength={10}
+          value={word}
+          style={[
+            styles.input,
+            {
+              color: theme.custom.colors.fontColor,
+            },
+          ]}
+        />
+      </View>
+    );
+  }
+);
 
-export function MnemonicInputFields({
-  mnemonicWords,
-  onChange,
-}: {
-  mnemonicWords: string[];
-  onChange?: (mnemonicWords: string[]) => void;
-}) {
-  const gap = 6;
-  return (
-    <FlatList
-      data={mnemonicWords}
-      numColumns={3}
-      initialNumToRender={mnemonicWords.length}
-      scrollEnabled={false}
-      keyExtractor={(_, index) => index.toString()}
-      contentContainerStyle={{ gap }}
-      columnWrapperStyle={{ gap }}
-      renderItem={({ item: word, index }) => {
-        return (
-          <ItemTextInput
-            word={word}
-            index={index}
-            onChangeText={(word) => {
-              if (onChange) {
-                const newMnemonicWords = [...mnemonicWords];
-                newMnemonicWords[index] = word;
-                onChange(newMnemonicWords);
-              }
-            }}
-          />
-        );
-      }}
-    />
-  );
-}
+const MnemonicWordInput = memo(_MnemonicWordInput);
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 6,
+    paddingLeft: 6,
+    paddingRight: 12,
     flexDirection: "row",
     alignItems: "center",
     borderRadius: 8,
@@ -94,6 +89,84 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     fontSize: 14,
     width: "100%",
-    paddingVertical: 12,
+    alignItems: "center",
+    height: ITEM_HEIGHT,
   },
 });
+
+type MnemonicInputFieldsProps = {
+  mnemonicWords: string[];
+  onChange?: (mnemonicWords: string[]) => void;
+  onComplete?: () => void;
+};
+export function MnemonicInputFields({
+  mnemonicWords,
+  onChange,
+  onComplete,
+}: MnemonicInputFieldsProps) {
+  const inputRef = useRef<TextInput[]>([]);
+
+  const selectNextInput = useCallback(
+    (index: number) => () => {
+      const next = inputRef.current[index + 1];
+      if (next) {
+        next.focus();
+      } else {
+        onComplete?.();
+      }
+    },
+    [onComplete]
+  );
+
+  const keyExtractor = (_: any, index: number) => index.toString();
+  const renderItem = useCallback(
+    ({ item, index }: { item: string; index: number }) => {
+      return (
+        <MnemonicWordInput
+          ref={(node) => {
+            if (node) {
+              inputRef.current[index] = node;
+            }
+          }}
+          word={item}
+          index={index}
+          returnKeyType={index === mnemonicWords.length - 1 ? "done" : "next"}
+          onSubmitEditing={selectNextInput(index)}
+          onBlur={() => {
+            if (mnemonicWords.length > 11) {
+              onComplete?.();
+            }
+          }}
+          onChangeText={(word) => {
+            if (onChange) {
+              const newMnemonicWords = [...mnemonicWords];
+              newMnemonicWords[index] = word;
+              onChange(newMnemonicWords);
+            }
+          }}
+        />
+      );
+    },
+    [mnemonicWords, onChange, selectNextInput, onComplete]
+  );
+
+  return (
+    <FlatList
+      data={mnemonicWords}
+      numColumns={3}
+      initialNumToRender={12}
+      scrollEnabled={mnemonicWords.length > 12}
+      keyExtractor={keyExtractor}
+      contentContainerStyle={{ gap: ITEM_GAP }}
+      columnWrapperStyle={{ gap: ITEM_GAP }}
+      renderItem={renderItem}
+      maxToRenderPerBatch={12}
+      style={{ maxHeight: 275 }}
+      getItemLayout={(_data, index) => ({
+        length: ITEM_HEIGHT,
+        offset: ITEM_HEIGHT * index,
+        index,
+      })}
+    />
+  );
+}

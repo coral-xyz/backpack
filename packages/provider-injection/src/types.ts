@@ -1,4 +1,4 @@
-type WalletProvider = {
+export type WalletProvider = {
   on: (
     eventName: string | symbol,
     listener: (...args: unknown[]) => void
@@ -14,7 +14,7 @@ type BackpackProvider = WalletProvider & {
   isBackpack: true;
 };
 
-type WindowEthereum = WalletProvider & {
+export type WindowEthereum = WalletProvider & {
   isMetaMask?: boolean;
   isBackpack?: boolean;
   autoRefreshOnNetworkChange?: boolean;

@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import type { Plugin } from "@coral-xyz/common";
 import { SIMULATOR_URL } from "@coral-xyz/recoil";
-import { useCustomTheme } from "@coral-xyz/themes";
 
 import { PluginDisplay } from "./Plugin";
 

@@ -1,7 +1,15 @@
-import { Pressable, StyleSheet, Switch, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  Pressable,
+  StyleSheet,
+  Switch,
+  Text,
+  View,
+} from "react-native";
+
+import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 
 import { Margin } from "~components/index";
-import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import { useTheme } from "~hooks/useTheme";
 
 export function IconPushDetail() {
@@ -24,12 +32,12 @@ export function IconExpand({ collapsed = true }: { collapsed: boolean }) {
   );
 }
 
-export function IconLaunchDetail() {
+export function IconLaunchDetail({ size = 24 }: { size?: number }) {
   const theme = useTheme();
   return (
     <MaterialCommunityIcons
       name="arrow-top-right"
-      size={24}
+      size={size}
       color={theme.custom.colors.icon}
     />
   );
@@ -70,11 +78,13 @@ function RowContainer({ children }) {
 }
 
 export function SettingsRowSwitch({
+  loading,
   onPress,
   icon,
   label,
   value,
 }: {
+  loading?: boolean;
   onPress: (value: boolean) => void;
   icon?: JSX.Element;
   label: string;
@@ -89,13 +99,17 @@ export function SettingsRowSwitch({
           {label}
         </Text>
       </View>
-      <Switch
-        trackColor={{ false: "#767577", true: "#81b0ff" }}
-        thumbColor={value ? "#f5dd4b" : "#f4f3f4"}
-        ios_backgroundColor="#3e3e3e"
-        onValueChange={() => onPress(value)}
-        value={value}
-      />
+      {loading ? (
+        <ActivityIndicator />
+      ) : (
+        <Switch
+          trackColor={{ false: "#767577", true: "#81b0ff" }}
+          thumbColor={value ? "#f5dd4b" : "#f4f3f4"}
+          ios_backgroundColor="#3e3e3e"
+          onValueChange={() => onPress(value)}
+          value={value}
+        />
+      )}
     </RowContainer>
   );
 }
@@ -164,7 +178,7 @@ export function SettingsRow({
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 12,
+    paddingHorizontal: 16,
     height: 48,
     flexDirection: "row",
     alignItems: "center",

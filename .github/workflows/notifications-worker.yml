@@ -18,6 +18,7 @@ jobs:
         run: |
           cd backend/native/notifications-worker
           touch .env
+          printf 'NODE_ENV=production\n' >> .env
           printf 'AUTH_JWT=%s\n' '${{secrets.AUTH_JWT}}' >> .env
           printf 'AUTH_JWT_PRIVATE_KEY=%s\n' '${{secrets.AUTH_JWT_PRIVATE_KEY}}' >> .env
           printf 'AUTH_JWT_PUBLIC_KEY=%s\n' '${{secrets.AUTH_JWT_PUBLIC_KEY}}' >> .env

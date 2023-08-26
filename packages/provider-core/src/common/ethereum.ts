@@ -1,3 +1,4 @@
+import type { InjectedRequestManager } from "@coral-xyz/common";
 import {
   ETHEREUM_RPC_METHOD_SIGN_AND_SEND_TX,
   ETHEREUM_RPC_METHOD_SIGN_MESSAGE,
@@ -8,13 +9,12 @@ import type { UnsignedTransaction } from "@ethersproject/transactions";
 import { ethers } from "ethers";
 
 import type { ChainedRequestManager } from "../chained-request-manager";
-import type { RequestManager } from "../request-manager";
 
 const { base58: bs58 } = ethers.utils;
 
 export async function signTransaction(
   publicKey: string,
-  requestManager: RequestManager | ChainedRequestManager,
+  requestManager: InjectedRequestManager | ChainedRequestManager,
   transaction: UnsignedTransaction
 ): Promise<TransactionRequest> {
   const serializedTx = encodeTransaction(transaction);
@@ -26,7 +26,7 @@ export async function signTransaction(
 
 export async function sendTransaction(
   publicKey: string,
-  requestManager: RequestManager | ChainedRequestManager,
+  requestManager: InjectedRequestManager | ChainedRequestManager,
   transaction: UnsignedTransaction
 ): Promise<any> {
   const serializedTx = encodeTransaction(transaction);
@@ -38,7 +38,7 @@ export async function sendTransaction(
 
 export async function sendAndConfirmTransaction(
   publicKey: string,
-  requestManager: RequestManager | ChainedRequestManager,
+  requestManager: InjectedRequestManager | ChainedRequestManager,
   transaction: UnsignedTransaction
 ): Promise<any> {
   const signature = this.sendTransaction(
@@ -52,7 +52,7 @@ export async function sendAndConfirmTransaction(
 
 export async function signMessage(
   publicKey: string,
-  requestManager: RequestManager | ChainedRequestManager,
+  requestManager: InjectedRequestManager | ChainedRequestManager,
   msg: string
 ): Promise<Uint8Array> {
   const encodedMsg = ethers.utils.base58.encode(ethers.utils.toUtf8Bytes(msg));

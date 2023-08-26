@@ -73,7 +73,7 @@ export const SendAllButton: FC = () => {
     transaction2.feePayer = wallet.publicKey;
     transaction3.feePayer = wallet.publicKey;
 
-    const signedTxs = await wallet.signAllTransactions([
+    const signedTxs = await wallet.signAllTransactions!([
       transaction1,
       transaction2,
       transaction3,

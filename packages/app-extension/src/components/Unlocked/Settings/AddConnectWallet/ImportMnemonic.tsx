@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { mnemonicPathToPrivateKey } from "@coral-xyz/blockchain-common";
 import type {
   Blockchain,
   SignedWalletDescriptor,
@@ -19,6 +18,7 @@ import {
   useDehydratedWallets,
   useRpcRequests,
 } from "@coral-xyz/recoil";
+import { mnemonicPathToPrivateKey } from "@coral-xyz/secure-background/legacyExport";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Box, Typography } from "@mui/material";
 
@@ -91,7 +91,7 @@ export function ImportMnemonicAutomatic() {
   );
 }
 
-export const ConfirmWalletSync = ({ onClose }: { onClose: () => void }) => {
+const ConfirmWalletSync = ({ onClose }: { onClose: () => void }) => {
   const theme = useCustomTheme();
   return (
     <div
@@ -332,7 +332,7 @@ export function ImportMnemonic({
   );
 }
 
-export function InputName({ onNext }: { onNext: (name: string) => void }) {
+function InputName({ onNext }: { onNext: (name: string) => void }) {
   const [name, setName] = useState("");
   return (
     <Box

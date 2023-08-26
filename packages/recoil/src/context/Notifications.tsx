@@ -1,27 +1,25 @@
 import React, { useEffect } from "react";
-import type {
-  AutolockSettings,
-  Blockchain,
-  Notification,
-} from "@coral-xyz/common";
+import type { AutolockSettings, Notification } from "@coral-xyz/common";
 import {
   BackgroundSolanaConnection,
+  Blockchain,
   CHANNEL_POPUP_NOTIFICATIONS,
   ChannelAppUi,
   getLogger,
   NOTIFICATION_ACTIVE_BLOCKCHAIN_UPDATED,
+  NOTIFICATION_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_AGGREGATE_WALLETS_UPDATED,
   NOTIFICATION_APPROVED_ORIGINS_UPDATE,
   NOTIFICATION_AUTO_LOCK_SETTINGS_UPDATED,
   NOTIFICATION_BLOCKCHAIN_KEYRING_CREATED,
   NOTIFICATION_BLOCKCHAIN_KEYRING_DELETED,
+  NOTIFICATION_CONNECTION_URL_UPDATED,
   NOTIFICATION_DARK_MODE_UPDATED,
   NOTIFICATION_DEVELOPER_MODE_UPDATED,
-  NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED,
-  NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
   NOTIFICATION_ETHEREUM_FEE_DATA_DID_UPDATE,
   NOTIFICATION_ETHEREUM_TOKENS_DID_UPDATE,
+  NOTIFICATION_EXPLORER_UPDATED,
   NOTIFICATION_FEATURE_GATES_UPDATED,
   NOTIFICATION_KEY_IS_COLD_UPDATE,
   NOTIFICATION_KEYNAME_UPDATE,
@@ -38,10 +36,7 @@ import {
   NOTIFICATION_KEYRING_STORE_UNLOCKED,
   NOTIFICATION_KEYRING_STORE_USERNAME_ACCOUNT_CREATED,
   NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
-  NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_SOLANA_COMMITMENT_UPDATED,
-  NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
-  NOTIFICATION_SOLANA_EXPLORER_UPDATED,
   NOTIFICATION_SOLANA_SPL_TOKENS_DID_UPDATE,
   NOTIFICATION_USER_ACCOUNT_AUTHENTICATED,
   NOTIFICATION_USER_ACCOUNT_PUBLIC_KEY_CREATED,
@@ -49,17 +44,14 @@ import {
   NOTIFICATION_USER_ACCOUNT_PUBLIC_KEYS_UPDATED,
   NOTIFICATION_XNFT_PREFERENCE_UPDATED,
 } from "@coral-xyz/common";
+import { KeyringStoreState } from "@coral-xyz/secure-background/types";
 import type { Commitment } from "@solana/web3.js";
 import { useRecoilState, useResetRecoilState, useSetRecoilState } from "recoil";
 
 import * as atoms from "../atoms";
 import { allPlugins } from "../hooks";
 import type { WalletPublicKeys } from "../types";
-import {
-  KeyringStoreStateEnum,
-  useUpdateAllSplTokenAccounts,
-  useUpdateEthereumBalances,
-} from "../";
+import { useUpdateAllSplTokenAccounts, useUpdateEthereumBalances } from "../";
 
 import { useNavigate } from "./useNavigatePolyfill";
 
@@ -280,8 +272,8 @@ export function NotificationsProvider(props: any) {
         case NOTIFICATION_AGGREGATE_WALLETS_UPDATED:
           handleAggregateWalletsUpdated(notif);
           break;
-        case NOTIFICATION_SOLANA_EXPLORER_UPDATED:
-          handleSolanaExplorerUpdated(notif);
+        case NOTIFICATION_EXPLORER_UPDATED:
+          handleExplorerUpdated(notif);
           break;
         case NOTIFICATION_SOLANA_COMMITMENT_UPDATED:
           handleSolanaCommitmentUpdated(notif);
@@ -289,17 +281,11 @@ export function NotificationsProvider(props: any) {
         case NOTIFICATION_SOLANA_SPL_TOKENS_DID_UPDATE:
           await handleSolanaSplTokensDidUpdate(notif);
           break;
-        case NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED:
-          handleSolanaConnectionUrlUpdated(notif);
+        case NOTIFICATION_CONNECTION_URL_UPDATED:
+          handleConnectionUrlUpdated(notif);
           break;
-        case NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED:
-          handleSolanaActiveWalletUpdated(notif);
-          break;
-        case NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED:
-          handleEthereumActiveWalletUpdated(notif);
-          break;
-        case NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED:
-          handleEthereumConnectionUrlUpdated(notif);
+        case NOTIFICATION_ACTIVE_WALLET_UPDATED:
+          handleActiveWalletUpdated(notif);
           break;
         case NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED:
           handleEthereumChainIdUpdated(notif);
@@ -361,11 +347,11 @@ export function NotificationsProvider(props: any) {
 
     const handleKeyringStoreCreated = (notif: Notification) => {
       setPreferences(notif.data.preferences);
-      setKeyringStoreState(KeyringStoreStateEnum.Unlocked);
+      setKeyringStoreState(KeyringStoreState.Unlocked);
     };
 
     const handleKeyringStoreLocked = () => {
-      setKeyringStoreState(KeyringStoreStateEnum.Locked);
+      setKeyringStoreState(KeyringStoreState.Locked);
       setAuthenticatedUser(null);
     };
 
@@ -375,7 +361,7 @@ export function NotificationsProvider(props: any) {
       // and may be updated by migrations that occur on an unlock attempt. The
       // recoil state won't be updated by migrations.
       setActiveUser(notif.data.activeUser);
-      setKeyringStoreState(KeyringStoreStateEnum.Unlocked);
+      setKeyringStoreState(KeyringStoreState.Unlocked);
     };
 
     const handleKeyringKeyDelete = (notif: Notification) => {
@@ -555,15 +541,25 @@ export function NotificationsProvider(props: any) {
       });
     };
 
-    const handleSolanaActiveWalletUpdated = (notif: Notification) => {
-      allPlugins().forEach((p) => {
-        p.pushSolanaPublicKeyChangedNotification(notif.data.activeWallet);
-      });
+    const handleActiveWalletUpdated = (notif: Notification) => {
+      if (notif.data.blockchain === Blockchain.SOLANA) {
+        allPlugins().forEach((p) => {
+          p.pushSolanaPublicKeyChangedNotification(notif.data.activeWallet);
+        });
+      } else if (notif.data.blockchain === Blockchain.ECLIPSE) {
+        allPlugins().forEach((p) => {
+          // TODO
+        });
+      } else if (notif.data.blockchain === Blockchain.ETHEREUM) {
+        allPlugins().forEach((p) => {
+          p.pushEthereumPublicKeyChangedNotification(notif.data.activeWallet);
+        });
+      }
       setActivePublicKeys(notif.data.activeWallets);
     };
 
     const handleReset = () => {
-      setKeyringStoreState(KeyringStoreStateEnum.NeedsOnboarding);
+      setKeyringStoreState(KeyringStoreState.NeedsOnboarding);
     };
 
     const handleApprovedOriginsUpdate = (notif: Notification) => {
@@ -594,19 +590,32 @@ export function NotificationsProvider(props: any) {
       setIsAggregateWallets(notif.data.aggregateWallets);
     };
 
-    const handleSolanaExplorerUpdated = (notif: Notification) => {
-      setSolanaExplorer(notif.data.explorer);
+    const handleExplorerUpdated = (notif: Notification) => {
+      // TODO: make this impl blockchain agnostic.
+      if (notif.data.blockchain === Blockchain.SOLANA) {
+        setSolanaExplorer(notif.data.explorer);
+      } else {
+        // TODO (wasn't ever implemented).
+      }
     };
 
     const handleSolanaCommitmentUpdated = (notif: Notification) => {
       setSolanaCommitment(notif.data.commitment);
     };
 
-    const handleSolanaConnectionUrlUpdated = (notif: Notification) => {
-      setSolanaConnectionUrl(notif.data.url);
-      allPlugins().forEach((p) => {
-        p.pushSolanaConnectionChangedNotification(notif.data.url);
-      });
+    const handleConnectionUrlUpdated = (notif: Notification) => {
+      // TODO: make this impl blockchain agnostic.
+      if (notif.data.blockchain === Blockchain.SOLANA) {
+        setSolanaConnectionUrl(notif.data.url);
+        allPlugins().forEach((p) => {
+          p.pushSolanaConnectionChangedNotification(notif.data.url);
+        });
+      } else if (notif.data.blockchain === Blockchain.ETHEREUM) {
+        setEthereumConnectionUrl(notif.data.connectionUrl);
+        allPlugins().forEach((p) => {
+          p.pushEthereumConnectionChangedNotification(notif.data.connectionUrl);
+        });
+      }
     };
 
     const handleSolanaSplTokensDidUpdate = async (notif: Notification) => {
@@ -624,7 +633,6 @@ export function NotificationsProvider(props: any) {
     };
 
     const handleUserAccountAuthenticated = (notif: Notification) => {
-      logger.debug("dd handleUserAccountAuthenticated:notf", notif.data);
       setAuthenticatedUser({
         username: notif.data.username,
         uuid: notif.data.uuid,
@@ -652,13 +660,6 @@ export function NotificationsProvider(props: any) {
       setServerPublicKeys(notif.data.publicKeys);
     };
 
-    const handleEthereumActiveWalletUpdated = (notif: Notification) => {
-      allPlugins().forEach((p) => {
-        p.pushEthereumPublicKeyChangedNotification(notif.data.activeWallet);
-      });
-      setActivePublicKeys(notif.data.activeWallets);
-    };
-
     const handleEthereumTokensDidUpdate = async (notif: Notification) => {
       const { connectionUrl, activeWallet, balances } = notif.data;
       await updateEthereumBalances({
@@ -670,13 +671,6 @@ export function NotificationsProvider(props: any) {
 
     const handleEthereumFeeDataDidUpdate = (notif: Notification) => {
       setEthereumFeeData(notif.data.feeData);
-    };
-
-    const handleEthereumConnectionUrlUpdated = (notif: Notification) => {
-      setEthereumConnectionUrl(notif.data.connectionUrl);
-      allPlugins().forEach((p) => {
-        p.pushEthereumConnectionChangedNotification(notif.data.connectionUrl);
-      });
     };
 
     const handleEthereumChainIdUpdated = (notif: Notification) => {

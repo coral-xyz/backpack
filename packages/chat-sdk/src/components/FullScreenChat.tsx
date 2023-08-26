@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import type { EnrichedMessageWithMetadata } from "@coral-xyz/common";
 import { BACKEND_API_URL } from "@coral-xyz/common";
-import { fetchMoreChatsFor } from "@coral-xyz/tamagui";
+import { fetchMoreChatsFor } from "@coral-xyz/chat-xplat";
 import { useCustomTheme } from "@coral-xyz/themes";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import FileUploadIcon from "@mui/icons-material/FileUploadRounded";
@@ -102,9 +102,9 @@ export const FullScreenChat = ({
   };
 
   const onMediaSelect = (file: File) => {
-    const fileType = file.type.split('/')[0];
-    
-    if(fileType === 'image' || fileType === 'video') {
+    const fileType = file.type.split("/")[0];
+
+    if (fileType === "image" || fileType === "video") {
       let reader = new FileReader();
       reader.onload = (e) => {
         setSelectedMediaKind(file.name.endsWith("mp4") ? "video" : "image");
@@ -222,8 +222,8 @@ export const FullScreenChat = ({
           position: "absolute",
           bottom: 70,
           right: 0,
-          transition: "opacity 0.1s",
-          opacity: jumpToBottom ? 1 : 0,
+          transition: "visibility 0.1s",
+          visibility: jumpToBottom ? "visible" : "hidden",
         }}
       >
         <div

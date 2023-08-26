@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/rules-of-hooks */
 import { Blockchain } from "@coral-xyz/common";
 import { useRecoilValue } from "recoil";
 
@@ -14,25 +13,36 @@ export function useAvailableBlockchains() {
 }
 
 export function useBlockchainExplorer(blockchain: Blockchain) {
-  switch (blockchain) {
-    case Blockchain.ETHEREUM:
-      return useRecoilValue(atoms.ethereumExplorer);
-    case Blockchain.SOLANA:
-      return useRecoilValue(atoms.solanaExplorer);
-    default:
-      throw new Error(`invalid blockchain ${blockchain}`);
-  }
+  const value = (() => {
+    switch (blockchain) {
+      case Blockchain.ETHEREUM:
+        return atoms.ethereumExplorer;
+      case Blockchain.SOLANA:
+        return atoms.solanaExplorer;
+      case Blockchain.ECLIPSE:
+        return atoms.solanaExplorer; // TODO
+      default:
+        throw new Error(`invalid blockchain ${blockchain}`);
+    }
+  })();
+  return useRecoilValue(value);
 }
 
 export function useBlockchainConnectionUrl(blockchain: Blockchain) {
-  switch (blockchain) {
-    case Blockchain.ETHEREUM:
-      return useRecoilValue(atoms.ethereumConnectionUrl);
-    case Blockchain.SOLANA:
-      return useRecoilValue(atoms.solanaConnectionUrl);
-    default:
-      throw new Error(`invalid blockchain ${blockchain}`);
-  }
+  const value = (() => {
+    switch (blockchain) {
+      case Blockchain.ETHEREUM:
+        return atoms.ethereumConnectionUrl;
+      case Blockchain.SOLANA:
+        return atoms.solanaConnectionUrl;
+      case Blockchain.ECLIPSE:
+        return atoms.eclipseConnectionUrl;
+      default:
+        throw new Error(`invalid blockchain ${blockchain}`);
+    }
+  })();
+
+  return useRecoilValue(value);
 }
 
 // TODO(peter) consolidate between extension/mobile-app or just live on S3
@@ -42,6 +52,8 @@ export function getBlockchainLogo(blockchain: Blockchain): string {
       return "./ethereum.png";
     case Blockchain.SOLANA:
       return "/solana.png";
+    case Blockchain.ECLIPSE:
+      return "/eclipse.png"; // TODO
     default:
       throw new Error(`invalid blockchain ${blockchain}`);
   }
@@ -104,12 +116,15 @@ export function useBlockchainTokenAccount({
 }
 
 export function useBlockchainActiveWallet(blockchain: Blockchain) {
-  switch (blockchain) {
-    case Blockchain.ETHEREUM:
-      return useRecoilValue(atoms.activeEthereumWallet)!;
-    case Blockchain.SOLANA:
-      return useRecoilValue(atoms.activeSolanaWallet)!;
-    default:
-      throw new Error(`invalid blockchain ${blockchain}`);
-  }
+  const value = (() => {
+    switch (blockchain) {
+      case Blockchain.ETHEREUM:
+        return atoms.activeEthereumWallet!;
+      case Blockchain.SOLANA:
+        return atoms.activeSolanaWallet!;
+      default:
+        throw new Error(`invalid blockchain ${blockchain}`);
+    }
+  })();
+  return useRecoilValue(value)!;
 }

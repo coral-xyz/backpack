@@ -1,0 +1,9 @@
+schema: "./src/schema.graphql"
+generates:
+  "./src/routes/graphql/types.ts":
+    plugins:
+      - "typescript"
+      - "typescript-resolvers"
+    config:
+      useIndexSignature: true
+      useTypeImports: true

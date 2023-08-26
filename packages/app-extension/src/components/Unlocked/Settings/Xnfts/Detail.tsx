@@ -184,9 +184,21 @@ export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
             display: "block",
             marginLeft: "auto",
             marginRight: "auto",
-            marginBottom: "30px",
+            marginBottom: "15px",
           }}
         />
+        {xnft.metadata?.xnft ? (
+          <Typography
+            sx={{
+              color: theme.custom.colors.fontColor,
+              fontSize: "12px",
+              marginBottom: "15px",
+              textAlign: "center",
+            }}
+          >
+            v{xnft.metadata.xnft.version}
+          </Typography>
+        ) : null}
         <Button
           disabled={isDisabled}
           disableRipple
@@ -240,11 +252,13 @@ export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
             ? "This xNFT was developed by the Backpack team and cannot be uninstalled."
             : "Uninstalling will remove this xNFT from your account."}
         </Typography>
-        {!isBaked ? <NegativeButton
-          disabled={isDisabled}
-          label="Uninstall xNFT"
-          onClick={() => setOpenConfirm(true)}
-          /> : null}
+        {!isBaked ? (
+          <NegativeButton
+            disabled={isDisabled}
+            label="Uninstall xNFT"
+            onClick={() => setOpenConfirm(true)}
+          />
+        ) : null}
       </div>
       <ApproveTransactionDrawer
         openDrawer={openConfirm}
@@ -292,9 +306,7 @@ const UninstallConfirmationCard = ({ xnft }: { xnft: any }) => {
       await confirmTransaction(
         ctx.connection,
         txSig,
-        ctx.commitment !== "confirmed" && ctx.commitment !== "finalized"
-          ? "confirmed"
-          : ctx.commitment
+        ctx.commitment === "finalized" ? "finalized" : "confirmed"
       );
 
       setCardType("complete");

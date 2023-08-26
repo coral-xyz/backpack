@@ -14,10 +14,10 @@
     "start": "parcel src/service-worker-loader.html -p 9333"
   },
   "dependencies": {
-    "@coral-xyz/blockchain-common": "*",
-    "@coral-xyz/blockchain-keyring": "*",
     "@coral-xyz/common": "*",
     "@coral-xyz/recoil": "*",
+    "@coral-xyz/secure-background": "*",
+    "@coral-xyz/secure-client": "*",
     "@solana/web3.js": "^1.63.1",
     "bip32": "^2.0.6",
     "bip39": "^3.0.4",

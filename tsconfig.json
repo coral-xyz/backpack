@@ -4,20 +4,22 @@
   "include": [],
   "references": [
     { "path": "packages/background" },
-    { "path": "packages/blockchains" },
+    { "path": "packages/secure-background" },
+    { "path": "packages/secure-client" },
     { "path": "packages/chat-sdk" },
+    { "path": "packages/chat-xplat" },
     { "path": "packages/common" },
+    { "path": "packages/data-components" },
     { "path": "packages/db" },
-    { "path": "packages/deptool" },
     { "path": "packages/ledger-injection" },
     { "path": "packages/message-sdk" },
     { "path": "packages/provider-core" },
     { "path": "packages/provider-injection" },
     { "path": "packages/react-common" },
     { "path": "packages/recoil" },
+    { "path": "packages/tamagui-core" },
     { "path": "packages/themes" },
     { "path": "packages/wallet-standard" },
-    { "path": "packages/react-native-core" },
-    { "path": "packages/tamagui-core" }
+    { "path": "packages/react-native-core" }
   ]
 }

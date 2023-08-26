@@ -1,7 +1,7 @@
+import type { KeyringStoreState } from "@coral-xyz/secure-background/types";
 import { useRecoilValue } from "recoil";
 
 import * as atoms from "../atoms";
-import type { KeyringStoreState } from "../atoms/keyring";
 
 export function useKeyringStoreState(): KeyringStoreState {
   return useRecoilValue(atoms.keyringStoreState)!;

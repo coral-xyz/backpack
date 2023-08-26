@@ -1,6 +1,7 @@
 import type { Event } from "@coral-xyz/common";
 import {
   BackgroundEthereumProvider,
+  Blockchain,
   CHANNEL_ETHEREUM_CONNECTION_INJECTED_REQUEST,
   CHANNEL_ETHEREUM_CONNECTION_INJECTED_RESPONSE,
   CHANNEL_ETHEREUM_NOTIFICATION,
@@ -9,10 +10,11 @@ import {
   ETHEREUM_RPC_METHOD_CONNECT,
   ETHEREUM_RPC_METHOD_SWITCH_CHAIN,
   getLogger,
-  NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED,
+  InjectedRequestManager,
+  NOTIFICATION_ACTIVE_WALLET_UPDATED,
+  NOTIFICATION_CONNECTION_URL_UPDATED,
   NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED,
   NOTIFICATION_ETHEREUM_CONNECTED,
-  NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
   NOTIFICATION_ETHEREUM_DISCONNECTED,
 } from "@coral-xyz/common";
 import { ethErrors } from "eth-rpc-errors";
@@ -20,7 +22,6 @@ import { ethers } from "ethers";
 import EventEmitter from "eventemitter3";
 
 import * as cmn from "./common/ethereum";
-import { RequestManager } from "./request-manager";
 import { isValidEventOrigin } from ".";
 
 const logger = getLogger("provider-ethereum-injection");
@@ -99,12 +100,12 @@ export class ProviderEthereumInjection extends EventEmitter {
   /**
    * Channel to send extension specific RPC requests to the extension.
    */
-  requestManager: RequestManager;
+  requestManager: InjectedRequestManager;
 
   /**
    *  Channel to send Solana connection API requests to the extension.
    */
-  connectionRequestManager: RequestManager;
+  connectionRequestManager: InjectedRequestManager;
 
   /**
    * The chain ID of the currently connected Ethereum chain.
@@ -144,12 +145,12 @@ export class ProviderEthereumInjection extends EventEmitter {
   constructor() {
     super();
 
-    this.requestManager = new RequestManager(
+    this.requestManager = new InjectedRequestManager(
       CHANNEL_ETHEREUM_RPC_REQUEST,
       CHANNEL_ETHEREUM_RPC_RESPONSE
     );
 
-    this.connectionRequestManager = new RequestManager(
+    this.connectionRequestManager = new InjectedRequestManager(
       CHANNEL_ETHEREUM_CONNECTION_INJECTED_REQUEST,
       CHANNEL_ETHEREUM_CONNECTION_INJECTED_RESPONSE
     );
@@ -357,13 +358,13 @@ export class ProviderEthereumInjection extends EventEmitter {
       case NOTIFICATION_ETHEREUM_DISCONNECTED:
         this._handleNotificationDisconnected();
         break;
-      case NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED:
+      case NOTIFICATION_CONNECTION_URL_UPDATED:
         this._handleNotificationConnectionUrlUpdated(event);
         break;
       case NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED:
         this._handleNotificationChainIdUpdated(event);
         break;
-      case NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED:
+      case NOTIFICATION_ACTIVE_WALLET_UPDATED:
         this._handleNotificationActiveWalletUpdated(event);
         break;
       default:
@@ -410,7 +411,12 @@ export class ProviderEthereumInjection extends EventEmitter {
    * of the chainId/network if the change was to a different network RPC.
    */
   _handleNotificationConnectionUrlUpdated = async (event: any) => {
-    const { connectionUrl } = event.data.detail.data;
+    const { connectionUrl, blockchain } = event.data.detail.data;
+
+    if (blockchain !== Blockchain.ETHEREUM) {
+      return;
+    }
+
     this.provider = new BackgroundEthereumProvider(
       this.connectionRequestManager,
       connectionUrl
@@ -426,7 +432,12 @@ export class ProviderEthereumInjection extends EventEmitter {
    * Handle a change of the active wallet in Backpack.
    */
   _handleNotificationActiveWalletUpdated = async (event: any) => {
-    const { activeWallet } = event.data.detail.data;
+    const { activeWallet, blockchain } = event.data.detail.data;
+
+    if (blockchain !== Blockchain.ETHEREUM) {
+      return;
+    }
+
     if (this.publicKey !== activeWallet) {
       this.publicKey = activeWallet;
       // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-1193.md#accountschanged

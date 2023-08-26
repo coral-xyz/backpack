@@ -1,13 +1,13 @@
 import {
+  formatWalletAddress,
   SOL_NATIVE_MINT,
-  walletAddressDisplay,
+  UNKNOWN_ICON_SRC,
   WSOL_MINT,
 } from "@coral-xyz/common";
+import { SOL_LOGO_URI } from "@coral-xyz/recoil";
 import type { TokenInfo } from "@solana/spl-token-registry";
 import { LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { NftEventTypes, Source, TransactionType } from "helius-sdk/dist/types";
-
-import { UNKNOWN_ICON_SRC } from "../../../common/Icon";
 
 import type { HeliusParsedTransaction } from "./types";
 
@@ -78,7 +78,7 @@ export const groupTxnsByDate = (
   return result;
 };
 
-export const getSourceOrTypeFormatted = (sourceOrType: string): string => {
+const getSourceOrTypeFormatted = (sourceOrType: string): string => {
   return sourceOrType
     .replaceAll("_", " ")
     .split(" ")
@@ -214,12 +214,12 @@ export const getTransactionCaption = (
     // case TransactionType.UNKNOWN:
     case TransactionType.TRANSFER:
       if (isUserTxnSender(transaction, activeWallet)) {
-        return `To: ${walletAddressDisplay(
+        return `To: ${formatWalletAddress(
           transaction?.tokenTransfers[0]?.toUserAccount ||
             transaction?.nativeTransfers[0]?.toUserAccount
         )}`;
       } else if (isUserTxnSender(transaction, activeWallet) === false) {
-        return `From: ${walletAddressDisplay(
+        return `From: ${formatWalletAddress(
           transaction?.tokenTransfers[0]?.fromUserAccount ||
             transaction?.nativeTransfers[0]?.fromUserAccount
         )}`;
@@ -231,14 +231,10 @@ export const getTransactionCaption = (
         : "";
 
     case TransactionType.SWAP:
-      // fallback to truncated mint address if token metadata was not found
-      return `${
-        tokenData?.[0]?.symbol ||
-        walletAddressDisplay(transaction?.tokenTransfers?.[0]?.mint)
-      } -> ${
-        tokenData?.[1]?.symbol ||
-        walletAddressDisplay(transaction?.tokenTransfers?.[1]?.mint)
-      }`;
+      const [input, output] = parseSwapTransaction(transaction, tokenData);
+      return input.symbolOrAddress && output.symbolOrAddress
+        ? [input.symbolOrAddress, output.symbolOrAddress].join(" -> ")
+        : "";
 
     case TransactionType.NFT_LISTING:
       return `Listed on ${getSourceOrTypeFormatted(transaction.source)}`;
@@ -258,7 +254,7 @@ export const getTransactionCaption = (
     // case TransactionType.BURN:
     //   return transaction?.
     case TransactionType.NFT_MINT:
-      return walletAddressDisplay(
+      return formatWalletAddress(
         metadata?.onChainMetadata?.metadata?.collection?.key
       );
 
@@ -274,7 +270,7 @@ export const getTransactionCaption = (
       //   transaction?.source !== TransactionType.UNKNOWN
       // )
       //   return getSourceOrTypeFormatted(transaction.source);
-      return walletAddressDisplay(transaction?.instructions[0].programId);
+      return formatWalletAddress(transaction?.instructions[0].programId);
   }
 };
 
@@ -318,10 +314,18 @@ export const getTokenData = (
   return tokenData;
 };
 
+// NOTE: this function code has been duplicated in recoil
 export const parseSwapTransaction = (
   transaction: HeliusParsedTransaction,
   tokenData: ReturnType<typeof getTokenData>
 ) => {
+  // should only be returned if parsing fails
+  const fallbackObject = {
+    tokenIcon: UNKNOWN_ICON_SRC,
+    amountWithSymbol: "",
+    symbolOrAddress: "",
+  };
+
   try {
     const {
       nativeInput,
@@ -333,37 +337,56 @@ export const parseSwapTransaction = (
     return [
       [nativeInput, tokenInput],
       [nativeOutput, tokenOutput],
-    ].map(([n, t], i) => {
-      const { mint, amount } = n
-        ? {
-            mint: SOL_NATIVE_MINT,
-            amount: (Number(n.amount) / LAMPORTS_PER_SOL).toFixed(5),
-          }
-        : {
-            mint: t.mint,
-            amount: (
-              Number(t.rawTokenAmount.tokenAmount) /
-              10 ** t.rawTokenAmount.decimals
-            ).toFixed(5),
-          };
+    ].map(([n, t]) => {
+      try {
+        const { mint, amount } = n
+          ? {
+              mint: SOL_NATIVE_MINT,
+              amount: (Number(n.amount) / LAMPORTS_PER_SOL).toFixed(5),
+            }
+          : {
+              mint: t.mint,
+              amount: (
+                Number(t.rawTokenAmount.tokenAmount) /
+                10 ** t.rawTokenAmount.decimals
+              ).toFixed(5),
+            };
 
-      return {
-        tokenIcon: tokenData[i]?.logoURI || UNKNOWN_ICON_SRC,
-        amountWithSymbol: `${amount} ${
-          tokenData?.[i]?.symbol || walletAddressDisplay(mint)
-        }`,
-      };
+        const token = tokenData
+          .concat({
+            address: SOL_NATIVE_MINT,
+            symbol: "SOL",
+            logoURI: SOL_LOGO_URI,
+          } as any)
+          .find((t) => t?.address === mint);
+
+        const symbolOrAddress = token?.symbol || formatWalletAddress(mint);
+
+        return {
+          tokenIcon: token?.logoURI || UNKNOWN_ICON_SRC,
+          symbolOrAddress,
+          amountWithSymbol: [amount, symbolOrAddress].join(" "),
+        };
+      } catch (err) {
+        console.error(err);
+        return fallbackObject;
+      }
     });
   } catch (err) {
     console.error(err);
-    // TODO: remove this previous behavior after some testing
-    return Array(2).map((_, i) => ({
-      tokenIcon: tokenData[i]?.logoURI || UNKNOWN_ICON_SRC,
-      amountWithSymbol: [
-        transaction?.tokenTransfers?.[i]?.tokenAmount.toFixed(5),
-        tokenData[i]?.symbol ||
-          walletAddressDisplay(transaction?.tokenTransfers?.[i]?.mint),
-      ].join(" "),
-    }));
+    return [fallbackObject, fallbackObject];
   }
 };
+
+export function snakeToTitleCase(input: string): string {
+  const parts = input.split("_").map((t) => t.toLowerCase());
+  const titleCasesParts = parts.map((p) =>
+    p.length === 1 ? p : `${p[0].toUpperCase()}${p.slice(1)}`
+  );
+
+  if (titleCasesParts[0] === "Nft") {
+    titleCasesParts[0] = titleCasesParts[0].toUpperCase();
+  }
+
+  return titleCasesParts.join(" ");
+}

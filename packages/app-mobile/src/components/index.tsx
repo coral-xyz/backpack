@@ -1,55 +1,88 @@
-import type { Blockchain } from "@coral-xyz/common";
-
-import { useState } from "react";
-import type { ImageStyle, StyleProp, TextStyle, ViewStyle } from "react-native";
+import { memo, useState } from "react";
+import type { StyleProp, TextStyle, ViewStyle } from "react-native";
 import {
   ActivityIndicator,
   Alert,
-  Image,
+  Button,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   View,
-  ScrollView,
 } from "react-native";
 
 import * as Clipboard from "expo-clipboard";
 import Constants from "expo-constants";
+import { Image } from "expo-image";
+import * as Updates from "expo-updates";
 
-import { proxyImageUrl, walletAddressDisplay } from "@coral-xyz/common";
+import { Blockchain, formatWalletAddress } from "@coral-xyz/common";
+import { useActiveWallet } from "@coral-xyz/recoil";
 import {
-  Margin,
   BaseButton,
-  LinkButton,
-  PrimaryButton,
-  SecondaryButton,
-  NegativeButton,
   DangerButton,
-  Text as _Text,
+  LinkButton,
+  Margin,
+  NegativeButton,
+  PrimaryButton,
+  ProxyImage,
+  RoundedContainerGroup,
+  SecondaryButton,
+  StyledText,
+  StyledTextProps,
+  TwoButtonFooter,
+  XStack,
+  Stack,
+  YStack,
 } from "@coral-xyz/tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { ContentCopyIcon, RedBackpack } from "~components/Icon";
+import { UserAvatar, CurrentUserAvatar } from "~components/UserAvatar";
+import { getBlockchainLogo } from "~hooks/index";
 import { useTheme } from "~hooks/useTheme";
 
 export { ActionCard } from "./ActionCard";
 export { MnemonicInputFields } from "./MnemonicInputFields";
-export { NavHeader } from "./NavHeader";
 export { NFTCard } from "./NFTCard";
-export { PasswordInput } from "./PasswordInput";
+export { NavHeader } from "./NavHeader";
 export { StyledTextInput } from "./StyledTextInput";
 export { TokenAmountHeader } from "./TokenAmountHeader";
 export { StyledTokenTextInput } from "./TokenInputField";
-export { Avatar } from "./UserAvatar";
+export { Avatar, CurrentUserAvatar } from "./UserAvatar";
 export {
-  Margin,
   BaseButton,
-  LinkButton,
-  PrimaryButton,
-  SecondaryButton,
-  NegativeButton,
   DangerButton,
+  LinkButton,
+  Margin,
+  NegativeButton,
+  PrimaryButton,
+  ProxyImage,
+  RoundedContainerGroup,
+  SecondaryButton,
+  StyledText,
+  StyledTextProps,
+  TwoButtonFooter,
+  UserAvatar,
 };
+
+// TODO(fix LinkButton inside tamagui)
+export const LinkButton__ = ({
+  onPress,
+  label,
+  color,
+}: {
+  onPress: () => void;
+  label: string;
+  color: string; // TODO tamagui color props
+}): JSX.Element => (
+  <Pressable style={{ padding: 12 }} onPress={onPress}>
+    <StyledText alignSelf="center" fontSize="$lg" color={color}>
+      {label}
+    </StyledText>
+  </Pressable>
+);
 
 export function CallToAction({
   icon,
@@ -97,48 +130,43 @@ const ctaStyles = StyleSheet.create({
   },
 });
 
-export function StyledText({
-  fontWeight = "500",
-  fontSize = 16,
-  textAlign,
-  children,
-  style,
-  ...props
-}: {
-  fontSize?: number;
-  fontWeight?: string;
-  children: string;
-  textAlign?: string;
-  style?: StyleProp<TextStyle>;
-}) {
-  const theme = useTheme();
-  const color = theme.custom.colors.fontColor;
-  return (
-    <_Text
-      color={theme.custom.colors.fontColor}
-      fontSize={fontSize}
-      fontFamily="Inter"
-      fontWeight={fontWeight}
-      // @ts-expect-error
-      textAlign={textAlign}
-      style={[{ color }, style]}
-      {...props}
-    >
-      {children}
-    </_Text>
-  );
-}
-
 export function Screen({
   scrollable,
   children,
   style,
+  headerPadding,
+  jc,
 }: {
   scrollable?: boolean;
-  children: JSX.Element | JSX.Element[] | null;
+  children: React.ReactNode;
   style?: StyleProp<ViewStyle>;
+  headerPadding?: boolean;
+  jc?: "space-between" | "center";
 }) {
+  const [show, setShow] = useState(true);
+  const insets = useSafeAreaInsets();
   const theme = useTheme();
+
+  // added for perf/dev reasons
+  if (!show) {
+    return (
+      <View
+        style={[
+          screenStyles.container,
+          {
+            flex: 1,
+            backgroundColor: "white",
+            alignItems: "center",
+            justifyContent: "center",
+          },
+          style,
+        ]}
+      >
+        <Button title="Load Screen" onPress={() => setShow(true)} />
+      </View>
+    );
+  }
+
   if (scrollable) {
     return (
       <ScrollView
@@ -161,6 +189,8 @@ export function Screen({
         screenStyles.container,
         {
           backgroundColor: theme.custom.colors.background,
+          marginTop: headerPadding ? insets.top : undefined,
+          justifyContent: jc,
         },
         style,
       ]}
@@ -196,7 +226,6 @@ export function Header({
           color: theme.custom.colors.fontColor,
           fontSize: 24,
           fontWeight: "500",
-          lineHeight: 32,
         },
         style,
       ]}
@@ -211,7 +240,7 @@ export function SubtextParagraph({
   style,
   onPress,
 }: {
-  children: string;
+  children: React.ReactNode;
   style?: StyleProp<TextStyle>;
   onPress?: () => void;
 }) {
@@ -325,55 +354,6 @@ export function EmptyState({
   );
 }
 
-// React Native apps need to specifcy a width and height for remote images
-export function ProxyImage({
-  src,
-  style,
-  ...props
-}: {
-  src: string;
-  style: StyleProp<ImageStyle>;
-}): JSX.Element {
-  const uri = proxyImageUrl(src);
-  return (
-    <Image
-      style={style}
-      source={{ uri }}
-      // onError={({ currentTarget }) => {
-      //   currentTarget.onerror = props.onError || null;
-      //   currentTarget.src = props.src;
-      // }}
-      {...props}
-    />
-  );
-}
-
-export function WalletAddressLabel({
-  publicKey,
-  name,
-  style,
-  nameStyle,
-}: {
-  publicKey: string;
-  name: string;
-  style: StyleProp<ViewStyle>;
-  nameStyle: StyleProp<TextStyle>;
-}): JSX.Element {
-  const theme = useTheme();
-  return (
-    <View style={[{ flexDirection: "row", alignItems: "center" }, style]}>
-      <Margin right={8}>
-        <Text style={[{ color: theme.custom.colors.fontColor }, nameStyle]}>
-          {name}
-        </Text>
-      </Margin>
-      <Text style={{ color: theme.custom.colors.secondary }}>
-        ({walletAddressDisplay(publicKey)})
-      </Text>
-    </View>
-  );
-}
-
 export function Debug({ data }: any): JSX.Element {
   const theme = useTheme();
   return (
@@ -409,7 +389,13 @@ export function DummyScreen({ route }) {
   );
 }
 
-export function FullScreenLoading({ label }: { label?: string }): JSX.Element {
+export function FullScreenLoading({
+  label,
+  children,
+}: {
+  label?: string;
+  children?: React.ReactNode;
+}): JSX.Element {
   const theme = useTheme();
   return (
     <View
@@ -433,11 +419,66 @@ export function FullScreenLoading({ label }: { label?: string }): JSX.Element {
           {label}
         </Text>
       ) : null}
+      {children}
     </View>
   );
 }
 
-export function WelcomeLogoHeader() {
+export const ScreenLoading = FullScreenLoading;
+export function ScreenError({
+  error,
+  extra,
+}: {
+  error: any;
+  extra?: string;
+}): JSX.Element {
+  return (
+    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+      <StyledText fontSize="$lg" color="$negative">
+        Something went wrong:
+      </StyledText>
+      <Text>{error.message}</Text>
+      <Text>{extra}</Text>
+    </View>
+  );
+}
+
+export function ScreenErrorFallback({ error, resetErrorBoundary }) {
+  return (
+    <>
+      <ScreenError error={error} />
+      <PrimaryButton label="Reset" onPress={resetErrorBoundary} />
+    </>
+  );
+}
+
+export const ScreenEmptyList = ({
+  iconName,
+  title,
+  subtitle,
+  buttonText,
+  onPress,
+}: {
+  iconName: string;
+  title: string;
+  subtitle: string;
+  buttonText?: string;
+  onPress?: () => void;
+}) => {
+  return (
+    <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+      <EmptyState
+        icon={(props: any) => <MaterialIcons name={iconName} {...props} />}
+        title={title}
+        subtitle={subtitle}
+        buttonText={buttonText}
+        onPress={onPress}
+      />
+    </View>
+  );
+};
+
+export function WelcomeLogoHeader({ subtitle }: { subtitle?: string }) {
   const theme = useTheme();
   const [showDebug, setShowDebug] = useState(false);
   return (
@@ -458,18 +499,20 @@ export function WelcomeLogoHeader() {
         >
           Backpack
         </Text>
-        <Margin top={8}>
-          <Text
-            style={{
-              lineHeight: 24,
-              fontSize: 16,
-              fontWeight: "500",
-              color: theme.custom.colors.secondary,
-            }}
-          >
-            gm
-          </Text>
-        </Margin>
+        {subtitle ? (
+          <Margin top={8}>
+            <Text
+              style={{
+                lineHeight: 24,
+                fontSize: 16,
+                fontWeight: "500",
+                color: theme.custom.colors.secondary,
+              }}
+            >
+              {subtitle}
+            </Text>
+          </Margin>
+        ) : null}
       </View>
       {showDebug ? (
         <Text
@@ -479,7 +522,16 @@ export function WelcomeLogoHeader() {
             backgroundColor: "white",
           }}
         >
-          {JSON.stringify(Constants?.expoConfig?.extra, null, 2)}
+          {JSON.stringify(
+            {
+              graphqlApiUrl: Constants.expoConfig?.extra?.graphqlApiUrl,
+              serviceWorkerUrl: Constants.expoConfig?.extra?.serviceWorkerUrl,
+              channel: Updates.channel === "" ? "none" : Updates.channel,
+              env: process.env.APP_ENV ?? "none",
+            },
+            null,
+            2
+          )}
         </Text>
       ) : null}
     </>
@@ -506,7 +558,7 @@ export function CopyWalletFieldInput({
   publicKey: string;
 }): JSX.Element {
   const theme = useTheme();
-  const walletDisplay = walletAddressDisplay(publicKey, 12);
+  const walletDisplay = formatWalletAddress(publicKey, 12);
 
   return (
     <View
@@ -554,7 +606,7 @@ export function CopyWalletAddressSubtitle({
       }}
     >
       <Text style={{ color: theme.custom.colors.secondary }}>
-        {walletAddressDisplay(publicKey)}
+        {formatWalletAddress(publicKey)}
       </Text>
     </Pressable>
   );
@@ -674,28 +726,6 @@ export function AddConnectWalletButton({
   );
 }
 
-export function TwoButtonFooter({
-  leftButton,
-  rightButton,
-}: {
-  leftButton: JSX.Element;
-  rightButton: JSX.Element;
-}): JSX.Element {
-  return (
-    <View style={twoButtonFooterStyles.container}>
-      <View style={{ flex: 1, marginRight: 8 }}>{leftButton}</View>
-      <View style={{ flex: 1, marginLeft: 8 }}>{rightButton}</View>
-    </View>
-  );
-}
-
-const twoButtonFooterStyles = StyleSheet.create({
-  container: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-});
-
 export function HeaderIconSubtitle({
   icon,
   title,
@@ -706,64 +736,13 @@ export function HeaderIconSubtitle({
   subtitle?: string;
 }): JSX.Element {
   return (
-    <View style={headerIconSubtitleStyles.container}>
-      <Margin bottom={16}>{icon}</Margin>
+    <YStack space={12} ai="center" mb={24}>
+      {icon}
       <Header text={title} />
       {subtitle ? <SubtextParagraph>{subtitle}</SubtextParagraph> : null}
-    </View>
+    </YStack>
   );
 }
-
-const headerIconSubtitleStyles = StyleSheet.create({
-  container: {
-    alignItems: "center",
-    marginBottom: 24,
-  },
-});
-
-export function RoundedContainerGroup({
-  children,
-  style,
-  disableTopRadius = false,
-  disableBottomRadius = false,
-}: {
-  children: JSX.Element;
-  style?: StyleProp<ViewStyle>;
-  disableTopRadius?: boolean;
-  disableBottomRadius?: boolean;
-}): JSX.Element {
-  const theme = useTheme();
-  return (
-    <View
-      style={[
-        roundedContainerStyles.container,
-        {
-          borderColor: theme.custom.colors.borderFull,
-        },
-        disableTopRadius ? roundedContainerStyles.disableTopRadius : null,
-        disableBottomRadius ? roundedContainerStyles.disableBottomRadius : null,
-        style,
-      ]}
-    >
-      {children}
-    </View>
-  );
-}
-
-const roundedContainerStyles = StyleSheet.create({
-  container: {
-    overflow: "hidden",
-    borderRadius: 12,
-  },
-  disableTopRadius: {
-    borderTopLeftRadius: 0,
-    borderTopRightRadius: 0,
-  },
-  disableBottomRadius: {
-    borderBottomLeftRadius: 0,
-    borderBottomRightRadius: 0,
-  },
-});
 
 export function Row({
   children,
@@ -779,3 +758,84 @@ const rowStyles = StyleSheet.create({
     alignItems: "center",
   },
 });
+
+// original component we use in a bunch of places, wrapped
+export const WalletAddressLabel = memo(function WalletAddressLabel({
+  publicKey,
+}: {
+  publicKey: string;
+}): JSX.Element {
+  return (
+    <Stack px={6} py={4} bg="$background" br="$small">
+      <StyledText fontSize="$sm" color="$secondary">
+        ({formatWalletAddress(publicKey)})
+      </StyledText>
+    </Stack>
+  );
+});
+
+// returns a name (username or wallet name) next to an address (public key)
+export function NameAddressLabel({
+  publicKey,
+  name,
+}: {
+  publicKey: string;
+  name: string;
+}): JSX.Element {
+  return (
+    <XStack space={8} ai="center">
+      <StyledText fontSize="$sm" color="$fontColor">
+        {name}
+      </StyledText>
+      <WalletAddressLabel publicKey={publicKey} />
+    </XStack>
+  );
+}
+
+// Used for the "from" functionality in sending
+export function CurrentUserAvatarWalletNameAddress() {
+  const w = useActiveWallet();
+  return (
+    <XStack space={6} ai="center">
+      <CurrentUserAvatar size={24} />
+      <NameAddressLabel publicKey={w.publicKey} name={w.name} />
+    </XStack>
+  );
+}
+
+// used for the "to" functionality in sending
+// can also be used for the current user "to" when sending to another wallet, just pass in that info
+export function AvatarUserNameAddress({
+  username,
+  avatarUrl,
+  publicKey,
+}: {
+  username: string;
+  avatarUrl: string;
+  publicKey: string;
+}): JSX.Element {
+  return (
+    <XStack space={6} ai="center">
+      <UserAvatar uri={avatarUrl} size={28} />
+      <NameAddressLabel publicKey={publicKey} name={username} />
+    </XStack>
+  );
+}
+
+export function BlockchainLogo({
+  size,
+  blockchain,
+  style,
+}: {
+  size?: number;
+  blockchain: Blockchain;
+  style?: StyleProp<any>;
+}) {
+  const logo = getBlockchainLogo(blockchain);
+  return (
+    <Image
+      style={[{ width: size, height: size, aspectRatio: 1 }, style]}
+      source={logo}
+    />
+  );
+}

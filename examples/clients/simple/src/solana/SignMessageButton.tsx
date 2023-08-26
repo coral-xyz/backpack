@@ -18,7 +18,7 @@ export const SignMessageButton: FC = () => {
 
   return (
     <button onClick={onClick} disabled={!wallet.publicKey}>
-      Sign the message: [1,2,3,4,5]
+      Sign the message: "hello world"
     </button>
   );
 };

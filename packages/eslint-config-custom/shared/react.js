@@ -60,7 +60,21 @@ module.exports = {
     "react-hooks/exhaustive-deps": [
       "warn",
       {
-        additionalHooks: "(useRecoilCallback|useRecoilTransaction_UNSTABLE)",
+        additionalHooks:
+          "(useAsyncEffect|useRecoilCallback|useRecoilTransaction_UNSTABLE)",
+      },
+    ],
+    "no-restricted-imports": [
+      "error",
+      {
+        paths: [
+          {
+            name: "@apollo/client",
+            importNames: ["gql"],
+            message:
+              "Please import 'gql' from '~/src/graphql/__generated__' instead.",
+          },
+        ],
       },
     ],
   },

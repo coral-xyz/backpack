@@ -1,5 +1,3 @@
-import { keyringForBlockchain } from "@coral-xyz/blockchain-common";
-import type { BlockchainKeyring } from "@coral-xyz/blockchain-keyring";
 import type {
   AutolockSettingsOption,
   EventEmitter,
@@ -17,27 +15,27 @@ import {
   BACKEND_API_URL,
   BACKEND_EVENT,
   Blockchain,
+  BLOCKCHAIN_COMMON,
   DEFAULT_DARK_MODE,
   defaultPreferences,
   deserializeTransaction,
-  EthereumConnectionUrl,
-  EthereumExplorer,
   getAccountRecoveryPaths,
   getAddMessage,
   getRecoveryPaths,
+  IS_MOBILE,
   makeUrl,
   NOTIFICATION_ACTIVE_BLOCKCHAIN_UPDATED,
+  NOTIFICATION_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_AGGREGATE_WALLETS_UPDATED,
   NOTIFICATION_APPROVED_ORIGINS_UPDATE,
   NOTIFICATION_AUTO_LOCK_SETTINGS_UPDATED,
   NOTIFICATION_BLOCKCHAIN_KEYRING_CREATED,
   NOTIFICATION_BLOCKCHAIN_KEYRING_DELETED,
+  NOTIFICATION_CONNECTION_URL_UPDATED,
   NOTIFICATION_DARK_MODE_UPDATED,
   NOTIFICATION_DEVELOPER_MODE_UPDATED,
-  NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED,
-  NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
-  NOTIFICATION_ETHEREUM_EXPLORER_UPDATED,
+  NOTIFICATION_EXPLORER_UPDATED,
   NOTIFICATION_FEATURE_GATES_UPDATED,
   NOTIFICATION_KEY_IS_COLD_UPDATE,
   NOTIFICATION_KEYNAME_UPDATE,
@@ -54,21 +52,33 @@ import {
   NOTIFICATION_KEYRING_STORE_UNLOCKED,
   NOTIFICATION_KEYRING_STORE_USERNAME_ACCOUNT_CREATED,
   NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
-  NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_SOLANA_COMMITMENT_UPDATED,
-  NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
-  NOTIFICATION_SOLANA_EXPLORER_UPDATED,
   NOTIFICATION_USER_ACCOUNT_AUTHENTICATED,
   NOTIFICATION_USER_ACCOUNT_PUBLIC_KEY_CREATED,
   NOTIFICATION_USER_ACCOUNT_PUBLIC_KEY_DELETED,
   NOTIFICATION_USER_ACCOUNT_PUBLIC_KEYS_UPDATED,
   NOTIFICATION_XNFT_PREFERENCE_UPDATED,
-  SolanaCluster,
-  SolanaExplorer,
+  TAB_APPS,
+  TAB_BALANCES,
+  TAB_BALANCES_SET,
+  TAB_MESSAGES,
+  TAB_NFTS,
+  TAB_NOTIFICATIONS,
+  TAB_RECENT_ACTIVITY,
+  TAB_SWAP,
+  TAB_TOKENS,
   TAB_XNFT,
 } from "@coral-xyz/common";
-import type { KeyringStoreState } from "@coral-xyz/recoil";
-import { KeyringStoreStateEnum, makeDefaultNav } from "@coral-xyz/recoil";
+import type {
+  BlockchainKeyring,
+  KeyringStore,
+  User,
+} from "@coral-xyz/secure-background/legacyExport";
+import {
+  keyringForBlockchain,
+  secureStore,
+} from "@coral-xyz/secure-background/legacyExport";
+import { KeyringStoreState } from "@coral-xyz/secure-background/types";
 import type {
   Commitment,
   SendOptions,
@@ -85,20 +95,19 @@ import { ethers } from "ethers";
 import type { PublicKeyData, PublicKeyType } from "../types";
 
 import type { EthereumConnectionBackend } from "./ethereum-connection";
-import { KeyringStore } from "./keyring";
+import type { Nav } from "./legacy-store";
+import * as legacyStore from "./legacy-store";
 import type { SolanaConnectionBackend } from "./solana-connection";
-import type { Nav, User } from "./store";
-import { getWalletDataForUser, setUser, setWalletDataForUser } from "./store";
-import * as store from "./store";
 
 const { base58: bs58 } = ethers.utils;
 
 export function start(
   events: EventEmitter,
+  keyringStore: KeyringStore,
   solanaB: SolanaConnectionBackend,
   ethereumB: EthereumConnectionBackend
 ) {
-  return new Backend(events, solanaB, ethereumB);
+  return new Backend(events, keyringStore, solanaB, ethereumB);
 }
 
 export class Backend {
@@ -112,10 +121,11 @@ export class Backend {
 
   constructor(
     events: EventEmitter,
+    keyringStore: KeyringStore,
     solanaB: SolanaConnectionBackend,
     ethereumB: EthereumConnectionBackend
   ) {
-    this.keyringStore = new KeyringStore(events);
+    this.keyringStore = keyringStore;
     this.solanaConnectionBackend = solanaB;
     this.ethereumConnectionBackend = ethereumB;
     this.events = events;
@@ -124,7 +134,7 @@ export class Backend {
     this.xnftWhitelist = new Promise(async (resolve, reject) => {
       try {
         const resp = await fetch(
-          "https://app-store-api.backpack.workers.dev/api/curation/whitelist"
+          "https://api.app-store.xnfts.dev/api/curation/whitelist"
         );
         const { whitelist } = await resp.json();
         resolve(whitelist);
@@ -148,6 +158,7 @@ export class Backend {
     const signature = await this.solanaSignTransaction(txStr, walletAddress);
     const pubkey = new PublicKey(walletAddress);
     const tx = deserializeTransaction(txStr);
+
     tx.addSignature(pubkey, Buffer.from(bs58.decode(signature)));
 
     // Send it to the network.
@@ -233,98 +244,93 @@ export class Backend {
     return blockhash;
   }
 
-  async solanaConnectionUrlRead(uuid: string): Promise<string> {
-    let data = await getWalletDataForUser(uuid);
-
-    // migrate the old default RPC value, this can be removed in future
-    const OLD_DEFAULT = "https://solana-rpc-nodes.projectserum.com";
-    if (
-      // if the current default RPC does not match the old one
-      SolanaCluster.DEFAULT !== OLD_DEFAULT &&
-      // and the user's RPC URL is that old default value
-      data.solana?.cluster === OLD_DEFAULT
-    ) {
-      // set the user's RPC URL to the new default value
-      data = {
-        ...data,
-        solana: {
-          ...data.solana,
-          cluster: SolanaCluster.DEFAULT,
-        },
-      };
-      await setWalletDataForUser(uuid, data);
-    }
-
-    return (data.solana && data.solana.cluster) ?? SolanaCluster.DEFAULT;
+  async connectionUrlRead(
+    uuid: string,
+    blockchain: Blockchain
+  ): Promise<string> {
+    const data = await secureStore.getWalletDataForUser(uuid);
+    const bcData = data[blockchain];
+    const defaultPreferences = BLOCKCHAIN_COMMON[blockchain].PreferencesDefault;
+    return (bcData.connectionUrl ??
+      bcData.cluster ??
+      defaultPreferences.connectionUrl ??
+      defaultPreferences.cluster) as string;
   }
 
   // Returns true if the url changed.
-  async solanaConnectionUrlUpdate(cluster: string): Promise<boolean> {
+  public async connectionUrlUpdate(
+    cluster: string,
+    blockchain: Blockchain
+  ): Promise<boolean> {
     const uuid = this.keyringStore.activeUserKeyring.uuid;
-    const data = await getWalletDataForUser(uuid);
+    const data = await secureStore.getWalletDataForUser(uuid);
 
-    if (data.solana.cluster === cluster) {
+    // TODO: consolidate cluster and connectionUrl fields.
+    // @ts-ignore
+    if (
+      data[blockchain].cluster === cluster ||
+      data[blockchain].connectionUrl === cluster
+    ) {
       return false;
     }
 
     let keyring: BlockchainKeyring | null;
     try {
-      keyring = this.keyringStore.activeUserKeyring.keyringForBlockchain(
-        Blockchain.SOLANA
-      );
+      keyring =
+        this.keyringStore.activeUserKeyring.keyringForBlockchain(blockchain);
     } catch {
       // Blockchain may be disabled
       keyring = null;
     }
     const activeWallet = keyring ? keyring.getActiveWallet() : null;
 
-    await setWalletDataForUser(uuid, {
+    await secureStore.setWalletDataForUser(uuid, {
       ...data,
-      solana: {
-        ...data.solana,
+      [blockchain]: {
+        ...(data[blockchain] || {}),
+        // TODO: consolidate cluster and connectionUrl fields.
         cluster,
+        connectionUrl: cluster,
       },
     });
 
     this.events.emit(BACKEND_EVENT, {
-      name: NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
+      name: NOTIFICATION_CONNECTION_URL_UPDATED,
       data: {
         activeWallet,
         url: cluster,
+        blockchain,
       },
     });
 
     return true;
   }
 
-  async solanaExplorerRead(uuid: string): Promise<string> {
-    const data = await store.getWalletDataForUser(uuid);
-    return data.solana && data.solana.explorer
-      ? data.solana.explorer
-      : SolanaExplorer.DEFAULT;
-  }
-
-  async solanaExplorerUpdate(explorer: string): Promise<string> {
+  public async explorerUpdate(
+    explorer: string,
+    blockchain: Blockchain
+  ): Promise<string> {
     const uuid = this.keyringStore.activeUserKeyring.uuid;
-    const data = await store.getWalletDataForUser(uuid);
-    await store.setWalletDataForUser(uuid, {
+    const data = await secureStore.getWalletDataForUser(uuid);
+    data[blockchain as string] = {
+      ...(data[blockchain] || {}),
+      explorer,
+    };
+    await secureStore.setWalletDataForUser(uuid, {
       ...data,
-      solana: {
-        ...data.solana,
-        explorer,
-      },
     });
     this.events.emit(BACKEND_EVENT, {
-      name: NOTIFICATION_SOLANA_EXPLORER_UPDATED,
+      name: NOTIFICATION_EXPLORER_UPDATED,
       data: {
         explorer,
+        blockchain,
       },
     });
     return SUCCESS_RESPONSE;
   }
 
   async solanaCommitmentRead(uuid: string): Promise<Commitment> {
-    const data = await store.getWalletDataForUser(uuid);
+    const data = await secureStore.getWalletDataForUser(uuid);
     return data.solana && data.solana.commitment
       ? data.solana.commitment
       : "processed";
@@ -332,8 +338,8 @@ export class Backend {
 
   async solanaCommitmentUpdate(commitment: Commitment): Promise<string> {
     const uuid = this.keyringStore.activeUserKeyring.uuid;
-    const data = await store.getWalletDataForUser(uuid);
-    await store.setWalletDataForUser(uuid, {
+    const data = await secureStore.getWalletDataForUser(uuid);
+    await secureStore.setWalletDataForUser(uuid, {
       ...data,
       solana: {
         ...data.solana,
@@ -388,74 +394,8 @@ export class Backend {
   // Ethereum.
   ///////////////////////////////////////////////////////////////////////////////
 
-  async ethereumExplorerRead(uuid: string): Promise<string> {
-    const data = await store.getWalletDataForUser(uuid);
-    return data.ethereum && data.ethereum.explorer
-      ? data.ethereum.explorer
-      : EthereumExplorer.DEFAULT;
-  }
-
-  async ethereumExplorerUpdate(explorer: string): Promise<string> {
-    const uuid = this.keyringStore.activeUserKeyring.uuid;
-    const data = await store.getWalletDataForUser(uuid);
-    await store.setWalletDataForUser(uuid, {
-      ...data,
-      ethereum: {
-        ...(data.ethereum || {}),
-        explorer,
-      },
-    });
-    this.events.emit(BACKEND_EVENT, {
-      name: NOTIFICATION_ETHEREUM_EXPLORER_UPDATED,
-      data: {
-        explorer,
-      },
-    });
-    return SUCCESS_RESPONSE;
-  }
-
-  async ethereumConnectionUrlRead(uuid: string): Promise<string> {
-    const data = await store.getWalletDataForUser(uuid);
-    return data.ethereum && data.ethereum.connectionUrl
-      ? data.ethereum.connectionUrl
-      : EthereumConnectionUrl.DEFAULT;
-  }
-
-  async ethereumConnectionUrlUpdate(connectionUrl: string): Promise<string> {
-    const uuid = this.keyringStore.activeUserKeyring.uuid;
-    const data = await store.getWalletDataForUser(uuid);
-
-    await store.setWalletDataForUser(uuid, {
-      ...data,
-      ethereum: {
-        ...(data.ethereum || {}),
-        connectionUrl,
-      },
-    });
-
-    let keyring: BlockchainKeyring | null;
-    try {
-      keyring = this.keyringStore.activeUserKeyring.keyringForBlockchain(
-        Blockchain.ETHEREUM
-      );
-    } catch {
-      // Blockchain may be disabled
-      keyring = null;
-    }
-    const activeWallet = keyring ? keyring.getActiveWallet() : null;
-
-    this.events.emit(BACKEND_EVENT, {
-      name: NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
-      data: {
-        activeWallet,
-        connectionUrl,
-      },
-    });
-    return SUCCESS_RESPONSE;
-  }
-
   async ethereumChainIdRead(): Promise<string> {
-    const data = await store.getWalletDataForUser(
+    const data = await secureStore.getWalletDataForUser(
       this.keyringStore.activeUserKeyring.uuid
     );
     return data.ethereum && data.ethereum.chainId
@@ -466,8 +406,8 @@ export class Backend {
 
   async ethereumChainIdUpdate(chainId: string): Promise<string> {
     const uuid = this.keyringStore.activeUserKeyring.uuid;
-    const data = await store.getWalletDataForUser(uuid);
-    await store.setWalletDataForUser(uuid, {
+    const data = await secureStore.getWalletDataForUser(uuid);
+    await secureStore.setWalletDataForUser(uuid, {
       ...data,
       ethereum: {
         ...(data.ethereum || {}),
@@ -506,7 +446,7 @@ export class Backend {
   ) {
     if (
       !keyringInit &&
-      (await this.keyringStoreState()) !== KeyringStoreStateEnum.Unlocked
+      (await this.keyringStoreState()) !== KeyringStoreState.Unlocked
     ) {
       throw new Error(
         "provide a keyring init or unlock keyring to sign message"
@@ -517,7 +457,7 @@ export class Backend {
     // If keyring init parameters were provided then init the keyring
     if (keyringInit) {
       // Create an empty keyring to init
-      blockchainKeyring = keyringForBlockchain(blockchain);
+      blockchainKeyring = keyringForBlockchain(blockchain, secureStore);
       if ("mnemonic" in keyringInit) {
         // If mnemonic wasn't actually passed retrieve it from the store. This
         // is to avoid having to pass the mnemonic to the client to make this
@@ -583,8 +523,14 @@ export class Backend {
       name: NOTIFICATION_KEYRING_STORE_CREATED,
       data: {
         blockchainActiveWallets: await this.blockchainActiveWallets(),
-        ethereumConnectionUrl: await this.ethereumConnectionUrlRead(uuid),
-        solanaConnectionUrl: await this.solanaConnectionUrlRead(uuid),
+        ethereumConnectionUrl: await this.connectionUrlRead(
+          uuid,
+          Blockchain.ETHEREUM
+        ),
+        solanaConnectionUrl: await this.connectionUrlRead(
+          uuid,
+          Blockchain.SOLANA
+        ),
         solanaCommitment: await this.solanaCommitmentRead(uuid),
         preferences: await this.preferencesRead(uuid),
       },
@@ -641,20 +587,25 @@ export class Backend {
     const xnftPreferences = await this.getXnftPreferences();
     const blockchainKeyrings = await this.blockchainKeyringsRead();
 
-    // Reset the navigation to the default everytime we switch users
-    // but keep the active tab.
-    const { activeTab } = (await store.getNav())!;
-    await store.setNav({
-      ...defaultNav,
-      activeTab,
-    });
-    const url = defaultNav.data[activeTab].urls[0];
-    this.events.emit(BACKEND_EVENT, {
-      name: NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
-      data: {
-        url,
-      },
-    });
+    // getNav doesn't need to be called for mobile since we have our own system
+    if (!IS_MOBILE) {
+      const navData = await legacyStore.getNav();
+      const activeTab = navData?.activeTab ?? TAB_TOKENS;
+      if (activeTab) {
+        await legacyStore.setNav({
+          ...defaultNav,
+          activeTab,
+        });
+      }
+
+      const url = defaultNav.data[activeTab].urls[0];
+      this.events.emit(BACKEND_EVENT, {
+        name: NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
+        data: {
+          url,
+        },
+      });
+    }
 
     // Push it.
     this.events.emit(BACKEND_EVENT, {
@@ -688,14 +639,16 @@ export class Backend {
     //
     const userInfo = { password, uuid };
     await this.keyringStore.tryUnlock(userInfo);
-    const activeUser = (await store.getUserData()).activeUser;
+    const activeUser = (await secureStore.getUserData()).activeUser;
     const blockchainActiveWallets = await this.blockchainActiveWallets();
-    const ethereumConnectionUrl = await this.ethereumConnectionUrlRead(
-      userInfo.uuid
+    const ethereumConnectionUrl = await this.connectionUrlRead(
+      userInfo.uuid,
+      Blockchain.ETHEREUM
     );
     const ethereumChainId = await this.ethereumChainIdRead();
-    const solanaConnectionUrl = await this.solanaConnectionUrlRead(
-      userInfo.uuid
+    const solanaConnectionUrl = await this.connectionUrlRead(
+      userInfo.uuid,
+      Blockchain.SOLANA
     );
     const solanaCommitment = await this.solanaCommitmentRead(userInfo.uuid);
 
@@ -768,8 +721,11 @@ export class Backend {
         for (const publicKey of publicKeys) {
           namedPublicKeys[blockchain][keyring].push({
             publicKey,
-            name: await store.getKeyname(publicKey),
-            isCold: await store.getIsCold(publicKey),
+            name: await secureStore.getKeyname(
+              publicKey,
+              blockchain as Blockchain
+            ),
+            isCold: await secureStore.getIsCold(publicKey),
           });
         }
       }
@@ -793,7 +749,7 @@ export class Backend {
     // we return a default set of preferences.
     //
     try {
-      return await store.getWalletDataForUser(uuid);
+      return await secureStore.getWalletDataForUser(uuid);
     } catch (err) {
       return defaultPreferences();
     }
@@ -813,24 +769,14 @@ export class Backend {
 
     if (newActivePublicKey !== oldActivePublicKey) {
       // Public key has changed, emit an event
-      // TODO: remove the blockchain specific events in favour of a single event
-      if (blockchain === Blockchain.SOLANA) {
-        this.events.emit(BACKEND_EVENT, {
-          name: NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED,
-          data: {
-            activeWallet: newActivePublicKey,
-            activeWallets: await this.activeWallets(),
-          },
-        });
-      } else if (blockchain === Blockchain.ETHEREUM) {
-        this.events.emit(BACKEND_EVENT, {
-          name: NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED,
-          data: {
-            activeWallet: newActivePublicKey,
-            activeWallets: await this.activeWallets(),
-          },
-        });
-      }
+      this.events.emit(BACKEND_EVENT, {
+        name: NOTIFICATION_ACTIVE_WALLET_UPDATED,
+        data: {
+          activeWallet: newActivePublicKey,
+          activeWallets: await this.activeWallets(),
+          blockchain,
+        },
+      });
     }
 
     if (blockchain !== oldBlockchain) {
@@ -955,11 +901,11 @@ export class Backend {
   }
 
   async keyIsCold(publicKey: string): Promise<boolean> {
-    return await store.getIsCold(publicKey);
+    return await secureStore.getIsCold(publicKey);
   }
 
   async keyIsColdUpdate(publicKey: string, isCold: boolean): Promise<string> {
-    await store.setIsCold(publicKey, isCold);
+    await secureStore.setIsCold(publicKey, isCold);
     const walletData = await this.keyringStoreReadAllPubkeyData();
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_KEY_IS_COLD_UPDATE,
@@ -976,8 +922,11 @@ export class Backend {
    * Read the name associated with a public key in the local store.
    * @param publicKey - public key to read the name for
    */
-  async keynameRead(publicKey: string): Promise<string> {
-    return await store.getKeyname(publicKey);
+  async keynameRead(
+    publicKey: string,
+    blockchain: Blockchain
+  ): Promise<string> {
+    return await secureStore.getKeyname(publicKey, blockchain);
   }
 
   /**
@@ -985,8 +934,12 @@ export class Backend {
    * @param publicKey - public key to update the name for
    * @param newName - new name to associate with the public key
    */
-  async keynameUpdate(publicKey: string, newName: string): Promise<string> {
-    await store.setKeyname(publicKey, newName);
+  async keynameUpdate(
+    publicKey: string,
+    newName: string,
+    blockchain: Blockchain
+  ): Promise<string> {
+    await secureStore.setKeyname(publicKey, newName, blockchain);
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_KEYNAME_UPDATE,
       data: {
@@ -1082,7 +1035,7 @@ export class Backend {
   // keyring is locked.
   async userRead(): Promise<User> {
     try {
-      const user = await store.getActiveUser();
+      const user = await secureStore.getActiveUser();
       return user;
     } catch (err) {
       return { username: "", uuid: "", jwt: "" };
@@ -1090,7 +1043,7 @@ export class Backend {
   }
 
   async userJwtUpdate(uuid: string, jwt: string) {
-    await setUser(uuid, { jwt });
+    await secureStore.setUser(uuid, { jwt });
 
     const walletData = await this.keyringStoreReadAllPubkeyData();
     const preferences = await this.preferencesRead(uuid);
@@ -1116,7 +1069,7 @@ export class Backend {
   }
 
   async allUsersRead(): Promise<Array<User>> {
-    const userData = await store.getUserData();
+    const userData = await secureStore.getUserData();
     return userData.users;
   }
 
@@ -1172,7 +1125,7 @@ export class Backend {
   }
 
   async keyringAutoLockSettingsRead(uuid: string) {
-    const data = await store.getWalletDataForUser(uuid);
+    const data = await secureStore.getWalletDataForUser(uuid);
     return data.autoLockSettings;
   }
 
@@ -1484,7 +1437,7 @@ export class Backend {
     //
     // If we're logging out the last user, reset the entire app.
     //
-    const data = await store.getUserData();
+    const data = await secureStore.getUserData();
     if (data.users.length === 1) {
       await this.keyringReset();
       return SUCCESS_RESPONSE;
@@ -1644,14 +1597,14 @@ export class Backend {
     if (state === "needs-onboarding") {
       return DEFAULT_DARK_MODE;
     }
-    const data = await store.getWalletDataForUser(uuid);
+    const data = await secureStore.getWalletDataForUser(uuid);
     return data.darkMode ?? DEFAULT_DARK_MODE;
   }
 
   async darkModeUpdate(darkMode: boolean): Promise<string> {
     const uuid = this.keyringStore.activeUserKeyring.uuid;
-    const data = await store.getWalletDataForUser(uuid);
-    await store.setWalletDataForUser(uuid, {
+    const data = await secureStore.getWalletDataForUser(uuid);
+    await secureStore.setWalletDataForUser(uuid, {
       ...data,
       darkMode,
     });
@@ -1665,14 +1618,14 @@ export class Backend {
   }
 
   async developerModeRead(uuid: string): Promise<boolean> {
-    const data = await store.getWalletDataForUser(uuid);
+    const data = await secureStore.getWalletDataForUser(uuid);
     return data.developerMode ?? false;
   }
 
   async developerModeUpdate(developerMode: boolean): Promise<string> {
     const uuid = this.keyringStore.activeUserKeyring.uuid;
-    const data = await store.getWalletDataForUser(uuid);
-    await store.setWalletDataForUser(uuid, {
+    const data = await secureStore.getWalletDataForUser(uuid);
+    await secureStore.setWalletDataForUser(uuid, {
       ...data,
       developerMode,
     });
@@ -1687,8 +1640,8 @@ export class Backend {
 
   async aggregateWalletsUpdate(aggregateWallets: boolean): Promise<string> {
     const uuid = this.keyringStore.activeUserKeyring.uuid;
-    const data = await store.getWalletDataForUser(uuid);
-    await store.setWalletDataForUser(uuid, {
+    const data = await secureStore.getWalletDataForUser(uuid);
+    await secureStore.setWalletDataForUser(uuid, {
       ...data,
       aggregateWallets,
     });
@@ -1703,7 +1656,7 @@ export class Backend {
 
   async isApprovedOrigin(origin: string): Promise<boolean> {
     const { uuid } = await this.userRead();
-    const data = await store.getWalletDataForUser(uuid);
+    const data = await secureStore.getWalletDataForUser(uuid);
     if (!data.approvedOrigins) {
       return false;
     }
@@ -1712,14 +1665,14 @@ export class Backend {
   }
 
   async approvedOriginsRead(uuid: string): Promise<Array<string>> {
-    const data = await store.getWalletDataForUser(uuid);
+    const data = await secureStore.getWalletDataForUser(uuid);
     return data.approvedOrigins;
   }
 
   async approvedOriginsUpdate(approvedOrigins: Array<string>): Promise<string> {
     const uuid = this.keyringStore.activeUserKeyring.uuid;
-    const data = await store.getWalletDataForUser(uuid);
-    await store.setWalletDataForUser(uuid, {
+    const data = await secureStore.getWalletDataForUser(uuid);
+    await secureStore.setWalletDataForUser(uuid, {
       ...data,
       approvedOrigins,
     });
@@ -1735,9 +1688,9 @@ export class Backend {
 
   async approvedOriginsDelete(origin: string): Promise<string> {
     const uuid = this.keyringStore.activeUserKeyring.uuid;
-    const data = await store.getWalletDataForUser(uuid);
+    const data = await secureStore.getWalletDataForUser(uuid);
     const approvedOrigins = data.approvedOrigins.filter((o) => o !== origin);
-    await store.setWalletDataForUser(uuid, {
+    await secureStore.setWalletDataForUser(uuid, {
       ...data,
       approvedOrigins,
     });
@@ -1798,7 +1751,7 @@ export class Backend {
   }
 
   async setFeatureGates(gates: FEATURE_GATES_MAP) {
-    await store.setFeatureGates(gates);
+    await legacyStore.setFeatureGates(gates);
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_FEATURE_GATES_UPDATED,
       data: {
@@ -1808,13 +1761,13 @@ export class Backend {
   }
 
   async getFeatureGates() {
-    return await store.getFeatureGates();
+    return await legacyStore.getFeatureGates();
   }
 
   async setXnftPreferences(xnftId: string, preference: XnftPreference) {
     const uuid = this.keyringStore.activeUserKeyring.uuid;
     const currentPreferences =
-      (await store.getXnftPreferencesForUser(uuid)) || {};
+      (await legacyStore.getXnftPreferencesForUser(uuid)) || {};
     const updatedPreferences = {
       ...currentPreferences,
       [xnftId]: {
@@ -1822,7 +1775,7 @@ export class Backend {
         ...preference,
       },
     };
-    await store.setXnftPreferencesForUser(uuid, updatedPreferences);
+    await legacyStore.setXnftPreferencesForUser(uuid, updatedPreferences);
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_XNFT_PREFERENCE_UPDATED,
       data: { updatedPreferences },
@@ -1831,7 +1784,7 @@ export class Backend {
 
   async getXnftPreferences() {
     const uuid = this.keyringStore.activeUserKeyring.uuid;
-    return await store.getXnftPreferencesForUser(uuid);
+    return await legacyStore.getXnftPreferencesForUser(uuid);
   }
 
   ///////////////////////////////////////////////////////////////////////////////
@@ -1843,7 +1796,7 @@ export class Backend {
     tab?: string,
     pushAboveRoot?: boolean
   ): Promise<string> {
-    let nav = await store.getNav();
+    let nav = await legacyStore.getNav();
     if (!nav) {
       throw new Error("nav not found");
     }
@@ -1864,7 +1817,7 @@ export class Backend {
       if (!cachedWhitelist.includes(pk)) {
         // Secondary lazy check to ensure there wasn't a whitelist update in-between cache updates
         const resp = await fetch(
-          `https://app-store-api.backpack.workers.dev/api/curation/whitelist/check?address=${pk}`
+          `https://api.app-store.xnfts.dev/api/curation/whitelist/check?address=${pk}`
         );
         const { whitelisted } = await resp.json();
 
@@ -1890,7 +1843,7 @@ export class Backend {
 
     nav.data[targetTab].urls.push(url);
 
-    await store.setNav(nav);
+    await legacyStore.setNav(nav);
 
     url = setSearchParam(url, "nav", "push");
 
@@ -1905,14 +1858,14 @@ export class Backend {
   }
 
   async navigationPop(tab?: string): Promise<string> {
-    let nav = await store.getNav();
+    let nav = await legacyStore.getNav();
     if (!nav) {
       throw new Error("nav not found");
     }
     const targetTab = tab ?? nav.activeTab;
     nav.data[targetTab] = nav.data[targetTab] ?? { id: targetTab, urls: [] };
     nav.data[targetTab].urls.pop();
-    await store.setNav(nav);
+    await legacyStore.setNav(nav);
 
     const urls =
       nav.data[targetTab].urls.length > 0
@@ -1932,12 +1885,12 @@ export class Backend {
   }
 
   async navigationToDefault(): Promise<string> {
-    await store.setNav(defaultNav);
+    await legacyStore.setNav(defaultNav);
     return SUCCESS_RESPONSE;
   }
 
   async navigationToRoot(): Promise<string> {
-    let nav = await store.getNav();
+    let nav = await legacyStore.getNav();
     if (!nav) {
       throw new Error("nav not found");
     }
@@ -1951,7 +1904,7 @@ export class Backend {
 
     let url = urls[0];
     nav.data[nav.activeTab].urls = [url];
-    await store.setNav(nav);
+    await legacyStore.setNav(nav);
 
     url = setSearchParam(url, "nav", "pop");
     this.events.emit(BACKEND_EVENT, {
@@ -1965,18 +1918,43 @@ export class Backend {
   }
 
   async navRead(): Promise<Nav> {
-    let nav = await store.getNav();
+    let nav = await legacyStore.getNav();
     if (!nav) {
-      await store.setNav(defaultNav);
+      await legacyStore.setNav(defaultNav);
       nav = defaultNav;
     }
+    nav = nav as Nav;
+
+    //
+    // Migrate balances tab if needed.
+    //
+    // This only works if this method is called on app load.
+    //
+    if (!nav.data["balances"].ref) {
+      nav.data["balances"] = {
+        id: "balances",
+        ref: "tokens",
+        urls: [],
+      };
+      nav.data["tokens"] = {
+        id: "tokens",
+        urls: [makeUrl("tokens", { title: "Tokens", props: {} })],
+      };
+      await legacyStore.setNav(nav);
+    }
+
     // @ts-ignore
     return nav;
   }
 
   async navReadUrl(): Promise<string> {
     const nav = await this.navRead();
-    let urls = nav.data[nav.activeTab].urls;
+
+    let tab = nav.data[nav.activeTab];
+    if (tab.ref) {
+      tab = nav.data[tab.ref];
+    }
+    let urls = tab.urls;
     if (nav.data[TAB_XNFT]?.urls.length > 0) {
       urls = nav.data[TAB_XNFT].urls;
     }
@@ -1984,9 +1962,33 @@ export class Backend {
   }
 
   async navigationActiveTabUpdate(activeTab: string): Promise<string> {
-    const currNav = await store.getNav();
+    const currNav = await legacyStore.getNav();
     if (!currNav) {
       throw new Error("invariant violation");
+    }
+
+    if (activeTab !== TAB_XNFT) {
+      delete currNav.data[TAB_XNFT];
+    }
+
+    // Newly introduced messages tab needs to be added to the
+    // store for backward compatability
+    if (activeTab === "messages" && !currNav.data[activeTab]) {
+      currNav.data[activeTab] = {
+        id: "messages",
+        urls: [makeUrl("messages", { title: "Messages", props: {} })],
+      };
+    }
+
+    // The "balances" tab is just a ref to the other internal tabs.
+    activeTab =
+      activeTab === "balances" ? currNav.data[activeTab].ref : activeTab;
+
+    //
+    // Sync the "balances" ref field
+    //
+    if (TAB_BALANCES_SET.has(activeTab)) {
+      currNav.data["balances"].ref = activeTab;
     }
 
     const nav = {
@@ -1994,19 +1996,7 @@ export class Backend {
       activeTab,
     };
 
-    if (activeTab !== TAB_XNFT) {
-      delete nav.data[TAB_XNFT];
-    }
-
-    // Newly introduced messages tab needs to be added to the
-    // store for backward compatability
-    if (activeTab === "messages" && !nav.data[activeTab]) {
-      nav.data[activeTab] = {
-        id: "messages",
-        urls: [makeUrl("messages", { title: "Messages", props: {} })],
-      };
-    }
-    await store.setNav(nav);
+    await legacyStore.setNav(nav);
 
     const navData = nav.data[activeTab];
     let url = navData.urls[navData.urls.length - 1];
@@ -2023,8 +2013,6 @@ export class Backend {
   }
 
   async navigationOpenChat(chatName: string): Promise<string> {
-    console.log("openchat");
-
     return SUCCESS_RESPONSE;
   }
 
@@ -2033,7 +2021,7 @@ export class Backend {
     activeTab?: string
   ): Promise<string> {
     // Get the tab nav.
-    const currNav = await store.getNav();
+    const currNav = await legacyStore.getNav();
     if (!currNav) {
       throw new Error("invariant violation");
     }
@@ -2043,17 +2031,26 @@ export class Backend {
     }
 
     // Update the active tab's nav stack.
-    const navData = currNav.data[activeTab ?? currNav.activeTab];
+    activeTab = activeTab ?? currNav.activeTab;
+
+    const navData = currNav.data[activeTab!];
     if (!navData) {
       // We exit gracefully so that we don't crash the app.
       console.error(`navData not found for tab ${activeTab}`);
       return SUCCESS_RESPONSE;
     }
     navData.urls[navData.urls.length - 1] = url;
-    currNav.data[activeTab ?? currNav.activeTab] = navData;
+    currNav.data[activeTab!] = navData;
+
+    //
+    // Sync the "balances" ref field
+    //
+    if (TAB_BALANCES_SET.has(activeTab)) {
+      currNav.data["balances"].ref = activeTab;
+    }
 
     // Save the change.
-    await store.setNav(currNav);
+    await legacyStore.setNav(currNav);
 
     // Only navigate if the user hasn't already moved away from this tab
     // or if the user didn't explicitly send an activeTab
@@ -2074,6 +2071,30 @@ export class Backend {
 
 export const SUCCESS_RESPONSE = "success";
 const defaultNav = makeDefaultNav();
+
+function makeDefaultNav() {
+  const defaultNav: any = {
+    activeTab: TAB_TOKENS,
+    data: {},
+  };
+  [
+    [TAB_BALANCES, "Balances"],
+    [TAB_NFTS, "Nfts"],
+    [TAB_SWAP, "Swap"],
+    [TAB_APPS, "Apps"],
+    [TAB_MESSAGES, "Messages"],
+    [TAB_RECENT_ACTIVITY, "Recent Activity"],
+    [TAB_NOTIFICATIONS, "Notifications"],
+    [TAB_TOKENS, "Tokens"],
+  ].forEach(([tabName, tabTitle]) => {
+    defaultNav.data[tabName] = {
+      id: tabName,
+      urls: [makeUrl(tabName, { title: tabTitle, props: {} })],
+      ref: tabName === "balances" ? "tokens" : undefined,
+    };
+  });
+  return defaultNav;
+}
 
 function setSearchParam(url: string, key: string, value: string): string {
   const [path, search] = url.split("?");

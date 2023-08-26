@@ -29,3 +29,11 @@ export const solanaConnectionUrl = selector<string>({
     return p.solana.cluster;
   },
 });
+
+export const eclipseConnectionUrl = selector<string>({
+  key: "eclipseConnectionUrl",
+  get: ({ get }) => {
+    const p = get(preferences);
+    return p.eclipse.cluster;
+  },
+});

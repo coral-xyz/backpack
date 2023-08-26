@@ -1,5 +1,5 @@
 {
-  "include": ["src", "webpack.config.js"],
+  "include": ["src", "webpack.config.js", "tamagui.config.ts"],
   "exclude": ["**/node_modules", "**/.*/"],
   "compilerOptions": {
     "strict": true,
@@ -17,26 +17,36 @@
     "isolatedModules": true,
     "noEmit": true,
     "downlevelIteration": true,
+    "noUnusedParameters": true,
     "jsx": "react-jsx",
     "paths": {
+      "@coral-xyz/tamagui": ["../tamagui-core"],
       "@coral-xyz/background": ["../background"],
       "@coral-xyz/chat-sdk": ["../chat-sdk"],
       "@coral-xyz/common": ["../common"],
+      "@coral-xyz/data-components": ["../data-components"],
       "@coral-xyz/db": ["../db"],
       "@coral-xyz/message-sdk": ["../message-sdk"],
       "@coral-xyz/react-common": ["../react-common"],
       "@coral-xyz/recoil": ["../recoil"],
-      "@coral-xyz/themes": ["../themes"]
+      "@coral-xyz/themes": ["../themes"],
+      "@coral-xyz/secure-background": ["../secure-background"],
+      "@coral-xyz/secure-client": ["../secure-client"]
     }
   },
   "references": [
+    { "path": "../tamagui-core" },
     { "path": "../background" },
+    { "path": "../secure-background" },
+    { "path": "../secure-client" },
     { "path": "../chat-sdk" },
     { "path": "../common" },
+    { "path": "../data-components" },
     { "path": "../db" },
     { "path": "../message-sdk" },
     { "path": "../react-common" },
     { "path": "../recoil" },
+    { "path": "../tamagui-core" },
     { "path": "../themes" }
   ]
 }

@@ -1,101 +1,125 @@
-import {
-  BACKPACK_CONFIG_VERSION,
-  Blockchain,
-  UI_RPC_METHOD_SETTINGS_DARK_MODE_UPDATE,
-  UI_RPC_METHOD_SETTINGS_DEVELOPER_MODE_UPDATE,
-} from "@coral-xyz/common";
-import {
-  useBackgroundClient,
-  // getBlockchainLogo,
-  useDarkMode,
-  useDeveloperMode,
-} from "@coral-xyz/recoil";
+import { Suspense, useState } from "react";
+import { Alert } from "react-native";
 
-import { Margin, RoundedContainerGroup, Screen } from "~components/index";
+import { BACKPACK_CONFIG_VERSION, Blockchain } from "@coral-xyz/common";
+import { YStack } from "@coral-xyz/tamagui";
+import { ErrorBoundary } from "react-error-boundary";
 
 import {
-  IconPushDetail,
-  SettingsRow,
-  SettingsRowSwitch,
-  SettingsRowText,
-} from "./components/SettingsRow";
+  RoundedContainerGroup,
+  Screen,
+  ScreenError,
+  ScreenLoading,
+} from "~components/index";
+import { SettingsList } from "~screens/Unlocked/Settings/components/SettingsMenuList";
 
-export function PreferencesScreen({ navigation }) {
-  // const theme = useTheme();
-  const background = useBackgroundClient();
-  const isDarkMode = useDarkMode();
-  const isDeveloperMode = useDeveloperMode();
+import { SettingsRowSwitch, SettingsRowText } from "./components/SettingsRow";
 
-  const onDarkModeSwitch = async (isDarkMode: boolean) => {
-    await background.request({
-      method: UI_RPC_METHOD_SETTINGS_DARK_MODE_UPDATE,
-      params: [isDarkMode],
+import {
+  BiometricAuthenticationStatus,
+  tryLocalAuthenticate,
+} from "~src/features/biometrics";
+import {
+  biometricAuthenticationSuccessful,
+  useDeviceSupportsBiometricAuth,
+  useOsBiometricAuthEnabled,
+} from "~src/features/biometrics/hooks";
+import * as Linking from "~src/lib/linking";
+
+function SettingsBiometricsMode() {
+  const [loading, setLoading] = useState(false);
+  const { biometricName } = useDeviceSupportsBiometricAuth();
+  const isSupported = useDeviceSupportsBiometricAuth();
+  const isEnabled = useOsBiometricAuthEnabled();
+
+  if (!isSupported) {
+    return null;
+  }
+
+  const onBiometricSwitch = async () => {
+    setLoading(true);
+    const authStatus = await tryLocalAuthenticate({
+      disableDeviceFallback: true,
     });
+
+    if (
+      authStatus === BiometricAuthenticationStatus.Unsupported ||
+      authStatus === BiometricAuthenticationStatus.MissingEnrollment
+    ) {
+      Alert.alert(
+        `${biometricName} is disabled`,
+        `To enable ${biometricName}, allow access in system settings`,
+        [
+          {
+            text: "Settings",
+            onPress: Linking.openSettings,
+          },
+          { text: "Not now" },
+        ]
+      );
+    }
+
+    if (biometricAuthenticationSuccessful(authStatus)) {
+      console.log("warn folks password is different now or something");
+    }
+
+    setLoading(false);
   };
 
-  const onDeveloperModeSwitch = async (isDeveloperMode: boolean) => {
-    await background.request({
-      method: UI_RPC_METHOD_SETTINGS_DEVELOPER_MODE_UPDATE,
-      params: [isDeveloperMode],
-    });
+  return (
+    <RoundedContainerGroup>
+      <SettingsRowSwitch
+        loading={loading}
+        value={Boolean(isEnabled)}
+        label={`Enable ${biometricName}`}
+        onPress={onBiometricSwitch}
+      />
+    </RoundedContainerGroup>
+  );
+}
+
+function Container({ navigation }) {
+  const menuItems = {
+    Solana: {
+      onPress: () => {
+        navigation.push("PreferencesSolana", {
+          blockchain: Blockchain.SOLANA,
+        });
+      },
+    },
+    Ethereum: {
+      onPress: () => {
+        navigation.push("PreferencesEthereum", {
+          blockchain: Blockchain.ETHEREUM,
+        });
+      },
+    },
   };
 
   return (
     <Screen>
-      <Margin vertical={12}>
-        <RoundedContainerGroup>
-          <SettingsRow
-            label="Auto-lock Timer"
-            onPress={() => navigation.push("Preferences")}
-            detailIcon={<IconPushDetail />}
-          />
-          <SettingsRow
-            label="Trusted Sites"
-            onPress={() => navigation.push("PreferencesTrustedSites")}
-            detailIcon={<IconPushDetail />}
-          />
-          <SettingsRowSwitch
-            value={isDarkMode}
-            label="Dark Mode"
-            onPress={(value) => onDarkModeSwitch(value)}
-          />
-          <SettingsRowSwitch
-            value={isDeveloperMode}
-            label="Developer Mode"
-            onPress={(value) => onDeveloperModeSwitch(value)}
-          />
-        </RoundedContainerGroup>
-      </Margin>
-      <Margin bottom={12}>
-        <RoundedContainerGroup>
-          <SettingsRow
-            label={Blockchain.SOLANA}
-            detailIcon={<IconPushDetail />}
-            onPress={() =>
-              navigation.push("PreferencesSolana", {
-                blockchain: Blockchain.SOLANA,
-              })
-            }
-          />
-          <SettingsRow
-            label={Blockchain.ETHEREUM}
-            detailIcon={<IconPushDetail />}
-            onPress={() =>
-              navigation.push("PreferencesEthereum", {
-                blockchain: Blockchain.ETHEREUM,
-              })
-            }
-          />
-        </RoundedContainerGroup>
-      </Margin>
-      <Margin bottom={12}>
+      <YStack space="$settingsList">
+        <SettingsBiometricsMode />
+        <SettingsList menuItems={menuItems} />
         <RoundedContainerGroup>
           <SettingsRowText
             label="Version"
             detailText={BACKPACK_CONFIG_VERSION}
           />
         </RoundedContainerGroup>
-      </Margin>
+      </YStack>
     </Screen>
+  );
+}
+
+export function PreferencesScreen({ navigation }): JSX.Element {
+  return (
+    <ErrorBoundary
+      fallbackRender={({ error }) => <ScreenError error={error} />}
+    >
+      <Suspense fallback={<ScreenLoading />}>
+        <Container navigation={navigation} />
+      </Suspense>
+    </ErrorBoundary>
   );
 }

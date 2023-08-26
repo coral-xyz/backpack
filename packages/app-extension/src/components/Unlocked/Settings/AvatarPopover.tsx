@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import { createContext, type CSSProperties, useContext, useState } from "react";
 import {
   openAddUserAccount,
   openPopupWindow,
@@ -15,13 +15,6 @@ import {
 import { HOVER_OPACITY, styles, useCustomTheme } from "@coral-xyz/themes";
 import { Add, Check } from "@mui/icons-material";
 import { Button, IconButton, Popover, Typography } from "@mui/material";
-
-import { CloseButton, WithDrawer } from "../../common/Layout/Drawer";
-import {
-  NavStackEphemeral,
-  NavStackScreen,
-} from "../../common/Layout/NavStack";
-import { Logout } from "../../Locked/Reset/ResetWarning";
 
 import { SettingsNavStackDrawer } from "./SettingsNavStackDrawer";
 
@@ -44,8 +37,8 @@ export function AvatarPopoverButton({
   buttonStyle,
   imgStyle,
 }: {
-  buttonStyle?: React.CSSProperties;
-  imgStyle?: React.CSSProperties;
+  buttonStyle?: CSSProperties;
+  imgStyle?: CSSProperties;
 }) {
   const classes = useStyles();
   const theme = useCustomTheme();
@@ -417,42 +410,11 @@ function UserMenuItem({ user, onClick }: { user: any; onClick: () => void }) {
   );
 }
 
-function LockList() {
-  const theme = useCustomTheme();
-  const background = useBackgroundClient();
-  return (
-    <MenuList>
-      <MenuListItem
-        onClick={() => {
-          background
-            .request({
-              method: UI_RPC_METHOD_KEYRING_STORE_LOCK,
-              params: [],
-            })
-            .catch(console.error);
-        }}
-      >
-        <Typography
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            color: theme.custom.colors.fontColor,
-            fontSize: "14px",
-          }}
-        >
-          Lock Wallet
-        </Typography>
-      </MenuListItem>
-    </MenuList>
-  );
-}
-
 type PopoverContext = {
   close: () => void;
   openSettings: () => void;
 };
-const _PopoverContext = React.createContext<PopoverContext | null>(null);
+const _PopoverContext = createContext<PopoverContext | null>(null);
 
 function PopoverProvider({ children, close, openSettings }: any) {
   return (
@@ -467,7 +429,7 @@ function PopoverProvider({ children, close, openSettings }: any) {
   );
 }
 
-export function usePopoverContext(): PopoverContext {
+function usePopoverContext(): PopoverContext {
   const ctx = useContext(_PopoverContext);
   if (ctx === null) {
     throw new Error("Context not available");

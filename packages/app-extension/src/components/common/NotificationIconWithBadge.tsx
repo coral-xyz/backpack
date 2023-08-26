@@ -17,7 +17,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 export const NotificationIconWithBadge = ({ style }: { style: any }) => {
-  const unreadCount = useUnreadCount();
+  const [unreadCount] = useUnreadCount();
   const classes = useStyles();
 
   if (!unreadCount) {

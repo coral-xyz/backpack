@@ -12,7 +12,7 @@ export function UserListSkeleton() {
   );
 }
 
-export function UserSkeleton() {
+function UserSkeleton() {
   const theme = useCustomTheme();
   return (
     <div

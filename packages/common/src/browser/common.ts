@@ -39,6 +39,10 @@ export class BrowserRuntimeCommon {
     });
   }
 
+  public static async removeLocalStorage(key: string): Promise<void> {
+    return chrome?.storage.local.remove(key);
+  }
+
   public static async setLocalStorage(key: string, value: any): Promise<void> {
     return new Promise((resolve, reject) => {
       const obj: any = {};

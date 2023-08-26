@@ -37,7 +37,7 @@ import type { ConfirmOptions, SendOptions } from "@solana/web3.js";
 import { useRecoilValue } from "recoil";
 
 import { sanitizeTransactionWithFeeConfig } from "../../utils/solana";
-import { walletAddressDisplay } from "../common";
+import { formatWalletAddress } from "../common";
 import { ApproveTransactionDrawer } from "../common/ApproveTransactionDrawer";
 import { Scrollbar } from "../common/Layout/Scrollbar";
 import { TransactionData } from "../common/TransactionData";
@@ -407,7 +407,7 @@ function SendTransactionRequest({
             fontSize: "14px",
           }}
         >
-          {walletAddressDisplay(from)}
+          {formatWalletAddress(from)}
         </Typography>
       ),
       classes: { root: classes.approveTableRoot },

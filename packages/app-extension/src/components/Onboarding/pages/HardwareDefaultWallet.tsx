@@ -4,20 +4,18 @@
 // script can't communicate with a hardware device.
 
 import { useEffect, useState } from "react";
-import type { WalletDescriptor } from "@coral-xyz/common";
+import type {   Blockchain,WalletDescriptor } from "@coral-xyz/common";
 import {
-  Blockchain,
   getAccountRecoveryPaths,
   UI_RPC_METHOD_FIND_SERVER_PUBLIC_KEY_CONFLICTS,
 } from "@coral-xyz/common";
 import { Loading } from "@coral-xyz/react-common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
-import Ethereum from "@ledgerhq/hw-app-eth";
-import Solana from "@ledgerhq/hw-app-solana";
+import type Ethereum from "@ledgerhq/hw-app-eth";
+import type Solana from "@ledgerhq/hw-app-solana";
 import type Transport from "@ledgerhq/hw-transport";
-import { ethers } from "ethers";
 
-const { base58 } = ethers.utils;
+import { BLOCKCHAIN_COMPONENTS } from "../../common/Blockchains";
 
 export const HardwareDefaultWallet = ({
   blockchain,
@@ -38,10 +36,8 @@ export const HardwareDefaultWallet = ({
 
   useEffect(() => {
     (async () => {
-      const ledgerWallet = {
-        [Blockchain.SOLANA]: new Solana(transport),
-        [Blockchain.ETHEREUM]: new Ethereum(transport),
-      }[blockchain];
+      const ledgerWallet =
+        BLOCKCHAIN_COMPONENTS[blockchain].LedgerApp(transport);
       setLedgerWallet(ledgerWallet);
     })();
   }, [blockchain, transport]);
@@ -57,13 +53,9 @@ export const HardwareDefaultWallet = ({
       try {
         // Get the public keys for all of the recovery paths for the current account index
         for (const path of recoveryPaths) {
-          const ledgerAddress = (
-            await ledgerWallet.getAddress(path.replace("m/", ""))
-          ).address;
-          const publicKey =
-            blockchain === Blockchain.SOLANA
-              ? base58.encode(ledgerAddress as Buffer)
-              : ledgerAddress.toString();
+          const publicKey = await BLOCKCHAIN_COMPONENTS[
+            blockchain
+          ].PublicKeyFromPath(ledgerWallet, path);
           publicKeys.push(publicKey);
         }
       } catch (error) {

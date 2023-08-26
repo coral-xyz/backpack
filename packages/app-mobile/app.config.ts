@@ -2,20 +2,70 @@ import { ExpoConfig, ConfigContext } from "expo/config";
 
 type ExpoExtras = {
   extra: {
-    FEATURE_MOBILE_CHAT: boolean;
-    localWebViewUrl: string;
-    remoteWebViewUrl: string;
+    eas: {
+      projectId: string;
+    };
+    serviceWorkerUrl: string;
+    graphqlApiUrl: string;
+    tabBarEnabled: boolean;
+  };
+};
+
+// NOTE: this is the hardcoded hash for production builds via App Store
+// deploy your current changes to production via pull request, switch to gh-pages branch and grab the hash from there
+// then fire off a build
+const PROD_SW_HASH = "8869656";
+
+const isDev = process.env.APP_ENV === "development";
+const localGraphQLApi = "http://localhost:8080/v2/graphql";
+const remoteGraphQLApi = "https://backpack-api.xnfts.dev/v2/graphql";
+const latestServiceWorkerUrl =
+  "https://mobile-service-worker.xnfts.dev/background-scripts/latest/service-worker-loader.html";
+
+const getEnvironment = () => {
+  if (process.env.APP_ENV === "production") {
+    return {
+      image: "./assets/splash-production.png",
+      backgroundColor: "#FFF",
+      packageName: "app.backpack.mobile",
+      // graphqlApiUrl: localGraphQLApi,
+      graphqlApiUrl: remoteGraphQLApi,
+      serviceWorkerUrl: latestServiceWorkerUrl,
+      // serviceWorkerUrl:  latestServiceWorkerUrl.replace(/latest/g, PROD_SW_HASH),
+    };
+  }
+
+  if (process.env.APP_ENV === "staging") {
+    return {
+      image: "./assets/splash-staging.png",
+      backgroundColor: "#000",
+      packageName: "app.backpack.dev",
+      // graphqlApiUrl: localGraphQLApi,
+      graphqlApiUrl: remoteGraphQLApi,
+      serviceWorkerUrl: latestServiceWorkerUrl,
+    };
+  }
+
+  return {
+    image: "./assets/splash-development.png",
+    backgroundColor: "#EB6E46",
+    packageName: "app.backpack.dev",
+    // graphqlApiUrl: localGraphQLApi,
+    graphqlApiUrl: remoteGraphQLApi,
+    serviceWorkerUrl: "http://localhost:9333",
+    // serviceWorkerUrl: latestServiceWorkerUrl,
   };
 };
 
 export default ({ config }: ConfigContext): ExpoConfig & ExpoExtras => {
   const projectID = "55bf074d-0473-4e61-9d9d-ecf570704635";
-  const packageName = "app.backpack.mobile";
-
-  const getUrl = (hash: string = "8b0f1ba") =>
-    `https://mobile-service-worker.xnfts.dev/background-scripts/${hash}/service-worker-loader.html`;
-
-  const remoteWebViewUrl = getUrl();
+  const {
+    image,
+    backgroundColor,
+    packageName,
+    serviceWorkerUrl,
+    graphqlApiUrl,
+  } = getEnvironment();
 
   return {
     ...config,
@@ -24,13 +74,30 @@ export default ({ config }: ConfigContext): ExpoConfig & ExpoExtras => {
     owner: "coral-xyz",
     version: "0.1.0",
     orientation: "portrait",
-    icon: "./assets/icon.png",
+    icon: isDev
+      ? "./assets/app-logo-development.png"
+      : "./assets/app-logo-production.png",
+    // generate icon dynamically based on STAGING vs. PRODUCTION
+    // icon: "https://icogen.vercel.app/api/icon?icon=fire",
     userInterfaceStyle: "light",
     splash: {
-      image: "./assets/splash.png",
+      image,
+      backgroundColor,
       resizeMode: "cover",
-      backgroundColor: "#000",
     },
+    plugins: [
+      [
+        "expo-build-properties",
+        {
+          android: {
+            unstable_networkInspector: true,
+          },
+          ios: {
+            unstable_networkInspector: true,
+          },
+        },
+      ],
+    ],
     updates: {
       fallbackToCacheTimeout: 0,
       url: "https://u.expo.dev/" + projectID,
@@ -40,21 +107,21 @@ export default ({ config }: ConfigContext): ExpoConfig & ExpoExtras => {
     },
     assetBundlePatterns: ["**/*"],
     ios: {
+      config: {
+        usesNonExemptEncryption: false,
+      },
       supportsTablet: false,
       bundleIdentifier: packageName,
       infoPlist: {
-        NSAllowsArbitraryLoads: true,
-        NSExceptionDomains: {
-          localhost: {
-            NSExceptionAllowsInsecureHTTPLoads: true,
-            NSIncludesSubdomains: true,
-          },
-        },
+        // ATTENTION: Your service worker must live in the top 3 or will not load
+        // Apple considers this a feature
+        // https://bugs.webkit.org/show_bug.cgi?id=227531
         WKAppBoundDomains: [
-          "coral-xyz.github.io",
-          "ngrok.io",
-          "backpack-api.xnfts.dev",
           "mobile-service-worker.xnfts.dev",
+          "mobile-service-worker.netlify.app",
+          // "xnfts.dev", // uncomment for testing
+          // "netlify.app",
+          // "ngrok.io",
         ],
       },
     },
@@ -70,9 +137,9 @@ export default ({ config }: ConfigContext): ExpoConfig & ExpoExtras => {
       favicon: "./assets/favicon.png",
     },
     extra: {
-      FEATURE_MOBILE_CHAT: true,
-      localWebViewUrl: "http://localhost:9333",
-      remoteWebViewUrl,
+      graphqlApiUrl,
+      serviceWorkerUrl,
+      tabBarEnabled: false,
       eas: {
         projectId: projectID,
       },

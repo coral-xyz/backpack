@@ -8,11 +8,8 @@ import {
   TWITTER_LINK,
 } from "@coral-xyz/common";
 import { DiscordIcon, List, ListItem } from "@coral-xyz/react-common";
-import {
-  KeyringStoreStateEnum,
-  OnboardingProvider,
-  useKeyringStoreState,
-} from "@coral-xyz/recoil";
+import { OnboardingProvider, useKeyringStoreState } from "@coral-xyz/recoil";
+import { KeyringStoreState } from "@coral-xyz/secure-background/types";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { CallMade, Lock, Menu, Twitter } from "@mui/icons-material";
 import { Box, IconButton, ListItemText, Toolbar } from "@mui/material";
@@ -34,7 +31,7 @@ export const Onboarding = ({
 
   const _ks = useKeyringStoreState();
   const isOnboarded =
-    !isAddingAccount && _ks !== KeyringStoreStateEnum.NeedsOnboarding;
+    !isAddingAccount && _ks !== KeyringStoreState.NeedsOnboarding;
 
   const defaultProps = {
     containerRef,
@@ -135,7 +132,7 @@ export function OptionsContainer({
   );
 }
 
-export function OnboardingMenu({
+function OnboardingMenu({
   containerRef,
   menuOpen,
   setMenuOpen,

@@ -6,11 +6,13 @@ import {
   useLocation,
   useSearchParams,
 } from "react-router-dom";
+import { useUsersMetadata } from "@coral-xyz/chat-xplat";
 import type { SearchParamsFor, SubscriptionType } from "@coral-xyz/common";
 import {
   BACKPACK_TEAM,
   NAV_COMPONENT_MESSAGE_PROFILE,
 } from "@coral-xyz/common";
+// import { Collectibles } from "@coral-xyz/data-components";
 import {
   ChatScreen,
   Inbox,
@@ -20,33 +22,40 @@ import {
 } from "@coral-xyz/message-sdk";
 import { useBreakpoints } from "@coral-xyz/react-common";
 import {
+  SwapProvider,
+  useActiveWallet,
   useDarkMode,
   useDecodedSearchParams,
+  useFeatureGates,
   useNavigation,
   useRedirectUrl,
   useUser,
 } from "@coral-xyz/recoil";
-import { useUsersMetadata } from "@coral-xyz/tamagui";
 import { useCustomTheme } from "@coral-xyz/themes";
-import { Typography } from "@mui/material";
 import { AnimatePresence } from "framer-motion";
 
+import { WalletDrawerButton } from "../../common/WalletList";
 import { Apps } from "../../Unlocked/Apps";
 import { Balances } from "../../Unlocked/Balances";
-import { Notifications } from "../../Unlocked/Balances/Notifications";
-import { RecentActivity } from "../../Unlocked/Balances/RecentActivity";
+import { RecentActivity as LegacyTransactions } from "../../Unlocked/Balances/RecentActivity";
 import { Token } from "../../Unlocked/Balances/TokensWidget/Token";
 import { ChatDrawer } from "../../Unlocked/Messages/ChatDrawer";
 import { MessageOptions } from "../../Unlocked/Messages/MessageOptions";
 import { Nfts } from "../../Unlocked/Nfts";
 import { NftsCollection } from "../../Unlocked/Nfts/Collection";
-import { NftOptionsButton, NftsDetail } from "../../Unlocked/Nfts/Detail";
 import { NftChat, NftsExperience } from "../../Unlocked/Nfts/Experience";
+import { NftOptionsButton, NftsDetail } from "../../Unlocked/Nfts/NftDetail";
+import { Notifications } from "../../Unlocked/Notifications";
+import { Notifications as LegacyNotifications } from "../../Unlocked/Notifications/legacy";
 import { SettingsButton } from "../../Unlocked/Settings";
+import { AvatarPopoverButton } from "../../Unlocked/Settings/AvatarPopover";
+import { _Swap } from "../../Unlocked/Swap";
+import { Transactions } from "../../Unlocked/Transactions";
 
 import { NavBackButton, WithNav } from "./Nav";
 import { WithMotion } from "./NavStack";
 import { Scrollbar } from "./Scrollbar";
+import { WithTabs } from "./Tab";
 import { XnftAppStack } from "./XnftAppStack";
 
 export function Router() {
@@ -55,24 +64,23 @@ export function Router() {
   return (
     <AnimatePresence initial={false}>
       <Routes location={location} key={location.pathname}>
-        <Route path="/balances" element={<BalancesPage />} />
-        <Route path="/balances/token" element={<TokenPage />} />
+        <Route path="/tokens" element={<BalancesPage />} />
+        <Route path="/tokens/token" element={<TokenPage />} />
         <Route path={"/messages/*"} element={<Messages />} />
         <Route path="/apps" element={<AppsPage />} />
+        <Route path="/swap" element={<SwapPage />} />
         <Route path="/nfts" element={<NftsPage />} />
         <Route path="/nfts/collection" element={<NftsCollectionPage />} />
         <Route path="/nfts/experience" element={<NftsExperiencePage />} />
         <Route path="/nfts/chat" element={<NftsChatPage />} />
         <Route path="/nfts/detail" element={<NftsDetailPage />} />
+        <Route path="/recent-activity" element={<TransactionsPage />} />
         {!isXs ? (
-          <>
-            <Route path="/notifications" element={<NotificationsPage />} />
-            <Route path="/recent-activity" element={<RecentActivityPage />} />
-          </>
+          <Route path="/notifications" element={<NotificationsPage />} />
         ) : null}
         {/*
-          Auto-lock functionality is dependent on checking if the URL contains
-          "xnft", if this changes then please verify that it still works
+						Auto-lock functionality is dependent on checking if the URL contains
+						"xnft", if this changes then please verify that it still works
           */}
         <Route path="/xnft/:xnftAddress/*" element={<XnftAppStack />} />
         <Route path="/xnft/:xnftAddress" element={<XnftAppStack />} />
@@ -86,15 +94,33 @@ export function Router() {
   );
 }
 
-export function NotificationsPage() {
-  return <NavScreen component={<Notifications />} />;
+function NotificationsPage() {
+  const _Component = () => {
+    const gates = useFeatureGates();
+    return gates.GQL_NOTIFICATIONS ? (
+      <Notifications />
+    ) : (
+      <LegacyNotifications />
+    );
+  };
+  return <NavScreen component={<_Component />} />;
 }
 
-export function RecentActivityPage() {
-  return <NavScreen component={<RecentActivity />} />;
+function TransactionsPage() {
+  const _Component = () => {
+    const gates = useFeatureGates();
+
+    return gates.GQL_TRANSACTION_HISTORY ? (
+      <Transactions />
+    ) : (
+      <LegacyTransactions />
+    );
+  };
+
+  return <NavScreen component={<_Component />} />;
 }
 
-export function Redirect() {
+function Redirect() {
   let url = useRedirectUrl();
   return <Navigate to={url} replace />;
 }
@@ -102,10 +128,10 @@ export function Redirect() {
 // We use a separate redirect for the xs size because some routes, e.g., /notifications
 // and /recent-activity don't exist on the xs size--for xs, they are ephemeral drawers,
 // for larger screens they are normal routes.
-export function RedirectXs() {
+function RedirectXs() {
   let url = useRedirectUrl();
-  if (url.startsWith("/notifications") || url.startsWith("/recent-activity")) {
-    return <Navigate to="/balances" replace />;
+  if (url.startsWith("/notifications")) {
+    return <Navigate to="/tokens" replace />;
   }
   return <Navigate to={url} replace />;
 }
@@ -158,10 +184,10 @@ function Messages() {
   }, []);
 
   if (!isXs) {
-    return <FullChatPage />;
+    return <NavScreen noMotion component={<FullChatPage />} />;
   }
 
-  return <MessageNativeInner />;
+  return <NavScreen noMotion component={<MessageNativeInner />} />;
 }
 
 function MessageNativeInner() {
@@ -172,45 +198,31 @@ function MessageNativeInner() {
   const { isXs } = useBreakpoints();
 
   if (hash.startsWith("/messages/requests")) {
-    return <NavScreen noMotion component={<RequestsScreen />} />;
+    return <RequestsScreen />;
   }
-
   if (hash.startsWith("/messages/chat")) {
     return (
-      <NavScreen
-        noMotion
-        component={
-          <ChatScreen
-            isDarkMode={isDarkMode}
-            userId={props.userId}
-            uuid={uuid}
-            username={props.username}
-          />
-        }
+      <ChatScreen
+        isDarkMode={isDarkMode}
+        userId={props.userId}
+        uuid={uuid}
+        username={props.username}
       />
     );
   }
-
   if (hash.startsWith("/messages/groupchat")) {
-    return (
-      <NavScreen
-        noMotion
-        component={<NftChat collectionId={props.id} {...props} />}
-      />
-    );
+    return <NftChat collectionId={props.id} {...props} />;
   }
 
   if (hash.startsWith("/messages/profile")) {
-    return (
-      <NavScreen noMotion component={<ProfileScreen userId={props.userId} />} />
-    );
+    return <ProfileScreen userId={props.userId} />;
   }
 
   if (!isXs) {
-    return <div />;
+    return null;
   }
 
-  return <NavScreen noMotion component={<Inbox />} />;
+  return <Inbox />;
 }
 
 function FullChatPage() {
@@ -256,6 +268,18 @@ function AppsPage() {
   return <NavScreen component={<Apps />} />;
 }
 
+function SwapPage() {
+  return (
+    <NavScreen
+      component={
+        <SwapProvider>
+          <_Swap isInDrawer={false} />
+        </SwapProvider>
+      }
+    />
+  );
+}
+
 function TokenPage() {
   const { props } = useDecodedSearchParams<SearchParamsFor.Token>();
   return <NavScreen component={<Token {...props} />} />;
@@ -281,6 +305,7 @@ function NavScreen({
     style,
     navButtonLeft,
     navButtonRight,
+    navButtonCenter,
     notchViewComponent,
     image,
     onClick,
@@ -302,6 +327,7 @@ function NavScreen({
         notchViewComponent={notchViewComponent}
         navButtonLeft={_navButtonLeft}
         navButtonRight={navButtonRight}
+        navButtonCenter={navButtonCenter}
         navbarStyle={style}
         noScrollbars={noScrollbars}
         isVerified={isVerified}
@@ -318,6 +344,7 @@ function NavScreen({
         notchViewComponent={notchViewComponent}
         navButtonLeft={_navButtonLeft}
         navButtonRight={navButtonRight}
+        navButtonCenter={navButtonCenter}
         navbarStyle={style}
         noScrollbars={noScrollbars}
         isVerified={isVerified}
@@ -334,11 +361,13 @@ function NavScreenInner({
   notchViewComponent,
   navButtonLeft,
   navButtonRight,
+  navButtonCenter,
   navbarStyle,
   noScrollbars,
   isVerified,
   component,
 }: any) {
+  const { isXs } = useBreakpoints();
   return (
     <div
       style={{
@@ -351,19 +380,39 @@ function NavScreenInner({
         bottom: 0,
       }}
     >
-      <WithNav
-        title={title}
-        image={image}
-        onClick={onClick}
-        notchViewComponent={notchViewComponent}
-        navButtonLeft={navButtonLeft}
-        navButtonRight={navButtonRight}
-        navbarStyle={navbarStyle}
-        noScrollbars={noScrollbars}
-        isVerified={isVerified}
-      >
-        {component}
-      </WithNav>
+      {isXs ? (
+        <WithNav
+          title={title}
+          image={image}
+          onClick={onClick}
+          notchViewComponent={notchViewComponent}
+          navButtonLeft={navButtonLeft}
+          navButtonRight={navButtonRight}
+          navButtonCenter={navButtonCenter}
+          navbarStyle={navbarStyle}
+          noScrollbars={noScrollbars}
+          isVerified={isVerified}
+        >
+          <WithTabs>{component}</WithTabs>
+        </WithNav>
+      ) : (
+        <WithTabs>
+          <WithNav
+            title={title}
+            image={image}
+            onClick={onClick}
+            notchViewComponent={notchViewComponent}
+            navButtonLeft={navButtonLeft}
+            navButtonRight={navButtonRight}
+            navButtonCenter={navButtonCenter}
+            navbarStyle={navbarStyle}
+            noScrollbars={noScrollbars}
+            isVerified={isVerified}
+          >
+            {component}
+          </WithNav>
+        </WithTabs>
+      )}
     </div>
   );
 }
@@ -386,12 +435,15 @@ function useNavBar() {
   const theme = useCustomTheme();
   const { props }: any = useDecodedSearchParams(); // TODO: fix type
   const { isXs } = useBreakpoints();
+  const wallet = useActiveWallet();
+  const isDark = useDarkMode();
   const profileUser = useUsersMetadata({ remoteUserIds: [props?.userId] });
   const image: string | undefined =
-    props.image ?? profileUser[props?.userId]?.image;
+    props && props.image ? props.image : profileUser[props?.userId]?.image;
 
   let navButtonLeft = null as any;
   let navButtonRight = null as any;
+  let navButtonCenter = null as any;
 
   let navStyle = {
     fontSize: "18px",
@@ -400,38 +452,16 @@ function useNavBar() {
   if (pathname === "/messages/chat" || pathname === "/messages/groupchat") {
     navStyle.background = theme.custom.colors.chatFadeGradientStart;
   }
+  if (pathname === "/swap") {
+    if (isDark) {
+      navStyle.background = "#1D1D20";
+    }
+  }
 
   if (isRoot) {
     navButtonRight = isXs ? <SettingsButton /> : undefined;
-    navButtonLeft = (
-      <div style={{ display: "flex" }}>
-        <Typography
-          style={{
-            userSelect: "none",
-            fontSize: "18px",
-            color: theme.custom.colors.fontColor,
-            fontWeight: 600,
-            display: "flex",
-            justifyContent: "center",
-            flexDirection: "column",
-          }}
-        >
-          {pathname.startsWith("/balances")
-            ? "Balances"
-            : pathname.startsWith("/apps")
-            ? "Applications"
-            : pathname.startsWith("/messages") && !isXs
-            ? ""
-            : pathname.startsWith("/messages")
-            ? "Messages"
-            : pathname.startsWith("/nfts")
-            ? "Collectibles"
-            : pathname.startsWith("/notifications")
-            ? "Notifications"
-            : "Recent Activity"}
-        </Typography>
-      </div>
-    );
+    navButtonLeft = isXs ? <AvatarPopoverButton /> : undefined;
+    navButtonCenter = <WalletDrawerButton wallet={wallet} />;
   } else if (pathname === "/balances/token") {
     navButtonRight = null;
   } else if (pathname === "/nfts/detail") {
@@ -461,6 +491,7 @@ function useNavBar() {
   return {
     navButtonRight,
     navButtonLeft,
+    navButtonCenter,
     style: navStyle,
     notchViewComponent,
     image:

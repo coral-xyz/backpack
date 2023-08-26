@@ -1,0 +1,65 @@
+table:
+  name: swaps
+  schema: auth
+object_relationships:
+  - name: distributor
+    using:
+      foreign_key_constraint_on: distributor_id
+  - name: user
+    using:
+      foreign_key_constraint_on: fee_payer_id
+insert_permissions:
+  - role: auth_worker
+    permission:
+      check: {}
+      columns:
+        - distributor_id
+        - fee_account_address
+        - fee_amount
+        - fee_mint_address
+        - fee_payer_id
+        - fee_payer_public_key
+        - transaction_at
+        - transaction_signature
+select_permissions:
+  - role: auth_worker
+    permission:
+      columns:
+        - fee_amount
+        - fee_account_address
+        - fee_mint_address
+        - fee_payer_public_key
+        - transaction_signature
+        - transaction_at
+        - created_at
+        - distributor_id
+        - fee_payer_id
+        - id
+      filter: {}
+update_permissions:
+  - role: auth_worker
+    permission:
+      columns:
+        - distributor_id
+        - fee_account_address
+        - fee_amount
+        - fee_mint_address
+        - fee_payer_id
+        - fee_payer_public_key
+        - transaction_at
+      filter: {}
+      check: {}
+event_triggers:
+  - name: track_swap
+    definition:
+      enable_manual: true
+      insert:
+        columns: "*"
+    retry_conf:
+      interval_sec: 20
+      num_retries: 3
+      timeout_sec: 60
+    webhook: https://jupiter.xnfts.dev/swap-webhook
+    headers:
+      - name: x-password
+        value_from_env: SWAP_WEBHOOK_PASSWORD

@@ -240,7 +240,7 @@ export const processFriendRequestAccept = async ({
   const userMetadata = await getUsersFromIds([from]);
   await notify(
     to,
-    `Friend request Accepted`,
+    `Friend request accepted`,
     `${
       userMetadata.find((x) => x.id === from)?.username
     } accepted your friend request`,

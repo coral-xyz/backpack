@@ -1,5 +1,5 @@
-import type { Token } from "@@types/types";
 import type { RemoteUserData } from "@coral-xyz/common";
+import type { Token } from "~types/types";
 
 import { useEffect, useState } from "react";
 import { ScrollView, View } from "react-native";
@@ -18,19 +18,22 @@ import {
   DangerButton,
   ListItem,
   PrimaryButton,
+  StyledText,
   Text,
   YGroup,
   YStack,
 } from "@coral-xyz/tamagui";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { SearchInput as BaseSearchInput } from "~components/StyledTextInput";
 import { UserAvatar } from "~components/UserAvatar";
+import { useSession } from "~lib/SessionProvider";
+
+import { ThemedMaterialIcon } from "~src/components/Icon";
 
 export const BubbleTopLabel = ({ text }: { text: string }) => {
   return (
-    <Text mb={8} fontSize={15} fontFamily="Inter_500Medium">
+    <Text mb={8} fontSize={15} fontFamily="InterMedium">
       {text}
     </Text>
   );
@@ -38,11 +41,13 @@ export const BubbleTopLabel = ({ text }: { text: string }) => {
 
 let debouncedTimer = 0;
 
-function NotSelected() {
-  return null;
-}
-
-type User = any;
+type User = {
+  walletName?: string;
+  username: string;
+  image: string;
+  uuid: string;
+  // addresses: { publicKey: string; blockchain: Blockchain }[];
+};
 
 type SelectUserResultProp = {
   user: User;
@@ -71,8 +76,8 @@ export function SendTokenSelectUserScreen({
   const insets = useSafeAreaInsets();
 
   return (
-    <ScrollView style={{ flex: 1 }}>
-      <YStack flex={1} jc="flex-between" mb={insets.bottom}>
+    <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
+      <YStack flex={1} jc="space-between" mb={insets.bottom}>
         <View style={{ flex: 1 }}>
           <Box marginBottom={8}>
             <SearchInput
@@ -140,13 +145,13 @@ export const SearchInput = ({
   searchResults: RemoteUserData[];
   blockchain: Blockchain;
 }) => {
+  const { token } = useSession();
   const fetchUserDetails = async (address: string, blockchain: Blockchain) => {
     try {
-      const jwt = await AsyncStorage.getItem("@bk-jwt");
       const url = `${BACKEND_API_URL}/users?usernamePrefix=${address}&blockchain=${blockchain}&limit=6`;
       const response = await fetch(url, {
         headers: {
-          authorization: `Bearer ${jwt}`,
+          authorization: `Bearer ${token}`,
         },
       });
 
@@ -363,7 +368,7 @@ function AddressList({
   const walletsWithPrimary = wallets.filter((w) => w.addresses?.[0]);
 
   return (
-    <YGroup bordered>
+    <YGroup>
       {walletsWithPrimary.map((wallet) => {
         const key = [wallet.username, wallet.walletName].join(":");
         const address = wallet.addresses?.[0];
@@ -375,7 +380,7 @@ function AddressList({
         };
 
         return (
-          <AddressListItem
+          <ListItemUserAddress
             key={key}
             address={address}
             user={user}
@@ -391,7 +396,7 @@ function AddressList({
   );
 }
 
-const AddressListItem = ({
+function ListItemUserAddress({
   address,
   user,
   onPress,
@@ -404,32 +409,32 @@ const AddressListItem = ({
     image: string;
     uuid: string;
   };
-}) => {
+}) {
   const title = user.walletName || user.username;
   return (
     <YGroup.Item>
       <ListItem
         hoverTheme
         pressTheme
-        height={48}
-        justifyContent="flex-start"
+        bg="$nav"
+        jc="flex-start"
+        ai="center"
         icon={<UserAvatar size={32} uri={user.image} />}
         onPress={onPress}
+        py={6}
       >
-        <Text fontSize={16} fontFamily="Inter_500Medium">
+        <StyledText fontWeight="500" color="$baseTextHighEmphasis">
           {title}
-        </Text>
+        </StyledText>
         {!address ? (
-          <View
-            style={{
-              width: 32,
-              height: 32,
-              backgroundColor: "#E33E3F",
-              marginLeft: 8,
-            }}
+          <ThemedMaterialIcon
+            name="block"
+            color="$redIcon"
+            size={24}
+            style={{ marginLeft: 4 }}
           />
         ) : null}
       </ListItem>
     </YGroup.Item>
   );
-};
+}

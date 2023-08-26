@@ -1,16 +1,16 @@
 import { useLocation } from "react-router-dom";
-import type {
-  CollectionChatData,
-  EnrichedInboxDb,
-  SubscriptionType,
-} from "@coral-xyz/common";
+import { useUsersMetadata } from "@coral-xyz/chat-xplat";
 import {
   BACKPACK_TEAM,
+  type CollectionChatData,
+  type EnrichedInboxDb,
+  formatAmPm,
   NAV_COMPONENT_MESSAGE_CHAT,
   NAV_COMPONENT_MESSAGE_GROUP_CHAT,
   NAV_COMPONENT_MESSAGE_PROFILE,
   NAV_COMPONENT_MESSAGE_REQUESTS,
   parseMessage,
+  type SubscriptionType,
 } from "@coral-xyz/common";
 import {
   BackpackStaffIcon,
@@ -18,7 +18,6 @@ import {
   LocalImage,
 } from "@coral-xyz/react-common";
 import { useDecodedSearchParams } from "@coral-xyz/recoil";
-import { useUsersMetadata } from "@coral-xyz/tamagui";
 import { useCustomTheme } from "@coral-xyz/themes";
 import MarkChatUnreadIcon from "@mui/icons-material/MarkChatUnread";
 import VerifiedIcon from "@mui/icons-material/Verified";
@@ -165,16 +164,6 @@ export function ChatListItem({
       printText.length > 25 ? printText.substring(0, 22) + "..." : printText;
   }
 
-  function formatAMPM(date: Date) {
-    let hours = date.getHours();
-    let minutes: string | number = date.getMinutes();
-    let ampm = hours >= 12 ? "pm" : "am";
-    hours = hours % 12;
-    hours = hours ? hours : 12; // the hour '0' should be '12'
-    minutes = minutes < 10 ? "0" + minutes : minutes;
-    return hours + ":" + minutes + " " + ampm;
-  }
-
   return (
     <ListItem
       button
@@ -307,7 +296,7 @@ export function ChatListItem({
                 : theme.custom.colors.smallTextColor,
             }}
           >
-            {formatAMPM(new Date(timestamp))}
+            {formatAmPm(new Date(timestamp))}
           </div>
         </div>
       </div>

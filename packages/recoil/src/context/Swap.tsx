@@ -18,14 +18,12 @@ import * as bs58 from "bs58";
 import { BigNumber, ethers, FixedNumber } from "ethers";
 
 import { blockchainTokenData } from "../atoms/balance";
-import { jupiterInputTokens } from "../atoms/solana/jupiter";
 import {
-  useFeatureGates,
-  useJupiterOutputTokens,
-  useJupiterTokenList,
-  useLoader,
-  useSolanaCtx,
-} from "../hooks";
+  jupiterInputTokens,
+  jupiterOutputTokens,
+  jupiterTokenList as jupiterTokenListAtom,
+} from "../atoms/solana/jupiter";
+import { useFeatureGates, useLoader, useSolanaCtx } from "../hooks";
 import type { TokenData, TokenDataWithBalance } from "../types";
 
 const { Zero } = ethers.constants;
@@ -33,6 +31,14 @@ const DEFAULT_DEBOUNCE_DELAY = 400;
 const DEFAULT_SLIPPAGE_PERCENT = 1;
 // Poll for new routes every 30 seconds in case of changing market conditions
 const ROUTE_POLL_INTERVAL = 30000;
+
+export enum SwapState {
+  INITIAL,
+  CONFIRMATION,
+  CONFIRMING,
+  CONFIRMED,
+  ERROR,
+}
 
 type JupiterRoute = {
   inAmount: string;
@@ -101,6 +107,8 @@ export type SwapContext = {
   isJupiterError: boolean;
   canSwap: boolean;
   canSwitch: boolean;
+  isInDrawer: boolean;
+  isLoading: boolean;
 };
 
 const _SwapContext = React.createContext<SwapContext | null>(null);
@@ -121,23 +129,28 @@ function useDebounce(value: any, wait = DEFAULT_DEBOUNCE_DELAY) {
 export function SwapProvider({
   tokenAddress,
   children,
+  isInDrawer = false,
 }: {
   tokenAddress?: string;
   children: React.ReactNode;
+  isInDrawer?: boolean;
 }) {
   const blockchain = Blockchain.SOLANA; // Solana only at the moment.
   const solanaCtx = useSolanaCtx();
   const { backgroundClient, connection, walletPublicKey } = solanaCtx;
-  const jupiterTokenList = useJupiterTokenList();
+  const [jupiterTokenList, jupiterTokenlistState] = useLoader(
+    jupiterTokenListAtom,
+    []
+  );
   const { SWAP_FEES_ENABLED } = useFeatureGates();
   const JUPITER_BASE_URL = SWAP_FEES_ENABLED
     ? "https://jupiter.xnfts.dev/v4/"
     : "https://quote-api.jup.ag/v4/";
-  const [fromTokens] = useLoader(
+  const [fromTokens, state] = useLoader(
     jupiterInputTokens({ publicKey: walletPublicKey.toString() }),
     []
   );
-  const [token] = tokenAddress
+  const [token, _state] = tokenAddress
     ? // TODO: refactor so this hook isn't behind a conditional
       // eslint-disable-next-line react-hooks/rules-of-hooks
       useLoader(
@@ -148,7 +161,7 @@ export function SwapProvider({
         }),
         undefined
       )
-    : [undefined];
+    : [undefined, "hasValue"];
 
   // Swap setttings
   const [[fromMint, toMint], setFromMintToMint] = useState([
@@ -239,7 +252,11 @@ export function SwapProvider({
     }
   }
 
-  const toTokens = useJupiterOutputTokens(fromMint);
+  //  const toTokens = useJupiterOutputTokens(fromMint);
+  const [toTokens, toTokensState] = useLoader(
+    jupiterOutputTokens({ inputMint: fromMint }),
+    []
+  );
   const toToken = toTokens.find((t) => t.mint === toMint);
 
   let availableForSwap = fromToken
@@ -506,23 +523,7 @@ export function SwapProvider({
     // Stop polling for route updates when swap is finalised
     stopRoutePolling();
     try {
-      const signature = await sendAndConfirmTransaction(transaction);
-
-      if (SWAP_FEES_ENABLED) {
-        try {
-          await fetch("https://jupiter.xnfts.dev/swap", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              signature,
-            }),
-          });
-        } catch (e) {
-          //  do nothing as we don't want to block the UI if it fails
-        }
-      }
+      await sendAndConfirmTransaction(transaction);
     } catch (e) {
       console.log("swap error", e);
       return false;
@@ -577,6 +578,14 @@ export function SwapProvider({
         feeExceedsBalance,
         canSwap: !availableForSwap.isZero(),
         canSwitch,
+        isInDrawer,
+        isLoading:
+          state === "loading" ||
+          _state === "loading" ||
+          jupiterTokenlistState === "loading" ||
+          toTokensState === "loading" ||
+          isLoadingRoutes ||
+          isLoadingTransactions,
       }}
     >
       {children}
@@ -587,7 +596,7 @@ export function SwapProvider({
 export function useSwapContext(): SwapContext {
   const ctx = useContext(_SwapContext);
   if (ctx === null) {
-    throw new Error("Context not available");
+    throw new Error("useSwapContext must be used within a SwapProvider");
   }
   return ctx;
 }

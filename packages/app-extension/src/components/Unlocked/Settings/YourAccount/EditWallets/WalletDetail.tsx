@@ -2,14 +2,13 @@ import React, { useEffect, useState } from "react";
 import type { Blockchain } from "@coral-xyz/common";
 import {
   BACKEND_API_URL,
+  formatWalletAddress,
   UI_RPC_METHOD_KEY_IS_COLD_UPDATE,
   UI_RPC_METHOD_KEYNAME_READ,
-  walletAddressDisplay,
 } from "@coral-xyz/common";
 import {
   PrimaryButton,
   SecondaryButton,
-  toast,
   WarningIcon,
 } from "@coral-xyz/react-common";
 import {
@@ -17,7 +16,6 @@ import {
   serverPublicKeys,
   useBackgroundClient,
   usePrimaryWallets,
-  useWalletPublicKeys,
 } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { ContentCopy } from "@mui/icons-material";
@@ -42,7 +40,6 @@ export const WalletDetail: React.FC<{
   const background = useBackgroundClient();
   const [tooltipOpen, setTooltipOpen] = useState(false);
   const [walletName, setWalletName] = useState(name);
-  const publicKeyData = useWalletPublicKeys();
   const isCold = useRecoilValue(isKeyCold(publicKey));
   const primaryWallets = usePrimaryWallets();
   const setServerPublicKeys = useSetRecoilState(serverPublicKeys);
@@ -53,11 +50,11 @@ export const WalletDetail: React.FC<{
       try {
         keyname = await background.request({
           method: UI_RPC_METHOD_KEYNAME_READ,
-          params: [publicKey],
+          params: [publicKey, blockchain],
         });
       } catch {
         // No wallet name, might be dehydrated
-        keyname = walletAddressDisplay(publicKey);
+        keyname = formatWalletAddress(publicKey);
       }
       setWalletName(keyname);
       nav.setOptions({ headerTitle: keyname });
@@ -102,6 +99,7 @@ export const WalletDetail: React.FC<{
         nav.push("edit-wallets-rename", {
           publicKey,
           name: walletName,
+          blockchain,
         }),
     },
   };

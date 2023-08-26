@@ -2,7 +2,7 @@ import type { Blockchain } from "@coral-xyz/common";
 import { useRecoilValue } from "recoil";
 
 import * as atoms from "../atoms";
-import type { WalletPublicKeys } from "../types";
+import type { Wallet, WalletPublicKeys } from "../types";
 
 export function useActiveEthereumWallet(): {
   publicKey: string;
@@ -18,11 +18,7 @@ export function useActiveSolanaWallet(): {
   return useRecoilValue(atoms.activeSolanaWallet)!;
 }
 
-export function useActiveWallet(): {
-  publicKey: string;
-  name: string;
-  blockchain: Blockchain;
-} {
+export function useActiveWallet(): Wallet {
   return useRecoilValue(atoms.activeWallet);
 }
 
@@ -79,23 +75,12 @@ export function useAllWalletsPerBlockchain(blockchain: Blockchain): Array<{
   return useRecoilValue(atoms.allWalletsPerBlockchain(blockchain));
 }
 
-export function useAllWallets(): Array<{
-  name: string;
-  type: string;
-  publicKey: string;
-  blockchain: Blockchain;
-  isCold?: boolean;
-}> {
-  return useRecoilValue(atoms.allWallets);
+export function useAllWallets(): Wallet[] {
+  const wallets = useRecoilValue(atoms.allWallets);
+  return wallets;
 }
 
-export function useAllWalletsDisplayed(): Array<{
-  name: string;
-  type: string;
-  publicKey: string;
-  blockchain: Blockchain;
-  isCold?: boolean;
-}> {
+export function useAllWalletsDisplayed(): Wallet[] {
   return useRecoilValue(atoms.allWalletsDisplayed);
 }
 

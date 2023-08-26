@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@coral-xyz/common": "*",
+    "@coral-xyz/secure-client": "*",
     "@ethersproject/abstract-provider": "^5.7.0",
     "@ethersproject/transactions": "^5.7.0",
     "@project-serum/anchor": "^0.23.0",

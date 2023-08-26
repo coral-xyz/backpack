@@ -1,12 +1,6 @@
-// TODO: remove the line below
-/* eslint-disable react-hooks/rules-of-hooks */
-import { Suspense, useState } from "react";
-import { Blockchain, explorerUrl, XNFT_GG_LINK } from "@coral-xyz/common";
-import {
-  EmptyState,
-  isFirstLastListItemStyle,
-  Loading,
-} from "@coral-xyz/react-common";
+import { Suspense } from "react";
+import { Blockchain, explorerUrl } from "@coral-xyz/common";
+import { isFirstLastListItemStyle, Loading } from "@coral-xyz/react-common";
 import {
   getBlockchainLogo,
   useActiveWallet,
@@ -17,38 +11,12 @@ import {
   useRecentTransactions,
 } from "@coral-xyz/recoil";
 import { styles as makeStyles, useCustomTheme } from "@coral-xyz/themes";
-import { CallMade, Check, Clear } from "@mui/icons-material";
-import FormatListBulletedRoundedIcon from "@mui/icons-material/FormatListBulletedRounded";
-import { IconButton, List, ListItem, Typography } from "@mui/material";
-
-import { CloseButton, WithDrawer } from "../../common/Layout/Drawer";
-import {
-  NavStackEphemeral,
-  NavStackScreen,
-} from "../../common/Layout/NavStack";
+import { CallMade } from "@mui/icons-material";
+import { List, ListItem, Typography } from "@mui/material";
 
 import { _RecentSolanaActivityList } from "./RecentSolanaActivity/RecentSolanaActivityList";
 
 const useStyles = makeStyles((theme) => ({
-  recentActivityListItemIconContainer: {
-    width: "44px",
-    height: "44px",
-    borderRadius: "22px",
-    marginRight: "12px",
-    display: "flex",
-    justifyContent: "center",
-    flexDirection: "column",
-  },
-  recentActivityListItemIcon: {
-    color: theme.custom.colors.positive,
-    marginLeft: "auto",
-    marginRight: "auto",
-  },
-  recentActivityListItemIconNegative: {
-    color: theme.custom.colors.negative,
-    marginLeft: "auto",
-    marginRight: "auto",
-  },
   txSig: {
     color: theme.custom.colors.fontColor,
     fontSize: "16px",
@@ -61,93 +29,44 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: 500,
     lineHeight: "24px",
   },
-  networkSettingsButtonContainer: {
-    display: "flex",
-    flexDirection: "row-reverse",
-    width: "38px",
-  },
-  networkSettingsButton: {
-    padding: 0,
-    width: "24px",
-    "&:hover": {
-      background: "transparent",
-    },
-  },
-  networkSettingsIcon: {
-    color: theme.custom.colors.icon,
-    backgroundColor: "transparent",
-    borderRadius: "12px",
-  },
 }));
 
-export function RecentActivityButton() {
-  const classes = useStyles();
-  const [openDrawer, setOpenDrawer] = useState(false);
-  return (
-    <div className={classes.networkSettingsButtonContainer}>
-      <IconButton
-        disableRipple
-        className={classes.networkSettingsButton}
-        onClick={() => setOpenDrawer(true)}
-        size="large"
-      >
-        <FormatListBulletedRoundedIcon
-          className={classes.networkSettingsIcon}
-        />
-      </IconButton>
-      <WithDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
-        <div style={{ height: "100%" }}>
-          <NavStackEphemeral
-            initialRoute={{ name: "root" }}
-            options={() => ({ title: "Transactions" })}
-            navButtonLeft={<CloseButton onClick={() => setOpenDrawer(false)} />}
-          >
-            <NavStackScreen
-              name="root"
-              component={(props: any) => <RecentActivity {...props} />}
-            />
-          </NavStackEphemeral>
-        </div>
-      </WithDrawer>
-    </div>
-  );
+export function RecentActivity() {
+  const { blockchain, publicKey } = useActiveWallet();
+  const opts =
+    blockchain === Blockchain.SOLANA
+      ? {
+          component: _RecentSolanaActivityList,
+          hook: useRecentSolanaTransactions,
+        }
+      : {
+          component: _RecentActivityList,
+          hook: useRecentEthereumTransactions,
+        };
+  return <RecentTransactions address={publicKey} {...opts} />;
 }
 
-export function RecentActivity() {
-  const activeWallet = useActiveWallet();
-
-  const recentTransactions =
-    (activeWallet.blockchain === Blockchain.SOLANA
-      ? useRecentSolanaTransactions({
-          address: activeWallet.publicKey,
-        })
-      : useRecentEthereumTransactions({
-          address: activeWallet.publicKey,
-        })) ?? [];
+function RecentTransactions({
+  address,
+  component: BlockchainActivityList,
+  hook: useBlockchainTransactions,
+}: {
+  address: ReturnType<typeof useActiveWallet>["publicKey"];
+  component: any;
+  hook:
+    | typeof useRecentSolanaTransactions
+    | typeof useRecentEthereumTransactions;
+}) {
+  const recentTransactions = useBlockchainTransactions({ address }) ?? [];
 
   // Used since Solana transactions have a timestamp and Ethereum transactions have a date.
-  const extractTime = (tx: any) => {
-    if (tx?.timestamp) {
-      return tx.timestamp;
-    } else if (tx?.date) {
-      return tx.date.getTime();
-    }
-    return 0;
-  };
+  const extractTime = (tx: any) => tx?.timestamp || tx?.date?.getTime() || 0;
 
-  const mergedTransactions = [...recentTransactions].sort((a, b) =>
+  const sortedTransactions = [...recentTransactions].sort((a, b) =>
     extractTime(a) > extractTime(b) ? -1 : 1
   );
 
-  return (
-    <Suspense fallback={<RecentActivityLoading />}>
-      {activeWallet.blockchain === Blockchain.SOLANA ? (
-        <_RecentSolanaActivityList transactions={mergedTransactions} />
-      ) : (
-        <_RecentActivityList transactions={mergedTransactions} />
-      )}
-    </Suspense>
-  );
+  return <BlockchainActivityList transactions={sortedTransactions} />;
 }
 
 export function RecentActivityList({
@@ -166,20 +85,18 @@ export function RecentActivityList({
   minimize?: boolean;
 }) {
   return (
-    <Suspense fallback={<RecentActivityLoading />}>
-      <_RecentActivityList
-        blockchain={blockchain}
-        address={address}
-        contractAddresses={contractAddresses}
-        transactions={transactions}
-        style={style}
-        minimize={minimize}
-      />
-    </Suspense>
+    <_RecentActivityList
+      blockchain={blockchain}
+      address={address}
+      contractAddresses={contractAddresses}
+      transactions={transactions}
+      style={style}
+      minimize={minimize}
+    />
   );
 }
 
-function RecentActivityLoading() {
+export function RecentActivityLoading() {
   return (
     <div
       style={{
@@ -202,13 +119,12 @@ function RecentActivityLoading() {
   );
 }
 
-export function _RecentActivityList({
+function _RecentActivityList({
   blockchain,
   address,
   contractAddresses,
   transactions: _transactions,
   style,
-  minimize,
 }: {
   blockchain?: Blockchain;
   address?: string;
@@ -258,9 +174,7 @@ export function _RecentActivityList({
         ))}
       </List>
     </div>
-  ) : (
-    <NoRecentActivityLabel minimize={!!minimize} />
-  );
+  ) : null;
 }
 
 function RecentActivityListItem({ transaction, isFirst, isLast }: any) {
@@ -306,7 +220,8 @@ function RecentActivityListItem({ transaction, isFirst, isLast }: any) {
               justifyContent: "center",
             }}
           >
-            <RecentActivityListItemIcon transaction={transaction} />
+            {/* <RecentActivityListItemIcon transaction={transaction} /> */}
+            {null}
           </div>
           <div>
             <Typography className={classes.txSig}>
@@ -347,45 +262,5 @@ function RecentActivityListItem({ transaction, isFirst, isLast }: any) {
         </div>
       </div>
     </ListItem>
-  );
-}
-
-function RecentActivityListItemIcon({ transaction }: any) {
-  const classes = useStyles();
-  return (
-    <div className={classes.recentActivityListItemIconContainer}>
-      {transaction.didError ? (
-        <Clear className={classes.recentActivityListItemIconNegative} />
-      ) : (
-        <Check className={classes.recentActivityListItemIcon} />
-      )}
-    </div>
-  );
-}
-
-function NoRecentActivityLabel({ minimize }: { minimize: boolean }) {
-  const theme = useCustomTheme();
-
-  return (
-    <div
-      style={{
-        height: "100%",
-        display: minimize ? "none" : undefined,
-      }}
-    >
-      <EmptyState
-        icon={(props: any) => <FormatListBulletedRoundedIcon {...props} />}
-        title="No Recent Activity"
-        subtitle="Your transactions and app activity will show up here when you start using Backpack!"
-        onClick={() => window.open(XNFT_GG_LINK)}
-        contentStyle={{
-          color: minimize ? theme.custom.colors.secondary : "inherit",
-        }}
-        innerStyle={{
-          marginBottom: minimize !== true ? "64px" : 0, // Tab height offset.
-        }}
-        minimize={minimize}
-      />
-    </div>
   );
 }

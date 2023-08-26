@@ -6,11 +6,13 @@
     "strict": true,
     "baseUrl": ".",
     "paths": {
+      "~src/*": ["src/*"],
       "~navigation/*": ["src/navigation/*"],
       "~components/*": ["src/components/*"],
       "~hooks/*": ["src/hooks/*"],
       "~lib/*": ["src/lib/*"],
-      "~screens/*": ["src/screens/*"]
+      "~screens/*": ["src/screens/*"],
+      "~types/*": ["src/types/*"]
     }
   }
 }

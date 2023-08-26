@@ -7,8 +7,6 @@ import {
   nftById,
   useAllWallets,
   useBlockchainConnectionUrl,
-  useNavigation,
-  useUser,
 } from "@coral-xyz/recoil";
 import type { CustomTheme } from "@coral-xyz/themes";
 import { styled } from "@coral-xyz/themes";
@@ -18,7 +16,8 @@ import { useRecoilValue } from "recoil";
 import { Scrollbar } from "../../common/Layout/Scrollbar";
 import { _BalancesTableHead } from "../Balances/Balances";
 
-import { CollectionCard, NFTCard } from "./Cards";
+import { CollectionCard } from "./CollectionEntry";
+import { NFTCard } from "./NftEntry";
 
 export type AllWalletCollections = Array<{
   publicKey: string;
@@ -31,12 +30,6 @@ type Row = {
   key: string;
   component: JSX.Element;
 };
-
-type collapseSingleCollection = (
-  listIndex: number,
-  blockchainCollectionIndex: number,
-  isCollapsed: boolean
-) => void;
 
 export function NftTable({
   blockchainCollections,
@@ -51,18 +44,6 @@ export function NftTable({
     );
 
   const ref = useRef<VariableSizeList>(null);
-
-  const collapseSingleCollection: collapseSingleCollection = useCallback(
-    (listIndex: number, blockchainIndex: number, isCollapsed: boolean) => {
-      setCollapsedCollections((oldValue) => {
-        const collapsed = [...oldValue];
-        collapsed[blockchainIndex] = isCollapsed;
-        return collapsed;
-      });
-      ref.current?.resetAfterIndex && ref.current?.resetAfterIndex(listIndex);
-    },
-    [setCollapsedCollections, ref]
-  );
 
   const nftWidth = 174;
 
@@ -91,7 +72,6 @@ export function NftTable({
                   i,
                   blockchainCollections,
                   collapsedCollections,
-                  collapseSingleCollection,
                   numberOfItemsPerRow,
                   prependItems
                 );
@@ -111,7 +91,6 @@ export function NftTable({
                   i,
                   blockchainCollections,
                   collapsedCollections,
-                  collapseSingleCollection,
                   numberOfItemsPerRow,
                   prependItems
                 );
@@ -124,7 +103,6 @@ export function NftTable({
                   index,
                   blockchainCollections,
                   collapsedCollections,
-                  collapseSingleCollection,
                   numberOfItemsPerRow,
                   prependItems
                 );
@@ -138,42 +116,15 @@ export function NftTable({
   );
 }
 
-const HeaderRow = function HeaderRow({
-  listIndex,
-  blockchainIndex,
-  blockchainCollections,
-  isCollapsed,
-  collapseSingleCollection,
-}: {
-  listIndex: number;
-  blockchainIndex: number;
-  blockchainCollections: AllWalletCollections;
-  isCollapsed: boolean;
-  collapseSingleCollection: collapseSingleCollection;
-}) {
-  const c = blockchainCollections[blockchainIndex];
-  const wallets = useAllWallets();
-  const wallet = wallets.find((wallet) => wallet.publicKey === c.publicKey);
-  const blockchain = wallet?.blockchain;
-  return (
-    <CustomCard top bottom={isCollapsed}>
-      <_BalancesTableHead
-        blockchain={blockchain as Blockchain}
-        wallet={wallet!}
-        showContent={!isCollapsed}
-        setShowContent={(isCollapsed) => {
-          collapseSingleCollection(listIndex, blockchainIndex, !isCollapsed);
-        }}
-      />
-    </CustomCard>
-  );
+const HeaderRow = function () {
+  return <CustomCard top bottom={false} />;
 };
 
 const FooterRow = function () {
   return <CustomCard top={false} bottom />;
 };
 
-const LoadingRow = function ({ itemsPerRow }: { itemsPerRow: number }) {
+export const LoadingRow = function ({ itemsPerRow }: { itemsPerRow: number }) {
   const items = new Array(itemsPerRow).fill(null);
 
   return (
@@ -181,31 +132,65 @@ const LoadingRow = function ({ itemsPerRow }: { itemsPerRow: number }) {
       <div
         style={{
           display: "flex",
-          padding: `6px 6px ${6 + 26}px 6px`,
-          justifyContent: "space-evenly",
+          height: "191.5px",
+          justifyContent: "space-between",
           flex: "0 0 auto",
+          paddingLeft: "12px",
+          paddingRight: "12px",
         }}
       >
         {items.map(() => {
           return (
             <div
               style={{
-                position: "relative",
-                width: "153.5px",
-                height: `${153.5}px`,
-                margin: "0px 6px",
-                borderRadius: "8px",
-                overflow: "hidden",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+                marginTop: "6px",
               }}
             >
-              <Skeleton
+              <div
                 style={{
-                  height: "100%",
-                  width: "100%",
-                  transform: "none",
-                  transformOrigin: "none",
+                  width: "153.5px",
+                  height: `153.5px`,
+                  position: "relative",
+                  borderRadius: "8px",
+                  overflow: "hidden",
                 }}
-              />
+              >
+                <Skeleton
+                  style={{
+                    width: "153.5px",
+                    height: `153.5px`,
+                    transform: "none",
+                    transformOrigin: "none",
+                  }}
+                />
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                }}
+              >
+                <div
+                  style={{
+                    height: "26px",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Skeleton
+                    style={{
+                      width: "100px",
+                      height: `10.5px`,
+                      transform: "none",
+                      transformOrigin: "none",
+                    }}
+                  />
+                </div>
+              </div>
             </div>
           );
         })}
@@ -254,7 +239,7 @@ const ItemRow = function ({
           flex: "0 0 auto",
         }}
       >
-        {items.map((collection: NftCollection, idx: number) => {
+        {items.map((collection: NftCollection) => {
           return (
             <div
               key={collection ? collection.id : null}
@@ -299,6 +284,7 @@ const CustomCard = styled("div")(
             borderTopLeftRadius: "12px",
             borderTopRightRadius: "12px",
             borderTop: theme.custom.colors.borderFull,
+            minHeight: "12px",
           }
         : {}),
       ...(bottom
@@ -322,8 +308,6 @@ function NftCollectionCard({
   connectionUrl: string;
   collection: NftCollection;
 }) {
-  const { uuid } = useUser();
-  const { push } = useNavigation();
   // Display the first NFT in the collection as the thumbnail in the grid
   const collectionDisplayNftId = collection.itemIds?.find((nftId) => !!nftId)!;
   const collectionDisplayNft = useRecoilValue(
@@ -378,7 +362,6 @@ const getItemForIndex = (
   index: number,
   blockchainCollections: AllWalletCollections,
   collapsedCollections: CollapsedCollections,
-  collapseSingleCollection: collapseSingleCollection,
   itemsPerRow: number,
   prependItems: Row[]
 ): Row | null => {
@@ -429,17 +412,9 @@ const getItemForIndex = (
 
   if (wrappedCollectionGroupIndex === 0) {
     return {
-      height: isCollapsed ? 52 : 36,
+      height: 12, //isCollapsed ? 52 : 36,
       key: `header${blockchainIndex}`,
-      component: (
-        <HeaderRow
-          listIndex={index}
-          blockchainIndex={blockchainIndex}
-          blockchainCollections={blockchainCollections}
-          isCollapsed={collapsedCollections[blockchainIndex]}
-          collapseSingleCollection={collapseSingleCollection}
-        />
-      ),
+      component: <HeaderRow />,
     };
   }
   if (collectionGroupIndex >= numberOfRowsInCollection) {

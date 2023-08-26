@@ -1,19 +1,12 @@
 import { useState } from "react";
-import { Blockchain, toTitleCase } from "@coral-xyz/common";
+import type { Blockchain } from "@coral-xyz/common";
 import { ProxyImage } from "@coral-xyz/react-common";
-import {
-  isAggregateWallets,
-  SOL_LOGO_URI,
-  useActiveWallet,
-  useActiveWallets,
-  useAllWalletsDisplayed,
-  useWalletName,
-} from "@coral-xyz/recoil";
+import { useAllWalletsDisplayed, useWalletName } from "@coral-xyz/recoil";
 import { styles } from "@coral-xyz/themes";
 import { ListItemIcon, Typography } from "@mui/material";
-import { useRecoilValue } from "recoil";
 
 import { TextField } from "../../../common";
+import { BLOCKCHAIN_COMPONENTS } from "../../../common/Blockchains";
 import { useNavigation } from "../../../common/Layout/NavStack";
 import {
   BalancesTable,
@@ -93,23 +86,6 @@ const useStyles = styles((theme) => ({
   },
 }));
 
-const RAMP_SUPPORTED_TOKENS = {
-  [Blockchain.SOLANA]: [
-    {
-      title: "SOL",
-      icon: SOL_LOGO_URI,
-      subtitle: "Solana",
-    },
-  ],
-  [Blockchain.ETHEREUM]: [
-    {
-      title: "ETH",
-      subtitle: "Ethereum",
-      icon: "/ethereum.png",
-    },
-  ],
-};
-
 export function Ramp({
   blockchain,
   publicKey,
@@ -188,7 +164,7 @@ export function Ramp({
   );
 }
 
-export function RampCard({
+function RampCard({
   blockchain,
   publicKey,
   onStartRamp,
@@ -205,19 +181,17 @@ export function RampCard({
     <BalancesTable>
       <BalancesTableHead wallet={{ name, publicKey, blockchain }} />
       <BalancesTableContent>
-        {RAMP_SUPPORTED_TOKENS[blockchain]
-          .filter(
-            ({ title, subtitle }) =>
-              title.toLowerCase().includes(searchFilter.toLocaleLowerCase()) ||
-              subtitle.toLowerCase().includes(searchFilter.toLowerCase())
-          )
-          .map((token: any) => (
-            <BalancesTableRow
-              onClick={() => onStartRamp({ blockchain, token, publicKey })}
-            >
-              <RampTokenCell token={token} />
-            </BalancesTableRow>
-          ))}
+        {BLOCKCHAIN_COMPONENTS[blockchain].RampSupportedTokens.filter(
+          ({ title, subtitle }) =>
+            title.toLowerCase().includes(searchFilter.toLocaleLowerCase()) ||
+            subtitle.toLowerCase().includes(searchFilter.toLowerCase())
+        ).map((token: any) => (
+          <BalancesTableRow
+            onClick={() => onStartRamp({ blockchain, token, publicKey })}
+          >
+            <RampTokenCell token={token} />
+          </BalancesTableRow>
+        ))}
       </BalancesTableContent>
     </BalancesTable>
   );
@@ -228,24 +202,28 @@ function RampTokenCell({ token }: any) {
   const classes = useStyles();
   return (
     <div className={classes.balancesTableCellContainer}>
-      {icon ? <ListItemIcon
-        className={classes.tokenListItemIcon}
-        classes={{ root: classes.tokenListItemIconRoot }}
+      {icon ? (
+        <ListItemIcon
+          className={classes.tokenListItemIcon}
+          classes={{ root: classes.tokenListItemIconRoot }}
         >
-        <ProxyImage
-          src={icon}
-          className={classes.logoIcon}
-          onError={(event: any) =>
+          <ProxyImage
+            src={icon}
+            className={classes.logoIcon}
+            onError={(event: any) =>
               (event.currentTarget.style.display = "none")
             }
           />
-      </ListItemIcon> : null}
+        </ListItemIcon>
+      ) : null}
       <div className={classes.tokenListItemContent}>
         <div className={classes.tokenListItemRow}>
           <Typography className={classes.tokenName}>{title}</Typography>
         </div>
         <div className={classes.tokenListItemRow}>
-          {subtitle ? <Typography className={classes.tokenAmount}>{subtitle}</Typography> : null}
+          {subtitle ? (
+            <Typography className={classes.tokenAmount}>{subtitle}</Typography>
+          ) : null}
         </div>
       </div>
     </div>

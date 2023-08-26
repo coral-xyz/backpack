@@ -5,6 +5,8 @@ import {
   CHANNEL_ETHEREUM_NOTIFICATION,
   CHANNEL_ETHEREUM_RPC_REQUEST,
   CHANNEL_ETHEREUM_RPC_RESPONSE,
+  CHANNEL_SECURE_BACKGROUND_REQUEST,
+  CHANNEL_SECURE_BACKGROUND_RESPONSE,
   CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST,
   CHANNEL_SOLANA_CONNECTION_INJECTED_RESPONSE,
   CHANNEL_SOLANA_NOTIFICATION,
@@ -17,6 +19,8 @@ import {
 const logger = getLogger("content-script");
 
 // Script entry.
+main();
+
 function main() {
   logger.debug("starting content script");
   injectScript("injected.js");
@@ -48,6 +52,13 @@ function initChannels() {
 // Initialize all proxy communication channels from the client to the background
 // script.
 function initClientChannels() {
+  //
+  // Secure Background service specific rpc requests.
+  //
+  ChannelContentScript.proxy(
+    CHANNEL_SECURE_BACKGROUND_REQUEST,
+    CHANNEL_SECURE_BACKGROUND_RESPONSE
+  );
   //
   // Wallet Solana specific rpc requests.
   //
@@ -85,5 +96,3 @@ function initBackgroundChannels() {
   ChannelContentScript.proxyReverse(CHANNEL_ETHEREUM_NOTIFICATION);
   ChannelContentScript.proxyReverse(CHANNEL_SOLANA_NOTIFICATION);
 }
-
-main();

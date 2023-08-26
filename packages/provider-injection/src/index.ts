@@ -1,17 +1,17 @@
 import {
+  CHANNEL_PLUGIN_RPC_REQUEST,
+  CHANNEL_PLUGIN_RPC_RESPONSE,
+  getLogger,
+} from "@coral-xyz/common";
+import {
+  ChainedRequestManager,
   ProviderEthereumInjection,
   ProviderEthereumXnftInjection,
   ProviderRootXnftInjection,
   ProviderSolanaInjection,
-  ProviderSolanaXnftInjection,
-  ChainedRequestManager,
 } from "@coral-xyz/provider-core";
-import {
-  getLogger,
-  CHANNEL_PLUGIN_RPC_REQUEST,
-  CHANNEL_PLUGIN_RPC_RESPONSE,
-} from "@coral-xyz/common";
 import { initialize } from "@coral-xyz/wallet-standard";
+
 import type { WalletProvider, WindowEthereum } from "./types";
 
 const logger = getLogger("provider-injection");
@@ -47,7 +47,7 @@ function initSolana() {
         );
         const xnft = new ProviderRootXnftInjection(requestManager, {
           ethereum: new ProviderEthereumXnftInjection(requestManager),
-          solana: new ProviderSolanaXnftInjection(requestManager),
+          solana,
         });
         return xnft;
       })(),

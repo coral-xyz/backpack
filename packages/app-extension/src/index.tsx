@@ -1,10 +1,17 @@
-import { lazy, Suspense } from "react";
+import React, { lazy, Suspense } from "react";
 import { createRoot } from "react-dom/client";
 import {
   BACKPACK_FEATURE_POP_MODE,
   isValidEventOrigin,
   openPopupWindow,
 } from "@coral-xyz/common";
+import {
+  FromExtensionTransportSender,
+  ToSecureUITransportReceiver,
+} from "@coral-xyz/secure-client";
+import type { SECURE_EVENTS } from "@coral-xyz/secure-client/types";
+import { SecureUI } from "@coral-xyz/secure-client/ui";
+import { v4 } from "uuid";
 
 import "./index.css";
 
@@ -25,9 +32,34 @@ chrome.runtime
   })
   .catch(console.error);
 
-// Connect to the background script so it can detect if the popup is closed
-chrome.runtime.connect();
+const urlParams = new URLSearchParams(window.location.search);
+const requestWindowId = urlParams.get("windowId");
+// if popup was passed windowId it was opened by secure-background
+// and should not render app since secure-ui will handle the request.
+const shouldRenderApp = !requestWindowId;
+const windowId = requestWindowId ?? v4();
 
+// Send connect event to background script to open channel.
+// add unique name so background can identify the popup.
+const port = chrome.runtime.connect({ name: windowId });
+
+const secureUITransportReceiver = new ToSecureUITransportReceiver<
+  SECURE_EVENTS,
+  "uiResponse"
+>(port);
+const extensionTransportSender =
+  new FromExtensionTransportSender<SECURE_EVENTS>({
+    name: "Backpack Extension",
+    address: window.location.origin,
+    context: "extension",
+  });
+const secureUITransportSender = new FromExtensionTransportSender<SECURE_EVENTS>(
+  {
+    name: "Backpack Extension",
+    address: window.location.origin,
+    context: "secureUI",
+  }
+);
 //
 // Configure event listeners.
 //
@@ -53,8 +85,16 @@ const container = document.getElementById("root");
 const root = createRoot(container!);
 root.render(
   <>
+    {shouldRenderApp ? (
+      <Suspense fallback={null}>
+        <App secureBackgroundSender={extensionTransportSender} />
+      </Suspense>
+    ) : null}
     <Suspense fallback={null}>
-      <App />
+      <SecureUI
+        secureBackgroundSender={secureUITransportSender}
+        secureUIReceiver={secureUITransportReceiver}
+      />
     </Suspense>
     <Suspense fallback={null}>
       <LedgerIframe />

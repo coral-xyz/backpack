@@ -267,7 +267,7 @@ export const createUser = async (
 ): Promise<{
   id: string;
   username: string;
-  public_keys: { blockchain: "solana" | "ethereum"; id: number }[];
+  public_keys: { blockchain: Blockchain; id: number }[];
 }> => {
   const inviteCode = uuidv4();
   await chain("mutation")(

@@ -4,11 +4,11 @@ import {
   Blockchain,
   fetchEthereumBalances,
   getLogger,
+  NOTIFICATION_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_BLOCKCHAIN_KEYRING_CREATED,
   NOTIFICATION_BLOCKCHAIN_KEYRING_DELETED,
-  NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED,
+  NOTIFICATION_CONNECTION_URL_UPDATED,
   NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED,
-  NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
   NOTIFICATION_ETHEREUM_FEE_DATA_DID_UPDATE,
   NOTIFICATION_ETHEREUM_TOKENS_DID_UPDATE,
   NOTIFICATION_KEYRING_STORE_CREATED,
@@ -22,8 +22,8 @@ import type { CachedValue } from "../types";
 
 const logger = getLogger("ethereum-connection-backend");
 
-export const ETHEREUM_TOKENS_REFRESH_INTERVAL = 10 * 1000;
-export const ETHEREUM_FEE_DATA_REFRESH_INTERVAL = 20 * 1000;
+const ETHEREUM_TOKENS_REFRESH_INTERVAL = 10 * 1000;
+const ETHEREUM_FEE_DATA_REFRESH_INTERVAL = 20 * 1000;
 
 export function start(events: EventEmitter): EthereumConnectionBackend {
   const b = new EthereumConnectionBackend(events);
@@ -67,10 +67,10 @@ export class EthereumConnectionBackend {
         case NOTIFICATION_KEYRING_STORE_LOCKED:
           handleKeyringStoreLocked(notif);
           break;
-        case NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED:
+        case NOTIFICATION_ACTIVE_WALLET_UPDATED:
           handleActiveWalletUpdated(notif);
           break;
-        case NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED:
+        case NOTIFICATION_CONNECTION_URL_UPDATED:
           handleConnectionUrlUpdated(notif);
           break;
         case NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED:
@@ -113,13 +113,23 @@ export class EthereumConnectionBackend {
     };
 
     const handleActiveWalletUpdated = (notif: Notification) => {
-      const { activeWallet } = notif.data;
+      const { activeWallet, blockchain } = notif.data;
+
+      if (blockchain !== Blockchain.ETHEREUM) {
+        return;
+      }
+
       this.stopPolling();
       this.startPolling(activeWallet);
     };
 
     const handleConnectionUrlUpdated = (notif: Notification) => {
-      const { connectionUrl } = notif.data;
+      const { connectionUrl, blockchain } = notif.data;
+
+      if (blockchain !== Blockchain.ETHEREUM) {
+        return;
+      }
+
       this.provider = new ethers.providers.JsonRpcProvider(connectionUrl);
       this.url = connectionUrl;
     };

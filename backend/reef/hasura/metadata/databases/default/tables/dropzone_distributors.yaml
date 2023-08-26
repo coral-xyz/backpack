@@ -1,21 +1,66 @@
 table:
   name: distributors
   schema: dropzone
+object_relationships:
+  - name: category
+    using:
+      foreign_key_constraint_on: category_id
+array_relationships:
+  - name: claims
+    using:
+      foreign_key_constraint_on:
+        column: distributor_id
+        table:
+          name: claims
+          schema: dropzone
+  - name: swaps
+    using:
+      foreign_key_constraint_on:
+        column: distributor_id
+        table:
+          name: swaps
+          schema: auth
 insert_permissions:
   - role: auth_worker
     permission:
       check: {}
       columns:
         - data
+        - lookup_table_public_key
+        - mint_public_key
+        - public_key
+        - transaction_signature
+        - created_at
+        - published_at
+        - category_id
         - id
-        - mint
 select_permissions:
   - role: auth_worker
     permission:
       columns:
+        - category_id
+        - created_at
         - data
         - id
-        - mint
-        - created_at
+        - lookup_table_public_key
+        - mint_public_key
+        - public_key
+        - published_at
+        - secret
+        - transaction_signature
       filter: {}
-      allow_aggregations: true
+update_permissions:
+  - role: auth_worker
+    permission:
+      columns:
+        - id
+        - category_id
+        - data
+        - public_key
+        - mint_public_key
+        - transaction_signature
+        - published_at
+        - created_at
+        - lookup_table_public_key
+      filter: {}
+      check: {}

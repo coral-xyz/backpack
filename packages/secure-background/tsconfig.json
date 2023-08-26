@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "dist/esm/",
+    "rootDir": "./"
+  },
+  "include": [
+    "src/**/*",
+    "index.ts",
+    "legacyExport.ts",
+    "service.ts",
+    "clients.ts",
+    "types.ts"
+  ]
+}

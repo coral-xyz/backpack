@@ -1,21 +1,18 @@
 import { Suspense, useEffect, useState } from "react";
 import type { Plugin } from "@coral-xyz/common";
 import { DEFAULT_PUBKEY_STR } from "@coral-xyz/common";
-import { Loading, MoreIcon, PowerIcon } from "@coral-xyz/react-common";
+import { Loading, PowerIcon } from "@coral-xyz/react-common";
 import {
   transactionRequest,
   useActiveSolanaWallet,
-  useBackgroundClient,
   useClosePlugin,
-  useConnectionBackgroundClient,
   useFreshPlugin,
-  useNavigationSegue,
   useOpenPlugin,
   usePlugins,
 } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
-import { Button, CircularProgress, Divider } from "@mui/material";
-import { useRecoilValue, useSetRecoilState } from "recoil";
+import { Button } from "@mui/material";
+import { useSetRecoilState } from "recoil";
 
 import { PluginRenderer } from "./Renderer";
 import { Simulator } from "./Simulator";
@@ -40,7 +37,7 @@ export function PluginApp({
   );
 }
 
-export function LoadPlugin({
+function LoadPlugin({
   xnftAddress,
   deepXnftPath,
 }: {
@@ -49,10 +46,7 @@ export function LoadPlugin({
 }) {
   const { publicKey } = useActiveSolanaWallet(); // TODO: aggregate wallet considerations.
   const plugins = usePlugins(publicKey);
-  const segue = useNavigationSegue();
   const setTransactionRequest = useSetRecoilState(transactionRequest);
-  const backgroundClient = useBackgroundClient();
-  const connectionBackgroundClient = useConnectionBackgroundClient();
   const openPlugin = useOpenPlugin();
 
   if (!xnftAddress) {
@@ -70,11 +64,7 @@ export function LoadPlugin({
     );
   }
   plugin.setHostApi({
-    push: segue.push,
-    pop: segue.pop,
     request: setTransactionRequest,
-    backgroundClient,
-    connectionBackgroundClient,
     openPlugin,
   });
 
@@ -109,17 +99,19 @@ export function PluginDisplay({
     <>
       <PluginControl plugin={plugin} />
       <Suspense fallback={<Loading />}>
-        {plugin ? <PluginRenderer
-          key={plugin?.iframeRootUrl}
-          plugin={plugin}
-          deepXnftPath={deepXnftPath}
-          /> : null}
+        {plugin ? (
+          <PluginRenderer
+            key={plugin?.iframeRootUrl}
+            plugin={plugin}
+            deepXnftPath={deepXnftPath}
+          />
+        ) : null}
       </Suspense>
     </>
   );
 }
 
-export function PluginControl({ plugin }: { plugin: any | null }) {
+function PluginControl({ plugin }: { plugin: any | null }) {
   const closePlugin = useClosePlugin();
   const [isLoading, setIsLoading] = useState(true);
 

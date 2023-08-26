@@ -16,6 +16,8 @@ import type {
 } from "./types";
 
 export * from "./api";
+export * from "./apollo";
+export * from "./blockchains";
 export * from "./browser";
 export * from "./channel";
 export * from "./constants";
@@ -23,6 +25,7 @@ export * from "./crypto";
 export * from "./ethereum";
 export * from "./explorer";
 export * from "./feature-gates";
+export * from "./formatting";
 export * from "./logging";
 export * from "./messages";
 export * from "./navigation";
@@ -30,6 +33,7 @@ export * from "./notifications";
 export * from "./plugin";
 export * from "./preferences";
 export * from "./solana";
+export * from "./tokens";
 export * from "./types";
 export * from "./utils";
 export { useStore } from "./zustand-store";
@@ -58,28 +62,6 @@ export function withContextPort<Backend>(
     const ctx = { backend, events, sender };
     return await handler(ctx, data);
   };
-}
-
-export function walletAddressDisplay(
-  publicKey: PublicKey | string,
-  numDigits = 4
-): string {
-  if (!publicKey) return "";
-  const pubkeyStr: string =
-    typeof publicKey === "string" ? publicKey : publicKey.toString();
-  return `${pubkeyStr.slice(0, numDigits)}...${pubkeyStr.slice(
-    pubkeyStr.length - numDigits
-  )}`;
-}
-
-export function usernameDisplay(username: string, maxLength = 10) {
-  if (!username) {
-    return "";
-  }
-  if (username.length <= maxLength) {
-    return username;
-  }
-  return username.slice(0, maxLength - 2) + "..";
 }
 
 /**

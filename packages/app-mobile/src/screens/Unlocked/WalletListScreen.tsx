@@ -1,91 +1,65 @@
-import {
-  FlatList,
-  Image,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import type { Wallet } from "~types/types";
 
-import {
-  Blockchain,
-  UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
-  walletAddressDisplay,
-} from "@coral-xyz/common";
-import {
-  useAllWallets,
-  useBackgroundClient,
-  useBlockchainActiveWallet,
-  useDehydratedWallets,
-} from "@coral-xyz/recoil";
+import { useCallback } from "react";
+import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
+
+import { Blockchain, formatWalletAddress } from "@coral-xyz/common";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { HardwareIcon, ImportedIcon, MnemonicIcon } from "~components/Icon";
 import {
+  BlockchainLogo,
   CopyButtonIcon,
   ListRowSeparator,
   Margin,
   RoundedContainerGroup,
   Row,
   Screen,
+  StyledText,
 } from "~components/index";
-import { getBlockchainLogo, useTheme } from "~hooks/index";
+import { useTheme } from "~hooks/useTheme";
+import { useWallets } from "~hooks/wallets";
 
-type Wallet = {
-  publicKey: string;
-  blockchain: string;
-  name: string;
-  type: string;
-};
+import { useSession } from "~src/lib/SessionProvider";
 
-// NOTE(peter): copied from app-extension/src/components/common/WalletList.tsx
-export function WalletListScreen({ navigation, route }): JSX.Element {
+export function WalletListScreen({ navigation }): JSX.Element {
   const insets = useSafeAreaInsets();
-  const activeWallet = useBlockchainActiveWallet(Blockchain.SOLANA);
-  const background = useBackgroundClient();
-  const wallets = useAllWallets();
-  const _dehydratedWallets = useDehydratedWallets();
+  const { activeWallet, setActiveWallet } = useSession();
+  const { allWallets } = useWallets();
 
-  const activeWallets = wallets.filter((w) => !w.isCold);
-  // const coldWallets = wallets.filter((w) => w.isCold);
+  const handlePressWallet = useCallback(
+    async (wallet: Wallet) => {
+      await setActiveWallet(wallet);
+      navigation.goBack();
+    },
+    [setActiveWallet, navigation]
+  );
 
-  // Dehydrated public keys are keys that exist on the server but cannot be
-  // used on the client as we don't have signing data, e.g. mnemonic, private
-  // key or ledger derivation path
-  const dehydratedWallets = _dehydratedWallets.map((w: any) => ({
-    ...w,
-    name: "", // TODO server side does not sync wallet names
-    type: "dehydrated",
-  }));
-
-  const onSelectWallet = async (w: Wallet) => {
-    await background.request({
-      method: UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
-      params: [w.publicKey.toString(), w.blockchain],
-    });
-
-    navigation.goBack();
-  };
+  const keyExtractor = (item) => item.publicKey;
+  const renderItem = useCallback(
+    ({ item: wallet }) => {
+      return (
+        <WalletListItem
+          name={wallet.name}
+          publicKey={wallet.publicKey}
+          type={wallet.type as string}
+          blockchain={wallet.blockchain}
+          onPress={handlePressWallet}
+          icon={<CopyButtonIcon text={wallet.publicKey} />}
+          isSelected={wallet.publicKey === activeWallet?.publicKey}
+        />
+      );
+    },
+    [activeWallet?.publicKey, handlePressWallet]
+  );
 
   return (
     <Screen style={{ marginBottom: insets.bottom }}>
       <FlatList
-        data={activeWallets.concat(dehydratedWallets)}
+        data={allWallets}
         ItemSeparatorComponent={() => <ListRowSeparator />}
-        keyExtractor={(item) => item.publicKey.toString()}
-        renderItem={({ item: wallet }) => {
-          return (
-            <WalletListItem
-              name={wallet.name}
-              publicKey={wallet.publicKey}
-              type={wallet.type}
-              blockchain={wallet.blockchain}
-              onPress={onSelectWallet}
-              icon={<CopyButtonIcon text={wallet.publicKey} />}
-              isSelected={wallet.publicKey === activeWallet?.publicKey}
-            />
-          );
-        }}
+        keyExtractor={keyExtractor}
+        renderItem={renderItem}
       />
     </Screen>
   );
@@ -122,20 +96,15 @@ function WalletListItem({
       >
         <View style={styles.listItemLeft}>
           <Margin right={12}>
-            <NetworkIcon blockchain={blockchain} />
+            <BlockchainLogo blockchain={blockchain} />
           </Margin>
           <View>
-            <Text
-              style={{
-                fontSize: 16,
-                fontFamily: isSelected
-                  ? "Inter_600SemiBold"
-                  : "Inter_400Regular",
-                color: theme.custom.colors.fontColor,
-              }}
+            <StyledText
+              color="$fontColor"
+              fontWeight={isSelected ? "$semibold" : "$base"}
             >
               {name}
-            </Text>
+            </StyledText>
             <Row>
               <WalletTypeIcon
                 type={type}
@@ -144,7 +113,7 @@ function WalletListItem({
               <Text
                 style={{ fontSize: 14, color: theme.custom.colors.fontColor }}
               >
-                {walletAddressDisplay(publicKey)}
+                {formatWalletAddress(publicKey)}
               </Text>
             </Row>
           </View>
@@ -153,11 +122,6 @@ function WalletListItem({
       </Pressable>
     </RoundedContainerGroup>
   );
-}
-
-function NetworkIcon({ blockchain }: { blockchain: Blockchain }) {
-  const logo = getBlockchainLogo(blockchain);
-  return <Image style={styles.logoContainer} source={logo} />;
 }
 
 function WalletTypeIcon({ type, fill }: { type: string; fill?: string }) {
@@ -181,10 +145,5 @@ const styles = StyleSheet.create({
   listItemLeft: {
     flexDirection: "row",
     alignItems: "center",
-  },
-  logoContainer: {
-    width: 24,
-    height: 24,
-    marginRight: 8,
   },
 });

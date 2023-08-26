@@ -1,58 +1,26 @@
-import type { StackScreenProps } from "@react-navigation/stack";
-
-import { useState, useCallback, useMemo } from "react";
+import { useState, Suspense, useCallback, useMemo } from "react";
 
 import * as Crypto from "expo-crypto";
 
-// import { Video, ResizeMode, AVPlaybackStatus } from "expo-av";
-
-import { CHAT_MESSAGES } from "@coral-xyz/common";
-import { createEmptyFriendship } from "@coral-xyz/db";
-import { useUser, useAvatarUrl } from "@coral-xyz/recoil";
 import {
   fetchMoreChatsFor,
   SignalingManager,
   useChatsWithMetadata,
-} from "@coral-xyz/tamagui";
+} from "@coral-xyz/chat-xplat";
+import { CHAT_MESSAGES } from "@coral-xyz/common";
+import { createEmptyFriendship } from "@coral-xyz/db";
+import { useUser, useAvatarUrl } from "@coral-xyz/recoil";
+import { ErrorBoundary } from "react-error-boundary";
 import { GiftedChat, Send } from "react-native-gifted-chat";
 import { v4 as uuidv4 } from "uuid";
 
 import { UserAvatar } from "~components/UserAvatar";
-import { ChatStackNavigatorParamList } from "~screens/Unlocked/Chat/ChatHelpers";
+import { ScreenError, ScreenLoading } from "~components/index";
+import { ChatDetailScreenProps } from "~navigation/types";
 
-const generateId = () => {
+function generateId() {
   return Crypto.randomUUID();
-};
-
-// function VideoMessage() {
-//   const video = useRef(null);
-//   const [status, setStatus] = useState<AVPlaybackStatus | object>({});
-//   return (
-//     <View>
-//       <Video
-//         ref={video}
-//         style={{ width: 150, height: 100 }}
-//         source={{
-//           uri: "https://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4",
-//         }}
-//         useNativeControls
-//         resizeMode={ResizeMode.CONTAIN}
-//         isLooping
-//         onPlaybackStatusUpdate={(status) => setStatus(() => status)}
-//       />
-//       <View>
-//         <Button
-//           title={status.isPlaying ? "Pause" : "Play"}
-//           onPress={() =>
-//             status.isPlaying
-//               ? video.current.pauseAsync()
-//               : video.current.playAsync()
-//           }
-//         />
-//       </View>
-//     </View>
-//   );
-// }
+}
 
 const formatDate = (created_at: string) => {
   return !isNaN(new Date(parseInt(created_at, 10)).getTime())
@@ -70,11 +38,6 @@ const formatChats = (chats) => {
         received: x.received,
         sent: true,
         pending: false,
-        // Videos / images follow this format
-        // video:
-        //   "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
-        // image:
-        //   "https://d33wubrfki0l68.cloudfront.net/7e97b18b02060f1d4b65a5850b49e2488da391bb/d60ff/img/homepage/dissection/3.png",
         user: {
           _id: x.uuid,
           name: x.username,
@@ -85,15 +48,11 @@ const formatChats = (chats) => {
     .reverse();
 };
 
-export function ChatDetailScreen({
-  // navigation,
-  route,
-}: StackScreenProps<ChatStackNavigatorParamList, "ChatDetail">): JSX.Element {
+function Container({ route }: ChatDetailScreenProps): JSX.Element {
   const { roomType, roomId, remoteUserId, remoteUsername } = route.params;
+  const [isLoadingEarlier, setIsLoadingEarlier] = useState(false);
   const user = useUser();
   const avatarUrl = useAvatarUrl();
-
-  const [isLoadingEarlier, setIsLoadingEarlier] = useState(false);
   const { chats } = useChatsWithMetadata({
     room: roomId.toString(),
     type: roomType,
@@ -162,17 +121,18 @@ export function ChatDetailScreen({
     return <Send {...props} />;
   }, []);
 
-  // const renderMessageVideo = useCallback((props: MessageVideoProps<any>) => {
-  //   const { video } = props.currentMessage;
-  //   return <VideoMessage />;
-  // }, []);
-
   const renderAvatar = useCallback((props) => {
     return <UserAvatar uri={props.currentMessage.user.avatar} size={32} />;
   }, []);
 
   return (
     <GiftedChat
+      multiline={false}
+      textInputProps={{
+        autoCorrect: false,
+        autoCapitalize: "none",
+        textContentType: "none",
+      }}
       messageIdGenerator={generateId}
       showAvatarForEveryMessage
       alwaysShowSend
@@ -185,12 +145,26 @@ export function ChatDetailScreen({
       onSend={onSend}
       renderSend={renderSend}
       renderAvatar={renderAvatar}
-      // renderMessageVideo={renderMessageVideo}
       user={{
         _id: user.uuid,
         name: user.username,
         avatar: avatarUrl,
       }}
     />
+  );
+}
+
+export function ChatDetailScreen({
+  navigation,
+  route,
+}: ChatDetailScreenProps): JSX.Element {
+  return (
+    <ErrorBoundary
+      fallbackRender={({ error }) => <ScreenError error={error} />}
+    >
+      <Suspense fallback={<ScreenLoading />}>
+        <Container navigation={navigation} route={route} />
+      </Suspense>
+    </ErrorBoundary>
   );
 }

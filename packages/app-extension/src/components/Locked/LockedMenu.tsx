@@ -1,4 +1,3 @@
-import { useEffect,useState } from "react";
 import {
   BACKPACK_LINK,
   DISCORD_INVITE_LINK,
@@ -78,7 +77,12 @@ export function LockedMenu({ menuOpen, setMenuOpen }: any) {
           },
         }}
       >
-        <div style={{ height: "100%" }}>
+        <div
+          style={{
+            height: "100%",
+            background: theme.custom.colors.backgroundBackdrop,
+          }}
+        >
           <NavStackEphemeral
             initialRoute={{ name: "root" }}
             options={() => ({ title: "" })}
@@ -103,7 +107,7 @@ export function LockedMenu({ menuOpen, setMenuOpen }: any) {
   );
 }
 
-export function LockedMenuList() {
+function LockedMenuList() {
   const theme = useCustomTheme();
   const nav = useNavigation();
   const classes = useStyles();

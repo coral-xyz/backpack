@@ -12,6 +12,7 @@
     "babel.config.js",
     "jest.config.base.js",
     "jest.config.js",
-    "jest.preset.js"
+    "jest.preset.js",
+    "tamagui.config.ts"
   ]
 }

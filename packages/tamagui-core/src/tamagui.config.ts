@@ -1,28 +1,15 @@
-// import { createAnimations } from "@tamagui/animations-react-native";
-// import { createMedia } from "@tamagui/react-native-media-driver";
 import {
-  baseTheme,
   DARK_COLORS,
   LIGHT_COLORS,
   MOBILE_DARK_OVERRIDES,
   MOBILE_LIGHT_OVERRIDES,
 } from "@coral-xyz/themes";
-import { config } from "@tamagui/config";
-// import { createInterFont } from "@tamagui/font-inter";
-import { themes as _themes, tokens as _tokens } from "@tamagui/themes";
-import { createTamagui, createTheme, createTokens } from "tamagui";
+import { config as defaultConfig } from "@tamagui/config";
+import { themes as _themes } from "@tamagui/themes";
+import { createTamagui, createTheme } from "tamagui";
 
-const tokens = createTokens({
-  ..._tokens,
-  size: {
-    ..._tokens.size,
-    container: 48,
-  },
-  radius: {
-    ..._tokens.radius,
-    ...baseTheme.custom.borderRadius,
-  },
-});
+import { interFont } from "./font-inter";
+import { darkThemeColors, lightThemeColors, tokens } from "./tokens";
 
 const darkTheme = createTheme({
   ...DARK_COLORS,
@@ -34,24 +21,43 @@ const lightTheme = createTheme({
   ...MOBILE_LIGHT_OVERRIDES,
 });
 
-export const appConfig = createTamagui({
-  ...config,
+export const config = createTamagui({
+  ...defaultConfig,
   tokens,
+  fonts: {
+    body: interFont,
+  },
   themes: {
-    dark: {
-      ..._themes.dark,
-      ...darkTheme,
-    },
     light: {
-      ..._themes.light,
+      ..._themes.light, // NOTE remove when all colors are correct
+      ...createTheme(lightThemeColors),
       ...lightTheme,
     },
+    dark: {
+      ..._themes.dark, // NOTE remove when all colors are correct
+      ...createTheme(darkThemeColors),
+      ...darkTheme,
+    },
+  },
+  media: {
+    sm: { maxWidth: 650 },
+    gtSm: { minWidth: 650 + 1 },
+    md: { maxWidth: 850 },
+    gtMd: { minWidth: 850 + 1 },
+    lg: { maxWidth: 1050 },
+    gtLg: { minWidth: 1050 + 1 },
+    xl: { maxWidth: 1250 },
+    gtXl: { minWidth: 1250 + 1 },
+    xxl: { maxWidth: 1450 },
+    gtXxl: { minWidth: 1450 + 1 },
   },
 });
 
-export type AppConfig = typeof appConfig;
+export type Conf = typeof config;
+
+// DO NOT CHANGE THS DECLARATION, THIS MUST LOOK LIKE THIS:
+// interface TamaguiCustomConfig extends Conf {}
 declare module "tamagui" {
-  // overrides TamaguiCustomConfig so your custom types
-  // work everywhere you import `tamagui`
-  type TamaguiCustomConfig = AppConfig;
+  // eslint-disable-next-line
+  interface TamaguiCustomConfig extends Conf {}
 }

@@ -1,3 +1,4 @@
+import { Dimensions } from "react-native";
 export function maybeRender(
   condition: boolean,
   fn: () => JSX.Element
@@ -17,3 +18,5 @@ export function getRandomColor() {
   }
   return color;
 }
+
+export const WINDOW_WIDTH = Dimensions.get("window").width;

@@ -1,3 +1,4 @@
+import { UNKNOWN_ICON_SRC } from "@coral-xyz/common";
 import {
   PrimaryButton,
   ProxyImage,
@@ -6,8 +7,7 @@ import {
 import { useAvatarUrl, useUser, useWalletName } from "@coral-xyz/recoil";
 import { styles } from "@coral-xyz/themes";
 
-import { walletAddressDisplay } from "../../../components/common";
-import { UNKNOWN_ICON_SRC } from "../../common/Icon";
+import { formatWalletAddress } from "../../../components/common";
 
 const useStyles = styles((theme) => ({
   connectablesContainer: {
@@ -115,7 +115,7 @@ export function WithApprovalButtons({
   );
 }
 
-export function OriginWalletConnectIcons({
+function OriginWalletConnectIcons({
   origin,
   originTitle,
   wallet,
@@ -139,7 +139,7 @@ export function OriginWalletConnectIcons({
       <Connectable
         kind="medium"
         title={username}
-        description={`${walletName} (${walletAddressDisplay(wallet)})`}
+        description={`${walletName} (${formatWalletAddress(wallet)})`}
         icon={avatarUrl}
       />
     </div>
@@ -170,7 +170,7 @@ export function OriginConnectable({
   );
 }
 
-export function Connectable({
+function Connectable({
   title,
   description,
   icon,

@@ -37,6 +37,13 @@
     "dev": {
       "cache": false,
       "outputs": []
+    },
+    "gql:generate": {
+      "cache": false,
+      "outputs": [
+        "backend/native/backpack-api/src/routes/graphql/types.ts",
+        "packages/data-components/src/apollo/**"
+      ]
     }
   }
 }
