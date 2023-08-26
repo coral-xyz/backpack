@@ -78,7 +78,7 @@ function UserActions({
       <>
         <Action text="Decline" onPress={onDecline} />
         <Action
-          textColor={theme.custom.colors.blue}
+          textColor="#0057EB"
           text="Accept"
           onPress={onAccept}
         />
