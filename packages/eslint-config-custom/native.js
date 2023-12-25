@@ -61,10 +61,6 @@ module.exports = {
         selector: "Literal[value=/\\d+(px|vh|vw|rem|pt|em)$/]",
         message: "Units like px, vh, etc don't work. Use unitless instead",
       },
-      {
-        selector: "Literal[value=/(treklabs.xyz|backpack.exchange)/]",
-        message: "Use Constants.expoConfig?.extra?.exchange{Api,Base}Url",
-      },
     ],
     "no-restricted-properties": [
       "error",

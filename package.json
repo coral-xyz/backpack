@@ -17,7 +17,6 @@
     "start": "env-cmd --silent turbo run start --concurrency=100% --filter='./packages/*'",
     "start:fresh": "yarn install && yarn clean && yarn install && yarn start",
     "test": "env-cmd --silent turbo run test -- --passWithNoTests --watchAll=false",
-    "submodule": "git submodule update --init && rm -f packages/trek-api-web-ts/yarn.lock && yarn",
     "build": "env-cmd --silent turbo run build --filter='!./examples/**'",
     "build:fresh": "git add . && git clean -xfd && yarn install && yarn submodule && yarn build --force",
     "e2e": "env-cmd --silent turbo run e2e",

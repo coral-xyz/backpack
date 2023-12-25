@@ -9,12 +9,6 @@ runs:
     ##########################################################################
 
     #
-    # Fetch submodule files and prepare for yarn install
-    #
-    - run: git submodule update --init && rm -f packages/trek-api-web-ts/yarn.lock
-      shell: bash
-
-    #
     # Make sure react-native package.json key is added if used in mobile
     #
     - name: "check-package-json-react-native.sh: chmod"
