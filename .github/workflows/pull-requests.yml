@@ -47,18 +47,10 @@ jobs:
         id: changes
         with:
           filters: |
-            mobile:
-              - 'packages/app-mobile/**'
-              - 'packages/**/*.native.*'
             extension:
               - 'packages/app-extension/**'
             xnft:
               - 'packages/xnft-cli/**'
-
-      - if: steps.changes.outputs.mobile == 'true'
-        uses: andymckay/labeler@1.0.4
-        with:
-          add-labels: "mobile"
 
       - if: steps.changes.outputs.extension == 'true'
         uses: andymckay/labeler@1.0.4

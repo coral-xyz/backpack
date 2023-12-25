@@ -1,16 +1,17 @@
 import { useEffect } from "react";
 import { UI_RPC_METHOD_APPROVED_ORIGINS_DELETE } from "@coral-xyz/common";
 import { useTranslation } from "@coral-xyz/i18n";
-import {
-  EmptyState,
-  List,
-  ListItem,
-  PrimaryButton,
-} from "@coral-xyz/react-common";
+import { EmptyState, List } from "@coral-xyz/react-common";
 import { useApprovedOrigins, useBackgroundClient } from "@coral-xyz/recoil";
-import { useTheme, YStack } from "@coral-xyz/tamagui";
+import {
+  BpPrimaryButton,
+  ListItemCore,
+  RoundedContainerGroup,
+  StyledText,
+  useTheme,
+  YStack,
+} from "@coral-xyz/tamagui";
 import { GppBad } from "@mui/icons-material";
-import { ListItemText } from "@mui/material";
 
 import { useNavigation } from "../../../common/Layout/NavStack";
 
@@ -44,37 +45,30 @@ export function PreferencesTrustedSites() {
     >
       {Object.entries(approvedOrigins).map(
         ([key, origin]: any, i, { length }) => (
-          <ListItem
-            button={false}
-            key={key}
-            id={key}
-            isFirst={i === 0}
-            isLast={i === length - 1}
-            style={{
-              height: "66px",
-              padding: "12px",
-            }}
-            detail={<RevokeButton origin={origin} />}
+          <RoundedContainerGroup
+            disableBottomRadius={i !== length - 1}
+            disableTopRadius={i !== 0}
+            pointerEvents="auto"
           >
-            <ListItemText
+            <ListItemCore
+              key={key}
               style={{
-                fontWeight: 500,
-                maxWidth: "90%",
-                overflow: "hidden",
-              }}
-              primaryTypographyProps={{
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                whiteSpace: "pre-wrap",
-                style: {
-                  wordWrap: "break-word",
-                  wordBreak: "break-all",
-                },
+                gap: 12,
+                height: 66,
+                padding: 12,
+                pointerEvents: "auto",
               }}
             >
-              {_trimProtocol(origin)}
-            </ListItemText>
-          </ListItem>
+              <StyledText
+                overflow="hidden"
+                textOverflow="ellipsis"
+                whiteSpace="nowrap"
+              >
+                {_trimProtocol(origin)}
+              </StyledText>
+              <RevokeButton origin={origin} />
+            </ListItemCore>
+          </RoundedContainerGroup>
         )
       )}
     </List>
@@ -94,15 +88,15 @@ function RevokeButton({ origin }: { origin: string }) {
   };
 
   return (
-    <PrimaryButton
-      onClick={() => onClick()}
+    <BpPrimaryButton
+      backgroundColor={theme.redText.val}
+      cursor="pointer"
+      flexGrow={0}
+      width={71}
+      height={34}
+      borderRadius={4}
+      onPress={onClick}
       label="Revoke"
-      style={{
-        backgroundColor: theme.redBackgroundSolid.val,
-        width: "71px",
-        height: "34px",
-        borderRadius: "4px",
-      }}
     />
   );
 }

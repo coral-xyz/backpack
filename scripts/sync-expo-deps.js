@@ -16,7 +16,13 @@ const appMobilePackagePath = path.join(
 );
 
 const appMobilePackage = JSON.parse(
-  fs.readFileSync(appMobilePackagePath, "utf8")
+  (() => {
+    try {
+      return fs.readFileSync(appMobilePackagePath, "utf8");
+    } catch {
+      return '{ "dependencies": {} }';
+    }
+  })()
 );
 
 const appMobileDeps = Object.entries(appMobilePackage.dependencies).filter(
@@ -36,10 +42,7 @@ directories.forEach((dir) => {
     .filter(Boolean);
 
   packagePaths.forEach((packagePath) => {
-    if (
-      packagePath === "packages/app-mobile/package.json" ||
-      packagePath === "packages/app-extension/package.json"
-    ) {
+    if (packagePath === "packages/app-extension/package.json") {
       return;
     }
 

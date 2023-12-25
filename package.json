@@ -24,8 +24,6 @@
     "clean": "git clean -xfd",
     "start:ext": "env-cmd --silent turbo run start --filter='@coral-xyz/app-extension...' --filter='@coral-xyz/background...' --concurrency=50",
     "build:ext": "env-cmd --silent turbo run build --filter='@coral-xyz/app-extension...' --filter='@coral-xyz/background...'",
-    "start:mobile": "turbo run start --filter='@coral-xyz/app-mobile...' --filter='@coral-xyz/provider-injection'",
-    "build:mobile": "turbo run build --filter='@coral-xyz/app-mobile...' --filter='@coral-xyz/provider-injection'",
     "upgrade:tamagui": "manypkg upgrade tamagui && manypkg upgrade @tamagui && manypkg upgrade tamagui-loader && manypkg upgrade react-native-web-lite",
     "sync-i18n-from-airtable": "npx esno scripts/airtable-to-localizations.ts && prettier --write packages/i18n/src/locales",
     "sync-i18n-to-airtable": "npx esno scripts/sync-localizations-to-airtable.ts",

@@ -47,10 +47,7 @@
     },
     "gql:generate": {
       "cache": false,
-      "outputs": [
-        "packages/app-mobile/src/graphql/__generated__/**",
-        "packages/data-components/src/apollo/**"
-      ]
+      "outputs": ["packages/data-components/src/apollo/**"]
     }
   }
 }
