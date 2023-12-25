@@ -13,10 +13,6 @@ module.exports = {
         message: "never",
       },
       {
-        name: "@coral-xyz/app-mobile",
-        message: "never",
-      },
-      {
         name: "@coral-xyz/db",
         message: "not even once",
       },

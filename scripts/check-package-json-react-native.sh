@@ -6,7 +6,6 @@
 declare -A whitelist
 whitelist["packages/ledger-injection"]=1
 whitelist["packages/provider-injection"]=1
-whitelist["packages/app-mobile"]=1
 whitelist["packages/provider-core"]=1
 whitelist["packages/secure-background"]=1
 whitelist["packages/wallet-standard"]=1
