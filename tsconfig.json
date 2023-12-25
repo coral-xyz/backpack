@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "files": [],
+  "include": [],
+  "references": [
+    { "path": "packages/background" },
+    { "path": "packages/secure-background" },
+    { "path": "packages/secure-clients" },
+    { "path": "packages/secure-ui" },
+    { "path": "packages/common" },
+    { "path": "packages/data-components" },
+    { "path": "packages/db" },
+    { "path": "packages/ledger-injection" },
+    { "path": "packages/provider-core" },
+    { "path": "packages/provider-injection" },
+    { "path": "packages/react-common" },
+    { "path": "packages/recoil" },
+    { "path": "packages/tamagui-core" },
+    { "path": "packages/wallet-standard" },
+    { "path": "packages/react-native-core" }
+  ]
+}

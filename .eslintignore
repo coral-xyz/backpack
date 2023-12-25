@@ -1,0 +1,9 @@
+**/node_modules/**
+**/dist/**
+**/build/**
+**/dev/**
+
+**/.expo/**
+**/.next/**
+**/__generated__/**
+./scripts/*.ts

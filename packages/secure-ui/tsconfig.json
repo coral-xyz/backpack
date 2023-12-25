@@ -1,0 +1,16 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "dist/esm/",
+    "rootDir": "./",
+    "paths": {
+      "@coral-xyz/common": ["../common"],
+      "@coral-xyz/i18n": ["../i18n"],
+      "@coral-xyz/recoil": ["../recoil"],
+      "@coral-xyz/secure-background": ["../secure-background"],
+      "@coral-xyz/secure-clients": ["../secure-clients"],
+      "@coral-xyz/tamagui": ["../tamagui-core"]
+    }
+  },
+  "include": ["src/**/*", "index.ts"]
+}

@@ -1,0 +1,32 @@
+{
+  "name": "@coral-xyz/provider-injection",
+  "version": "0.1.0",
+  "source": "src/index.ts",
+  "scripts": {
+    "start": "node build.js --watch",
+    "build": "node build.js",
+    "build:publish": "cd ../secure-ui; yarn build; cd ../provider-core; yarn build; cd ../provider-injection; yarn build; cp ./dist/browser/index.js ../app-extension/build/injected.js; cp ./dist/browser/index.js ../app-extension/dev/injected.js"
+  },
+  "browserslist": "> 0.5%, last 2 versions, not dead",
+  "dependencies": {
+    "@coral-xyz/common": "*",
+    "@coral-xyz/provider-core": "*",
+    "@coral-xyz/secure-clients": "workspace:^",
+    "@coral-xyz/wallet-standard": "*",
+    "@solana/web3.js": "^1.63.1",
+    "bip32": "^4.0.0",
+    "bs58": "^5.0.0",
+    "eth-rpc-errors": "^4.0.3",
+    "eventemitter3": "^4.0.7"
+  },
+  "devDependencies": {
+    "esbuild": "^0.19.10",
+    "esbuild-node-builtins": "^0.1.0",
+    "eslint-config-custom": "*",
+    "typescript": "^5.2.2"
+  },
+  "app": "dist/browser/index.js",
+  "targets": {
+    "app": {}
+  }
+}

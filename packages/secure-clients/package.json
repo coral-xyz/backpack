@@ -1,0 +1,35 @@
+{
+  "name": "@coral-xyz/secure-clients",
+  "version": "0.1.0",
+  "description": "",
+  "license": "ISC",
+  "module": "dist/esm/index.js",
+  "source": "index.ts",
+  "react-native": "index.ts",
+  "types": "index.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -b",
+    "dev": "tsc --watch",
+    "start": "tsc --watch",
+    "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx --cache",
+    "lint:fix": "yarn run lint --fix"
+  },
+  "dependencies": {
+    "@coral-xyz/common": "*",
+    "@metaplex-foundation/mpl-bubblegum": "^0.7.0",
+    "@solana/spl-account-compression": "^0.1.9",
+    "@solana/web3.js": "1.63.1",
+    "@types/serviceworker": "^0.0.69",
+    "bs58": "^5.0.0",
+    "ethers5": "npm:ethers@^5.5.1",
+    "ethers6": "npm:ethers@^6.8.0"
+  },
+  "devDependencies": {
+    "@types/eventemitter3": "^2.0.2",
+    "eslint-config-custom": "*",
+    "typescript": "^5.2.2"
+  }
+}

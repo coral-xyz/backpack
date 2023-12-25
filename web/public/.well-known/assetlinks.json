@@ -1,0 +1,33 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "app.backpack.mobile",
+      "sha256_cert_fingerprints": [
+        "C0:D5:85:66:05:4F:3C:BF:31:06:D6:8D:E6:C5:83:86:B2:9E:B3:FE:43:58:E1:D5:82:44:88:B5:AA:B0:15:EF",
+        "1A:A7:D2:9A:4C:E9:71:12:4E:A8:88:02:F0:C5:02:00:0A:6A:7B:04:19:81:A8:5B:F3:02:68:A1:02:87:BF:04"
+      ]
+    }
+  },
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "app.backpack.dev",
+      "sha256_cert_fingerprints": [
+        "B8:BF:F2:3E:DC:1A:75:E3:76:61:1E:45:4F:7A:5B:23:00:A0:5C:01:0B:97:C3:31:3A:5C:F3:C6:4F:90:A6:D8"
+      ]
+    }
+  },
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "app.backpack.staging",
+      "sha256_cert_fingerprints": [
+        "16:5A:C7:AE:62:DC:B4:6E:82:ED:D5:86:E9:9F:33:C9:A0:C2:77:95:9C:F9:12:90:48:29:C9:51:E2:C3:A5:CC"
+      ]
+    }
+  }
+]
