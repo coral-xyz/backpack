@@ -47,7 +47,6 @@
     "@mui/styles": "^5.14.1",
     "@react-navigation/native": "^6.1.9",
     "@react-navigation/native-stack": "^6.9.17",
-    "@react-navigation/stack": "^6.3.20",
     "@solana/web3.js": "^1.63.1",
     "@uidotdev/usehooks": "^2.4.1",
     "bip39": "^3.0.4",
