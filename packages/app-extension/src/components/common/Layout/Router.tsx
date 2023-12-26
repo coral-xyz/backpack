@@ -15,6 +15,8 @@ import {
   useNavigation,
   useRedirectUrl,
 } from "@coral-xyz/recoil";
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
 import { AnimatePresence } from "framer-motion";
 
 import { WalletDrawerButton } from "../../common/WalletList";
@@ -34,6 +36,19 @@ import { NavBackButton, WithNav } from "./Nav";
 import { WithMotion } from "./NavStack";
 import { WithTabs } from "./Tab";
 import { XnftAppStack } from "./XnftAppStack";
+
+const Stack = createStackNavigator();
+
+function MyStack() {
+  return (
+    <Stack.Navigator initialRouteName="Home">
+      <Stack.Screen name="Home" component={BalancesPage} />
+      <Stack.Screen name="Notifications" component={TokenPage} />
+      <Stack.Screen name="Profile" component={NftsPage} />
+      <Stack.Screen name="Settings" component={TransactionsPage} />
+    </Stack.Navigator>
+  );
+}
 
 export function Router() {
   const location = useLocation();

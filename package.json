@@ -71,6 +71,8 @@
     "yarn": "^4.0.0"
   },
   "dependencies": {
+    "@react-navigation/native-stack": "^6.9.17",
+    "npx": "^10.2.2",
     "patch-package": "^6.5.0"
   }
 }
