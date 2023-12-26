@@ -1,12 +1,37 @@
 import { useRef } from "react";
+import { Button, Text, View } from "react-native";
 import { EXTENSION_HEIGHT, EXTENSION_WIDTH } from "@coral-xyz/common";
 import { Backpack } from "@coral-xyz/react-common";
 import { OnboardingProvider, useKeyringStoreState } from "@coral-xyz/recoil";
 import { KeyringStoreState } from "@coral-xyz/secure-background/types";
 import { RequireUserUnlocked } from "@coral-xyz/secure-ui";
 import { useTheme as useTamaguiTheme, useTheme } from "@coral-xyz/tamagui";
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import { OnboardAccount } from "./pages/OnboardAccount";
+
+const Stack = createNativeStackNavigator();
+
+function About({ navigation }: { navigation: any }) {
+  return (
+    <View>
+      <Text style={{ color: "white" }}>About us Page</Text>
+      <Button title="Go back" onPress={() => navigation.goBack()} />
+    </View>
+  );
+}
+function Home({ navigation }: { navigation: any }) {
+  return (
+    <View>
+      <Text style={{ color: "white" }}>Home Page</Text>
+      <Button
+        title="Go to about us page"
+        onPress={() => navigation.push("About")}
+      />
+    </View>
+  );
+}
 
 export const Onboarding = ({
   isAddingAccount,
@@ -50,8 +75,8 @@ export const Onboarding = ({
 
 export function OptionsContainer({
   innerRef,
-  children,
-}: {
+}: // children,
+{
   innerRef?: any;
   children: React.ReactNode;
 }) {
@@ -102,7 +127,15 @@ export function OptionsContainer({
             position: "relative",
           }}
         >
-          {children}
+          <View>
+            <NavigationContainer>
+              <Stack.Navigator>
+                <Stack.Screen name="Home" component={Home} />
+                <Stack.Screen name="About" component={About} />
+              </Stack.Navigator>
+            </NavigationContainer>
+          </View>
+          {/* {children} */}
         </div>
       </div>
     </div>

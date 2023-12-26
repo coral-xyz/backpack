@@ -192,6 +192,15 @@ const options = {
           name: "assets/[name].[ext]",
         },
       },
+      {
+        test: /\.(jpg|png|svg)$/,
+        use: {
+          loader: "url-loader",
+          options: {
+            limit: 25000,
+          },
+        },
+      },
       babelLoaderConfiguration,
       swcLoaderConfiguration,
       // tamaguiLoaderConfiguration, // NOTE(peter) turned off for now bc it's not working with our webpack conifg. it's just an optimization compiler that we can configure later once i figure it out

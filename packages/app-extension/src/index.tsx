@@ -1,3 +1,4 @@
+import "react-native-gesture-handler";
 const startTime = Date.now();
 
 import { lazy, Suspense } from "react";
