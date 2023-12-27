@@ -36,11 +36,13 @@ esbuild
                 result.errors.length
               } errors`
             );
-            fs.cp(
-              "./dist/browser/index.js",
-              "../app-mobile/assets/provider.html",
-              () => {}
-            );
+            if (fs.existsSync("../app-mobile/assets")) {
+              fs.cp(
+                "./dist/browser/index.js",
+                "../app-mobile/assets/provider.html",
+                () => {}
+              );
+            }
           });
         },
       },

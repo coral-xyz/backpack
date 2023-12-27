@@ -4,6 +4,8 @@ const { polyfillNode } = require("esbuild-plugin-polyfill-node");
 const { htmlPlugin } = require("@craftamap/esbuild-plugin-html");
 const path = require("path");
 
+if (!fs.existsSync("../app-mobile/assets")) process.exit(0);
+
 esbuild
   .context({
     entryPoints: ["src/browser.ts"],
