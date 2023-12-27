@@ -41,11 +41,11 @@ const Stack = createStackNavigator();
 
 function MyStack() {
   return (
-    <Stack.Navigator initialRouteName="Home">
-      <Stack.Screen name="Home" component={BalancesPage} />
-      <Stack.Screen name="Notifications" component={TokenPage} />
-      <Stack.Screen name="Profile" component={NftsPage} />
-      <Stack.Screen name="Settings" component={TransactionsPage} />
+    <Stack.Navigator initialRouteName="Balances">
+      <Stack.Screen name="Balances" component={BalancesPage} />
+      <Stack.Screen name="Tokens" component={TokenPage} />
+      <Stack.Screen name="Nfts" component={NftsPage} />
+      <Stack.Screen name="Transactions" component={TransactionsPage} />
     </Stack.Navigator>
   );
 }
@@ -53,9 +53,18 @@ function MyStack() {
 export function Router() {
   const location = useLocation();
   const { isXs } = useBreakpoints();
+
   return (
     <AnimatePresence initial={false}>
-      <Routes location={location} key={location.pathname}>
+      <NavigationContainer>
+        <MyStack />
+      </NavigationContainer>
+    </AnimatePresence>
+  )
+  
+  return (
+    <AnimatePresence initial={false}>
+      <Routes>
         <Route path="/tokens" element={<BalancesPage />} />
         <Route path="/tokens/token" element={<TokenPage />} />
         <Route path="/nfts" element={<NftsPage />} />
