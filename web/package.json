@@ -1,0 +1,39 @@
+{
+  "name": "@coral-xyz/backpack-web",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "lint:fix": "next lint --fix"
+  },
+  "dependencies": {
+    "next": "^13.1.6",
+    "react": "18.2.0",
+    "react-dom": "18.2.0"
+  },
+  "devDependencies": {
+    "@headlessui/react": "^1.6.5",
+    "@heroicons/react": "^1.0.6",
+    "@mailchimp/mailchimp_marketing": "^3.0.75",
+    "@tailwindcss/aspect-ratio": "^0.4.0",
+    "@tailwindcss/forms": "^0.5.2",
+    "@tailwindcss/typography": "^0.5.2",
+    "@types/node": "^18.0.0",
+    "@types/react": "^17.0.2",
+    "@types/react-dom": "^17.0.2",
+    "autoprefixer": "^10.4.7",
+    "eslint": "8.49.0",
+    "eslint-config-next": "^13.1.6",
+    "eslint-config-prettier": "^9.0.0",
+    "isomorphic-unfetch": "^3.1.0",
+    "next-plausible": "^3.2.0",
+    "postcss": "^8.4.14",
+    "prettier": "^2.8.8",
+    "prettier-plugin-tailwindcss": "^0.1.11",
+    "tailwindcss": "^3.1.4",
+    "typescript": "~4.9.3"
+  }
+}

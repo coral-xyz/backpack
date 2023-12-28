@@ -1,0 +1,62 @@
+{
+  "name": "@coral-xyz/tamagui",
+  "version": "1.0.0",
+  "license": "MIT",
+  "types": "./types/index.d.ts",
+  "main": "src/index.tsx",
+  "module:jsx": "src",
+  "module": "dist/esm",
+  "react-native": "src/index.tsx",
+  "files": [
+    "types",
+    "src",
+    "dist"
+  ],
+  "sideEffects": [
+    "*.css"
+  ],
+  "scripts": {
+    "build": "tamagui-build",
+    "start": "tamagui-build --watch",
+    "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx --cache",
+    "lint:fix": "yarn run lint --fix"
+  },
+  "dependencies": {
+    "@coral-xyz/common": "*",
+    "@coral-xyz/recoil": "*",
+    "@coral-xyz/themes": "*",
+    "@emotion/css": "^11.11.2",
+    "@mui/material": "^5.14.1",
+    "@mui/styles": "^5.14.20",
+    "@tamagui/animations-react-native": "~1.76.0",
+    "@tamagui/babel-plugin": "~1.76.0",
+    "@tamagui/config": "~1.76.0",
+    "@tamagui/core": "~1.76.0",
+    "@tamagui/font-inter": "~1.76.0",
+    "@tamagui/helpers-icon": "~1.76.0",
+    "@tamagui/lucide-icons": "~1.76.0",
+    "@tamagui/shorthands": "~1.76.0",
+    "@tamagui/theme-base": "~1.76.0",
+    "@tamagui/themes": "~1.76.0",
+    "@types/color": "^3.0.6",
+    "color": "^4.2.3",
+    "expo-image": "~1.3.5",
+    "expo-linking": "~5.0.2",
+    "rc-scrollbars": "^1.1.6",
+    "react-content-loader": "^6.2.1",
+    "react-error-boundary": "^4.0.9",
+    "react-native-gesture-handler": "~2.12.0",
+    "react-native-svg": "13.10.0",
+    "tamagui": "~1.76.0"
+  },
+  "peerDependencies": {
+    "react": "18.2.0",
+    "react-native": "0.72.6"
+  },
+  "devDependencies": {
+    "@tamagui/build": "~1.76.0",
+    "@types/react": "^18.2.6",
+    "@types/react-native": "~0.72.5",
+    "eslint-config-custom": "*"
+  }
+}

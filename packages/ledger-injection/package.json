@@ -1,0 +1,33 @@
+{
+  "name": "@coral-xyz/ledger-injection",
+  "version": "1.0.0",
+  "homepage": ".",
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "scripts": {
+    "build": "parcel build src/index.html --public-url /ledger-injection/",
+    "deploy": "gh-pages -d dist -r git@github.com:coral-xyz/ledger-injection.git",
+    "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx",
+    "lint:fix": "yarn run lint --fix",
+    "prebuild": "rimraf dist",
+    "start": "rimraf dist && parcel build src/index.html && parcel src/index.html --https --port 4443"
+  },
+  "dependencies": {
+    "@coral-xyz/common": "*",
+    "@ethersproject/transactions": "^5.7.0",
+    "@ledgerhq/hw-app-eth": "6.27.1",
+    "@ledgerhq/hw-app-solana": "6.27.1",
+    "@ledgerhq/hw-transport": "6.27.1",
+    "@ledgerhq/hw-transport-webhid": "6.27.1",
+    "ethers": "^5.7.0",
+    "process": "^0.11.10"
+  },
+  "devDependencies": {
+    "eslint-config-custom": "*",
+    "gh-pages": "^4.0.0",
+    "parcel": "^2.8.3",
+    "rimraf": "^3.0.2",
+    "typescript": "^5.2.2"
+  }
+}

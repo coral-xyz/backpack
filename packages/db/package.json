@@ -1,0 +1,28 @@
+{
+  "name": "@coral-xyz/db",
+  "version": "0.1.0",
+  "module": "dist/esm/index.js",
+  "source": "src/index.ts",
+  "react-native": "src/index.ts",
+  "types": "dist/esm/index.d.ts",
+  "scripts": {
+    "build": "tsc -b && tsc-alias"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@coral-xyz/common": "*",
+    "dexie": "^3.2.2",
+    "dexie-react-hooks": "^1.1.1",
+    "react": "18.2.0",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "tsc-alias": "^1.8.3",
+    "typescript": "^5.2.2"
+  },
+  "targets": {
+    "module": false,
+    "main": false,
+    "types": false
+  }
+}

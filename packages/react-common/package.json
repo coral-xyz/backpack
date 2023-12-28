@@ -1,0 +1,36 @@
+{
+  "name": "@coral-xyz/react-common",
+  "version": "0.1.0",
+  "module": "dist/esm/index.js",
+  "react-native": "src/index.ts",
+  "source": "src/index.ts",
+  "types": "dist/esm/index.d.ts",
+  "scripts": {
+    "build": "tsc -b && tsc-alias"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@coral-xyz/common": "*",
+    "@coral-xyz/db": "*",
+    "@coral-xyz/i18n": "*",
+    "@coral-xyz/recoil": "*",
+    "@coral-xyz/tamagui": "*",
+    "@mui/icons-material": "^5.14.1",
+    "@mui/material": "^5.14.1",
+    "emoji-picker-react": "^4.4.5",
+    "eventemitter3": "^4.0.7",
+    "graphql-ws": "^5.11.2",
+    "react": "18.2.0",
+    "react-custom-scrollbars": "^4.2.1",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "tsc-alias": "^1.7.0",
+    "typescript": "^5.2.2"
+  },
+  "targets": {
+    "module": false,
+    "main": false,
+    "types": false
+  }
+}

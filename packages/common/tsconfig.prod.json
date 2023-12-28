@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "exclude": ["dist/esm", "**/*.test.ts"],
+  "compilerOptions": {
+    "outDir": "dist/esm/",
+    "rootDir": "./src",
+    "baseUrl": "src",
+    "types": ["chrome", "firefox-webext-browser", "jest"]
+  }
+}

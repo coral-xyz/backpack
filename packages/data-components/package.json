@@ -1,0 +1,35 @@
+{
+  "private": true,
+  "name": "@coral-xyz/data-components",
+  "version": "1.0.0",
+  "license": "MIT",
+  "main": "dist/esm/index.js",
+  "module": "dist/esm/index.js",
+  "source": "src/index.ts",
+  "types": "dist/esm/index.d.ts",
+  "react-native": "src/index.ts",
+  "scripts": {
+    "build": "tsc -b && tsc-alias",
+    "start": "tsc --watch",
+    "gql:generate": "graphql-codegen --config codegen.yml"
+  },
+  "dependencies": {
+    "@apollo/client": "~3.8.0",
+    "@coral-xyz/common": "*",
+    "@coral-xyz/i18n": "*",
+    "@coral-xyz/recoil": "*",
+    "@coral-xyz/tamagui": "*",
+    "expo-modules-core": "~1.5.0",
+    "helius-sdk": "^1.0.12",
+    "react": "^18.2.0",
+    "recoil": "^0.7.5"
+  },
+  "devDependencies": {
+    "@graphql-codegen/cli": "^3.3.1",
+    "@graphql-codegen/client-preset": "^3.0.1",
+    "@types/react": "^18.2.6",
+    "eslint-config-custom": "*",
+    "tsc-alias": "^1.8.6",
+    "typescript": "^5.2.2"
+  }
+}

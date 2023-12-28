@@ -1,0 +1,19 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": [
+          "3BZAP22DU6.app.backpack.dev",
+          "3BZAP22DU6.app.backpack.mobile",
+          "3BZAP22DU6.app.backpack.staging"
+        ],
+        "components": [
+          {
+            "/": "/ul/*",
+            "comment": "Matches any URL whose path starts with /ul/"
+          }
+        ]
+      }
+    ]
+  }
+}

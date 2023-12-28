@@ -1,0 +1,51 @@
+{
+  "name": "@coral-xyz/background",
+  "version": "0.1.0",
+  "module": "dist/esm/index.js",
+  "source": "src/index.ts",
+  "react-native": "src/index.ts",
+  "types": "dist/esm/index.d.ts",
+  "scripts": {
+    "build": "tsc -b && yarn build:html",
+    "dev": "tsc --watch",
+    "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx --cache",
+    "lint:fix": "yarn run lint --fix",
+    "start": "yarn start:html",
+    "build:html": "node esbuild.js",
+    "start:html": "node esbuild.js --watch"
+  },
+  "dependencies": {
+    "@coral-xyz/common": "*",
+    "@coral-xyz/recoil": "*",
+    "@coral-xyz/secure-background": "*",
+    "@coral-xyz/secure-clients": "*",
+    "@solana/web3.js": "^1.63.1",
+    "bip39": "^3.1.0",
+    "bs58": "^5.0.0",
+    "ethers5": "npm:ethers@^5.5.1",
+    "eventemitter3": "^4.0.7"
+  },
+  "devDependencies": {
+    "@craftamap/esbuild-plugin-html": "^0.6.1",
+    "@parcel/reporter-bundle-analyzer": "^2.9.3",
+    "@types/eventemitter3": "^2.0.2",
+    "esbuild": "^0.19.10",
+    "esbuild-plugin-polyfill-node": "^0.3.0",
+    "eslint-config-custom": "*",
+    "parcel": "^2.8.3",
+    "rimraf": "^5.0.1",
+    "typescript": "^5.2.2",
+    "web-resource-inliner": "^6.0.1"
+  },
+  "targets": {
+    "modern": {
+      "context": "browser",
+      "engines": {
+        "browsers": "last 2 ios_saf versions"
+      }
+    },
+    "module": false,
+    "main": false,
+    "types": false
+  }
+}

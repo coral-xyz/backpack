@@ -1,0 +1,54 @@
+{
+  "include": [
+    "src",
+    "webpack.config.js",
+    "tamagui.config.ts",
+    "../data-components/src/components/Collectibles/LockCollectionToggle.tsx"
+  ],
+  "exclude": ["**/node_modules", "**/.*/"],
+  "compilerOptions": {
+    "strict": true,
+    "allowJs": true,
+    "target": "es2022",
+    "lib": ["dom", "dom.iterable", "es2022"],
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "module": "es2022",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "downlevelIteration": true,
+    "noUnusedParameters": true,
+    "jsx": "react-jsx",
+    "paths": {
+      "@coral-xyz/tamagui": ["../tamagui-core"],
+      "@coral-xyz/background": ["../background"],
+      "@coral-xyz/common": ["../common"],
+      "@coral-xyz/data-components": ["../data-components"],
+      "@coral-xyz/i18n": ["../i18n"],
+      "@coral-xyz/react-common": ["../react-common"],
+      "@coral-xyz/recoil": ["../recoil"],
+      "@coral-xyz/secure-background": ["../secure-background"],
+      "@coral-xyz/secure-clients": ["../secure-clients"],
+      "@coral-xyz/secure-ui": ["../secure-ui"]
+    }
+  },
+  "references": [
+    { "path": "../tamagui-core" },
+    { "path": "../background" },
+    { "path": "../secure-background" },
+    { "path": "../secure-clients" },
+    { "path": "../secure-ui" },
+    { "path": "../common" },
+    { "path": "../data-components" },
+    { "path": "../db" },
+    { "path": "../react-common" },
+    { "path": "../recoil" },
+    { "path": "../tamagui-core" },
+    { "path": "../i18n" }
+  ]
+}

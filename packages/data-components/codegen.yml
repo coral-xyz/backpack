@@ -1,0 +1,12 @@
+schema: 'https://backpack-api.xnfts.dev/v2/graphql'
+documents: ['src/components/**/*.tsx', 'src/hooks/**/*.ts']
+ignoreNoDocuments: true
+generates:
+  './src/apollo/':
+    preset: 'client'
+    presetConfig:
+      gqlTagName: 'gql'
+    config:
+      scalars:
+        JSONObject: '{ data: string } | Record<string, any>'
+      useTypeImports: true

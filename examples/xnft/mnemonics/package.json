@@ -1,0 +1,35 @@
+{
+  "private": true,
+  "name": "mnemonics",
+  "homepage": ".",
+  "installConfig": {
+    "hoistingLimits": "workspaces"
+  },
+  "scripts": {
+    "build": "expo export:web",
+    "start": "yarn build && xnft web",
+    "bundle": "yarn build && xnft bundle",
+    "dev": "expo start --web & xnft --iframe http://localhost:19006"
+  },
+  "dependencies": {
+    "@coral-xyz/xnft-cli": "*",
+    "@react-native-picker/picker": "2.4.10",
+    "@solana/web3.js": "^1.74.0",
+    "bip39": "^3.1.0",
+    "ethers": "^5.7.2",
+    "expo": "~49.0.16",
+    "micro-ed25519-hdkey": "^0.1.2",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-native": "0.72.6",
+    "react-native-web": "~0.19.6"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.21.3",
+    "@expo/webpack-config": "^19.0.0",
+    "@types/react": "~18.2.14",
+    "@types/react-dom": "^18.0.11",
+    "@types/react-native": "~0.72.5",
+    "typescript": "^5.0.2"
+  }
+}

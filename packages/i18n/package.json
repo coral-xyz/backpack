@@ -1,0 +1,28 @@
+{
+  "name": "@coral-xyz/i18n",
+  "version": "1.0.0",
+  "description": "",
+  "source": "src/index.ts",
+  "react-native": "src/index.native.ts",
+  "main": "dist/esm/index.js",
+  "module": "dist/esm/index.js",
+  "types": "dist/esm/index.d.ts",
+  "scripts": {
+    "build": "tsc -b && tsc-alias",
+    "start": "tsc --watch"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@coral-xyz/common": "workspace:^",
+    "@os-team/i18next-react-native-language-detector": "^1.0.30",
+    "i18next": "^23.2.11",
+    "i18next-browser-languagedetector": "^7.1.0",
+    "react-i18next": "^13.0.2"
+  },
+  "devDependencies": {
+    "tsc-alias": "^1.8.6",
+    "typescript": "^5.2.2"
+  }
+}

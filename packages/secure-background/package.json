@@ -1,0 +1,37 @@
+{
+  "name": "@coral-xyz/secure-background",
+  "version": "0.1.0",
+  "description": "",
+  "license": "ISC",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -b",
+    "dev": "tsc --watch",
+    "start": "tsc --watch",
+    "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx --cache",
+    "lint:fix": "yarn run lint --fix"
+  },
+  "dependencies": {
+    "@coral-xyz/common": "*",
+    "@solana/web3.js": "1.63.1",
+    "@types/serviceworker": "^0.0.69",
+    "@types/uuid": "^9.0.1",
+    "bip32": "^2.0.6",
+    "bip32-path": "^0.4.2",
+    "bip39": "^3.0.4",
+    "bs58": "^5.0.0",
+    "ed25519-hd-key": "^1.2.0",
+    "ethers5": "npm:ethers@^5.5.1",
+    "ethers6": "npm:ethers@^6.8.0",
+    "eventemitter3": "^5.0.1",
+    "tweetnacl": "^1.0.3",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "@types/eventemitter3": "^2.0.2",
+    "eslint-config-custom": "*",
+    "typescript": "^5.2.2"
+  }
+}
