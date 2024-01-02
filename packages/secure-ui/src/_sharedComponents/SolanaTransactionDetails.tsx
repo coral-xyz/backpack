@@ -10,6 +10,7 @@ export type TransactionOverrides = {
   computeUnits: string;
   priorityFee: string;
   disableFeeConfig: boolean;
+  downgradedWritableAccounts: string[];
 };
 
 export function SolanaTransactionDetails({

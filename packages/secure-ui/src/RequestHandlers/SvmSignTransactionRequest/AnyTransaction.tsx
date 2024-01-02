@@ -57,6 +57,7 @@ export function AnyTransaction({
       computeUnits:
         solanaTxData.solanaFeeConfig?.config?.computeUnits?.toString() || "0",
       disableFeeConfig: solanaTxData.solanaFeeConfig?.disabled ?? false,
+      downgradedWritableAccounts: solanaTxData.downgradedWritableAccounts ?? [],
     });
 
   useEffect(() => {
@@ -67,6 +68,8 @@ export function AnyTransaction({
         computeUnits: cfg.config?.computeUnits?.toString() ?? "0",
         priorityFee: cfg.config?.priorityFee?.toString() ?? "0",
         disableFeeConfig: req.disablePriorityFees ?? cfg.disabled,
+        downgradedWritableAccounts:
+          solanaTxData.downgradedWritableAccounts ?? [],
       });
     }
   }, [
@@ -81,6 +84,7 @@ export function AnyTransaction({
       computeUnits:
         solanaTxData.solanaFeeConfig?.config?.computeUnits?.toString() || "0",
       disableFeeConfig: solanaTxData.solanaFeeConfig?.disabled ?? false,
+      downgradedWritableAccounts: solanaTxData.downgradedWritableAccounts ?? [],
     });
   };
 
@@ -138,24 +142,24 @@ export function AnyTransaction({
       ) : blowfishError ||
         blowfishEvaluation.error ||
         !blowfishEvaluation.normalizedEvaluation ? (
-          <RequestConfirmation
-            title="Confirm Transaction"
-            rightButton={
-              <PrimaryButton
-                disabled={
+        <RequestConfirmation
+          title="Confirm Transaction"
+          rightButton={
+            <PrimaryButton
+              disabled={
                 solanaTxData.loading ||
                 mutableLockedNftsLoadable.state === "loading"
               }
-                label="Approve"
-                onPress={onApprove}
+              label="Approve"
+              onPress={onApprove}
             />
           }
-            onApprove={onApprove}
-            onDeny={onDeny}
+          onApprove={onApprove}
+          onDeny={onDeny}
         >
-            {notBackpack ? (
-              <Warning
-                warning={{
+          {notBackpack ? (
+            <Warning
+              warning={{
                 severity: "WARNING",
                 kind: "somehting",
                 message:
@@ -163,18 +167,18 @@ export function AnyTransaction({
               }}
             />
           ) : null}
-            <OriginUserHeader
-              origin={currentRequest.event.origin}
-              publicKey={currentRequest.request.publicKey}
-              blockchain={Blockchain.SOLANA}
+          <OriginUserHeader
+            origin={currentRequest.event.origin}
+            publicKey={currentRequest.request.publicKey}
+            blockchain={Blockchain.SOLANA}
           />
-            <SolanaTransactionDetails
-              setTransactionOverrides={setTransactionOverrides}
-              transactionOverrides={transactionOverrides}
-              solanaTxData={solanaTxData}
-              title="Transaction Details:"
+          <SolanaTransactionDetails
+            setTransactionOverrides={setTransactionOverrides}
+            transactionOverrides={transactionOverrides}
+            solanaTxData={solanaTxData}
+            title="Transaction Details:"
           />
-          </RequestConfirmation>
+        </RequestConfirmation>
       ) : (
         <BlowfishTransactionDetails
           origin={currentRequest.event.origin}
@@ -187,10 +191,10 @@ export function AnyTransaction({
             solanaTxData.version === "legacy" &&
             !currentRequest.request.disablePriorityFees
               ? [
-                <TransactionSettings
-                  overrides={transactionOverrides}
-                  resetOverrides={resetOverrides}
-                  setOverrides={setTransactionOverrides}
+                  <TransactionSettings
+                    overrides={transactionOverrides}
+                    resetOverrides={resetOverrides}
+                    setOverrides={setTransactionOverrides}
                   />,
                 ]
               : undefined

@@ -37,7 +37,8 @@ export function deriveSolanaPrivateKey(
 export async function sanitizeTransactionWithFeeConfig(
   txStr: string,
   blockchain: Blockchain,
-  feeConfig: { disabled: boolean; config: SolanaFeeConfig }
+  feeConfig: { disabled: boolean; config: SolanaFeeConfig },
+  downgradedWritableAccounts: string[]
 ) {
   if (blockchain === Blockchain.SOLANA && !feeConfig.disabled) {
     const tx = deserializeTransaction(txStr);
@@ -80,6 +81,16 @@ export async function sanitizeTransactionWithFeeConfig(
     }
 
     transaction.add(...coreIxs);
+
+    // Not sure where the logic that checks if the transaction is partially signed but
+    transaction.instructions.forEach((ix) => {
+      ix.keys.forEach((key) => {
+        if (downgradedWritableAccounts.includes(key.pubkey.toBase58())) {
+          key.isWritable = false;
+        }
+      });
+    });
+
     return encode(
       transaction.serialize({
         requireAllSignatures: false,

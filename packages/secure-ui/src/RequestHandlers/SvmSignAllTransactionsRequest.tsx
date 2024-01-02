@@ -62,6 +62,7 @@ export function SvmSignAllTransactionsRequest({
       computeUnits:
         solanaTxData?.solanaFeeConfig?.config?.computeUnits?.toString() ?? "0",
       disableFeeConfig: !user.preferences.developerMode,
+      downgradedWritableAccounts: solanaTxData.downgradedWritableAccounts ?? [],
     }))
   );
 
@@ -134,13 +135,13 @@ export function SvmSignAllTransactionsRequest({
       ) : blowfishError ||
         blowfishEvaluation.error ||
         !blowfishEvaluation.normalizedEvaluation ? (
-          <LegacyAllTransactionDetails
-            currentRequest={currentRequest}
-            onApprove={onApprove}
-            onDeny={onDeny}
-            solanaTxsData={solanaTxsData}
-            transactionOverrides={transactionOverrides}
-            setTransactionOverrides={setTransactionOverrides}
+        <LegacyAllTransactionDetails
+          currentRequest={currentRequest}
+          onApprove={onApprove}
+          onDeny={onDeny}
+          solanaTxsData={solanaTxsData}
+          transactionOverrides={transactionOverrides}
+          setTransactionOverrides={setTransactionOverrides}
         />
       ) : (
         <BlowfishTransactionDetails
@@ -217,6 +218,7 @@ function LegacyAllTransactionDetails({
             disableFeeConfig: true,
             computeUnits: "0",
             priorityFee: "0",
+            downgradedWritableAccounts: [],
           }}
           solanaTxData={aggregatedTx}
           title={`Aggregated [${solanaTxsData.length}] Transaction Details:`}
@@ -233,12 +235,12 @@ function LegacyAllTransactionDetails({
       </Stack>
       {showAdvanced
         ? solanaTxsData.map((solanaTxData, i) => (
-          <SolanaTransactionDetails
-            key={i}
-            setTransactionOverrides={setSingleTransactionOverrides(i)}
-            transactionOverrides={transactionOverrides[i]}
-            solanaTxData={solanaTxData}
-            title={`[${i + 1}/${solanaTxsData.length}] Transaction Details:`}
+            <SolanaTransactionDetails
+              key={i}
+              setTransactionOverrides={setSingleTransactionOverrides(i)}
+              transactionOverrides={transactionOverrides[i]}
+              solanaTxData={solanaTxData}
+              title={`[${i + 1}/${solanaTxsData.length}] Transaction Details:`}
             />
           ))
         : null}

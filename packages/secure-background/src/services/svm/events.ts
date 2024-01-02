@@ -129,6 +129,7 @@ export interface SECURE_SVM_SIGN_TX
       priorityFee: string;
       computeUnits: string;
       disableFeeConfig: boolean;
+      downgradedWritableAccounts: string[];
     };
   };
   response: {
@@ -150,6 +151,7 @@ export interface SECURE_SVM_SIGN_ALL_TX
       priorityFee: string;
       computeUnits: string;
       disableFeeConfig: boolean;
+      downgradedWritableAccounts: string[];
     }[];
   };
   response: {

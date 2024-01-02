@@ -792,6 +792,7 @@ class BackpackSolanaWallet {
     signers?: Signer[];
     options?: SendOptions | ConfirmOptions;
     uuid?: string;
+    includedAccounts?: string[];
   }): Promise<SimulatedTransactionResponse> {
     const tx = request.tx;
     const connection = request.customConnection ?? this.connection;
@@ -810,7 +811,10 @@ class BackpackSolanaWallet {
         ? ({
             accounts: {
               encoding: "base64",
-              addresses: [publicKey.toString()],
+              addresses: [
+                publicKey.toString(),
+                ...(request.includedAccounts ?? []),
+              ],
             },
           } as SimulateTransactionConfig)
         : undefined;

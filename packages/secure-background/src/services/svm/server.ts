@@ -331,6 +331,7 @@ export class SVMService {
       disableFeeConfig: boolean;
       priorityFee: string;
       computeUnits: string;
+      downgradedWritableAccounts: string[];
     },
     origin: SecureEventOrigin
   ): Promise<{ encoding: string; signature: string }> {
@@ -347,7 +348,8 @@ export class SVMService {
           priorityFee: BigInt(transactionOverrides.priorityFee),
           computeUnits: parseFloat(transactionOverrides.computeUnits),
         },
-      }
+      },
+      transactionOverrides.downgradedWritableAccounts
     );
 
     const transaction = deserializeTransaction(txStr);

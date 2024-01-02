@@ -50,6 +50,7 @@ export function BurnTokenTransaction({
       computeUnits:
         solanaTxData?.solanaFeeConfig?.config?.computeUnits?.toString() ?? "0",
       disableFeeConfig: !user.preferences.developerMode,
+      downgradedWritableAccounts: [],
     });
 
   const onApprove = () => {

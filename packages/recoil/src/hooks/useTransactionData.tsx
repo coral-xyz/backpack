@@ -23,6 +23,7 @@ import {
 import { BigNumber, ethers } from "ethers";
 
 import { useEthereumCtx, useEthereumPrice, useSolanaCtx } from "./";
+import { base64 } from "@coral-xyz/anchor/dist/cjs/utils/bytes";
 
 const { base58: bs58 } = ethers.utils;
 const DEFAULT_COMPUTE_UNIT_LIMIT = 200_000;
@@ -49,6 +50,7 @@ export type TransactionData = {
   networkFeeUsd?: string;
   noGas?: boolean;
   version?: TransactionVersion;
+  downgradedWritableAccounts?: Array<string>;
 };
 
 type TransactionOverrides = {
@@ -57,6 +59,7 @@ type TransactionOverrides = {
   gasLimit: BigNumber;
   maxFeePerGas: BigNumber | undefined;
   maxPriorityFeePerGas: BigNumber | undefined;
+  downgradedWritableAccounts?: Array<string>;
 };
 
 const blockchainTxDataHooks = {
@@ -256,13 +259,15 @@ export function useSolanaTxData(
   serializedTx: any,
   publicKey?: string
 ): TransactionData {
-  const { connection, walletPublicKey } = useSolanaCtx();
+  const { solanaClient, connection, walletPublicKey } = useSolanaCtx();
   const [loading, setLoading] = useState(true);
   const [simulationError] = useState(true);
   const [estimatedTxFee, setEstimatedTxFee] = useState(5000);
   const [noGas, setNoGas] = useState(false);
   const [balanceChanges] = useState({});
-  const [_, setSimulationAccounts] = useState<Array<string>>([]);
+  const [simulationAccounts, setSimulationAccounts] = useState<Array<string>>(
+    []
+  );
 
   const [transaction, setTransaction] = useState<
     | { version: "legacy"; tx: Transaction }
@@ -280,6 +285,9 @@ export function useSolanaTxData(
     },
     disabled: false,
   });
+  const [downgradedWritableAccounts, setDowngradedWritableAccounts] = useState<
+    Array<string>
+  >([]);
 
   useEffect(() => {
     let deserializedTransaction: VersionedTransaction | Transaction =
@@ -423,6 +431,75 @@ export function useSolanaTxData(
       });
     }
   }, [publicKey]);
+  useEffect(() => {
+    if (
+      solanaClient &&
+      transaction &&
+      walletPublicKey &&
+      simulationAccounts.length > 0
+    ) {
+      const determineDowngradeWritableAccounts = async () => {
+        setLoading(true);
+
+        const writableAccounts = simulationAccounts.map(
+          (k) => new PublicKey(k)
+        );
+        const preSimulationWritableAccounts =
+          await connection.getMultipleAccountsInfo(writableAccounts);
+        const simulation = await solanaClient.wallet.simulate({
+          publicKey: walletPublicKey,
+          tx: transaction.tx,
+          includedAccounts: simulationAccounts,
+        });
+
+        if (simulation.err) {
+          // TODO: Handle case where simulation failed
+          setLoading(false);
+          return;
+        }
+
+        if (!simulation.accounts) {
+          // TODO: Handle indeterminate state which ive seen before even when passing in accounts.
+          setLoading(false);
+          return;
+        }
+
+        const unchangedAccounts = preSimulationWritableAccounts
+          .map((_, i) => {
+            return {
+              pubkey: writableAccounts[i],
+              account: preSimulationWritableAccounts[i],
+            };
+          })
+          .filter(({ pubkey, account: presimulationAccount }, i) => {
+            if (!presimulationAccount) {
+              return false;
+            }
+            const simulationAccount = simulation.accounts![i];
+            if (simulationAccount === null && presimulationAccount == null) {
+              return true;
+            } else if (simulationAccount === null) {
+              // TODO: This just means the simulation RPC response doesn't have the account
+              // could be an indetermine state of the account.
+              return false;
+            }
+
+            return (
+              presimulationAccount.lamports === simulationAccount.lamports &&
+              presimulationAccount.data.equals(
+                base64.decode(simulationAccount.data[0]) // [encoded data, encoding name (always 'base64')]
+              )
+            );
+          });
+
+        setDowngradedWritableAccounts(
+          unchangedAccounts.map((account) => account.pubkey.toBase58())
+        );
+        setLoading(false);
+      };
+      determineDowngradeWritableAccounts();
+    }
+  }, [transaction, solanaClient, simulationAccounts, walletPublicKey]);
   // useEffect(() => {
   //   if (transaction) {
   //     const estimateBalanceChanges = async () => {
@@ -562,6 +639,7 @@ export function useSolanaTxData(
     // @ts-ignore
     setSolanaFeeConfig,
     version: transaction?.version,
+    downgradedWritableAccounts,
   };
 }
 
