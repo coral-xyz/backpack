@@ -76,6 +76,9 @@ export function Preferences() {
     [t("hidden_tokens")]: {
       onClick: () => nav.push("preferences-hidden-tokens"),
     },
+    [t("token_delegation")]: {
+      onClick: () => nav.push("preferences-token-delegation"),
+    },
   };
 
   // if (BACKPACK_FEATURE_LIGHT_MODE) {

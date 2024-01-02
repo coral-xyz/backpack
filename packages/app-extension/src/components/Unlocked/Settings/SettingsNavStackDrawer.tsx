@@ -150,6 +150,10 @@ export function SettingsNavStackDrawer({
             component={(props: any) => <PreferencesHiddenTokens {...props} />}
           />
           <NavStackScreen
+            name="preferences-token-delegation"
+            component={(props: any) => <PreferencesHiddenTokens {...props} />}
+          />
+          <NavStackScreen
             name="update-username"
             component={(props: any) => <UpdateUsername {...props} />}
           />
