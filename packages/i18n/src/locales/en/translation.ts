@@ -797,6 +797,7 @@ const Translations = {
   },
   manage_token_display: "Manage token display",
   hidden_tokens: "Hidden Tokens",
+  token_delegation: "Token Delegation",
   hidden_tokens_description:
     "Disable a token in this list to hide it from your wallet balances table.",
   transaction_settings: "Transaction Settings",
