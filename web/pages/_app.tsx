@@ -1,26 +1,16 @@
 import type { AppProps } from 'next/app';
-import Head from 'next/head';
 import PlausibleProvider from 'next-plausible';
 
 import CoralFooter from '../components/CoralFooter';
 import Nav from '../components/Nav';
+import Metadata from '../components/Metadata';
 
 import '../styles/globals.css';
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <>
-      <Head>
-        <meta name="twitter:title" content="Backpack - A home for your xNFT apps" />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta
-          name="twitter:image"
-          content="https://www.backpack.app/_next/image?url=%2Fbrands%2Fbackpack-twitter.png&w=3840&q=75"
-        />
-        <meta name="apple-itunes-app" content="app-id=6445964121" />
-        <title>Backpack</title>
-      </Head>
-
+      <Metadata />
       <PlausibleProvider domain="backpack.app" trackOutboundLinks={true}>
         <div className="bg-zinc-900">
           <div

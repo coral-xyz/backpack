@@ -1,11 +1,14 @@
 import { Suspense, lazy } from 'react';
 
+import Metadata from '../components/Metadata';
+
 const Newsletter = lazy(() => import('../components/Newsletter'));
 const Partners = lazy(() => import('../components/Partners'));
 
 export default function About() {
   return (
     <>
+      <Metadata pageName="About" />
       <div className="mx-auto mb-28 flex flex-col items-center gap-16">
         <h1
           className="mt-4 text-4xl font-extrabold tracking-tight

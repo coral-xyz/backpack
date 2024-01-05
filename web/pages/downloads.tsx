@@ -1,6 +1,8 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
+import Metadata from '../components/Metadata';
+
 const ANDROID_APK_VERSION = 'v1.4.3 (39)';
 const ANDROID_APK_DOWNLOAD_LINK =
   'https://pub-2ee2f082ae5a494585ea53c1e7eca5a8.r2.dev/backpack-app-1.4.3-39.apk';
@@ -41,15 +43,18 @@ function Panel({
 
 export default function Downloads() {
   return (
-    <div className="text-[#F0F0F2]">
-      <div className="mb-16 mt-[-25px] text-center">
-        <h1 className="text-6xl font-extrabold text-white">Download</h1>
+    <>
+      <Metadata pageName="Downloads" />
+      <div className="text-[#F0F0F2]">
+        <div className="mb-16 mt-[-25px] text-center">
+          <h1 className="text-6xl font-extrabold text-white">Download</h1>
+        </div>
+        <div className="flex w-full flex-col-reverse items-center justify-center gap-14 px-4 md:flex-row md:items-start">
+          <_DesktopSection />
+          <_MobileSection />
+        </div>
       </div>
-      <div className="flex w-full flex-col-reverse items-center justify-center gap-14 px-4 md:flex-row md:items-start">
-        <_DesktopSection />
-        <_MobileSection />
-      </div>
-    </div>
+    </>
   );
 }
 
