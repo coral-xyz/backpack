@@ -1,4 +1,4 @@
-export default function Terms() {
+export default function Privacy() {
   return (
     <div className="mx-auto mb-28 flex flex-col items-center gap-16">
       <h1
