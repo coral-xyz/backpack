@@ -1,0 +1,18 @@
+{
+  "extends": "../../tsconfig.base",
+  "include": ["src"],
+  "compilerOptions": {
+    "composite": true,
+    "esModuleInterop": true,
+    "outDir": "./dist/esm",
+    "jsx": "preserve",
+    "baseUrl": ".",
+    "paths": {
+      "~components/*": ["./src/components/*"],
+      "~hooks/*": ["./src/hooks/*"],
+      "~screens/*": ["./src/screens/*"]
+    }
+  },
+
+  "references": [{ "path": "../common" }, { "path": "../recoil" }]
+}

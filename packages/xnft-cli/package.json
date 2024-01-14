@@ -1,0 +1,31 @@
+{
+  "name": "@coral-xyz/xnft-cli",
+  "version": "0.0.2-test.4",
+  "bin": {
+    "xnft": "./index.js"
+  },
+  "browserslist": [
+    "last 1 chrome version",
+    "last 1 firefox version",
+    "last 1 safari version",
+    "last 1 edge version"
+  ],
+  "dependencies": {
+    "@coral-xyz/xnft": "^0.2.60",
+    "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
+    "chokidar": "^3.5.3",
+    "commander": "^10.0.0",
+    "download-git-repo": "latest",
+    "esbuild": "^0.19.10",
+    "esbuild-plugin-resolve": "^1.0.3",
+    "eslint-config-custom": "*",
+    "express": "^4.18.2",
+    "fast-glob": "^3.2.12",
+    "jszip": "^3.10.1",
+    "node-stdlib-browser": "^1.2.0"
+  },
+  "devDependencies": {
+    "eslint-config-custom": "*",
+    "shx": "^0.3.4"
+  }
+}

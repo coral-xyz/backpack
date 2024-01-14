@@ -1,0 +1,24 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "dist/esm/",
+    "rootDir": "./",
+    "paths": {
+      "@coral-xyz/tamagui": ["../tamagui-core"],
+      "@coral-xyz/background": ["../background"],
+      "@coral-xyz/common": ["../common"],
+      "@coral-xyz/data-components": ["../data-components"],
+      "@coral-xyz/react-common": ["../react-common"],
+      "@coral-xyz/recoil": ["../recoil"],
+      "@coral-xyz/secure-background": ["../secure-background"],
+      "@coral-xyz/secure-ui": ["../secure-ui"]
+    }
+  },
+  "include": [
+    "src/**/*",
+    "index.ts",
+    "types.ts",
+    "legacyCommon.ts",
+    "service.ts"
+  ]
+}

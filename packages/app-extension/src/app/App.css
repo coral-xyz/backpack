@@ -1,0 +1,66 @@
+body {
+  background: black;
+}
+
+.track-vertical {
+  top: 2px;
+  bottom: 2px;
+  right: 2px;
+  border-radius: 3px;
+}
+.track-vertical .thumb-vertical {
+  position: relative;
+  display: block;
+  width: 100%;
+  cursor: pointer;
+  border-radius: inherit;
+}
+
+.track-horizontal {
+  position: absolute;
+  height: 6px;
+  right: 2px;
+  bottom: 2px;
+  left: 2px;
+  border-radius: 3px;
+}
+.track-horizontal .thumb-horizontal {
+  position: relative;
+  display: block;
+  height: 100%;
+  cursor: pointer;
+  border-radius: inherit;
+}
+.view {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  overflow: auto;
+  margin-right: -15px;
+}
+
+.stack-push-enter {
+  z-index: 1;
+}
+.stack-push-active {
+  transform: translate3d(100%, 0, 0);
+  transition: all 300ms ease-in-out;
+}
+.stack-push-exit {
+  z-index: 10;
+}
+.stack-push-active {
+  transform: translate3d(-100%, 0, 0);
+  transition: all 300ms ease-in-out;
+}
+
+[contentEditable="true"]:empty:before {
+  content: attr(placeholder);
+  opacity: 0.2;
+}
+
+[contenteditable]:focus {
+  outline: 0px solid transparent;
+}
