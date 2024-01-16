@@ -198,7 +198,7 @@ const Translations = {
   can_still_interact: "You can still send messages and interact",
   not_your_friend: "This is not a friend",
   only_add_friends_warning: "Only add friends you know and trust",
-  request_to_add_friend: "Request to add friend",
+  request_to_add_friend: "Accept friend request",
   cancel_pending_request: "Cancel Pending Request",
   message: "Message",
   connected: "Connected",
