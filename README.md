@@ -66,7 +66,7 @@ Go to chrome://flags/#allow-insecure-localhost and enable the toggle, then resta
 ### Install submodules
 
 ```bash
-git submodule init && git submodule update && rm packages/trek-api-web-ts/yarn.lock
+git submodule init && git submodule update
 ```
 
 ### Install dependencies
