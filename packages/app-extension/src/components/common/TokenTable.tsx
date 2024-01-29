@@ -252,11 +252,25 @@ function TokenRow({
   style?: any;
 }) {
   let subtitle = token.tokenListEntry?.symbol;
+
   if (token.displayAmount) {
-    subtitle = `${parseFloat(
-      token.displayAmount
-    ).toLocaleString()} ${subtitle}`;
+    // Parse the amount to a float
+    let amount = parseFloat(token.displayAmount);
+
+    // Round the amount to 2 decimal places
+    amount = Math.round(amount * 100) / 100;
+
+    // Convert large numbers to M or B format
+    if (amount >= 1000000000) {
+      subtitle = `${(amount / 1000000000).toFixed(2)}B ${subtitle}`;
+    } else if (amount >= 1000000) {
+      subtitle = `${(amount / 1000000).toFixed(2)}M ${subtitle}`;
+    } else {
+      subtitle = `${amount.toLocaleString()} ${subtitle}`;
+    }
   }
+
+  // Now 'subtitle' contains the formatted balance
 
   return (
     <YStack
