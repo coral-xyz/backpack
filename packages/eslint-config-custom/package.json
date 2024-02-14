@@ -1,0 +1,28 @@
+{
+  "name": "eslint-config-custom",
+  "description": "Shared ESLINT config for universal Backpack projects (web, native, node)",
+  "version": "1.0.0",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "format": "npx prettier --write --config ../../.prettierrc --ignore-path ../../.prettierignore --log-level error",
+    "format:all": "yarn format '**/*.{js,jsx,ts,tsx}' --cache"
+  },
+  "dependencies": {
+    "@peterpme/eslint-plugin-react-native": "^4.2.0",
+    "@typescript-eslint/eslint-plugin": "^6.17.0",
+    "@typescript-eslint/parser": "^6.17.0",
+    "eslint-config-turbo": "^1.12.3",
+    "eslint-config-universe": "^12.0.0",
+    "eslint-plugin-backpack": "file:./eslint-plugin-backpack",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-mui-custom": "file:./eslint-plugin-mui-custom",
+    "eslint-plugin-prettier": "^5.1.3",
+    "eslint-plugin-simple-import-sort": "^10.0.0",
+    "typescript": "^5.3.3"
+  },
+  "devDependencies": {
+    "eslint": "^8.49.0",
+    "prettier": "3.2.4"
+  }
+}

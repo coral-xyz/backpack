@@ -1,0 +1,47 @@
+{
+  "name": "@coral-xyz/secure-background",
+  "version": "0.1.0",
+  "description": "",
+  "license": "ISC",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -b",
+    "dev": "tsc --watch",
+    "start": "tsc --watch",
+    "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx --cache",
+    "lint:fix": "yarn run lint --fix",
+    "format": "npx prettier --write --config ../../.prettierrc --ignore-path ../../.prettierignore --log-level error",
+    "format:all": "yarn format '**/*.{js,jsx,ts,tsx}' --cache"
+  },
+  "lint-staged": {
+    "*.{js,jsx,css,md,json}": "prettier --write",
+    "*.{ts,tsx}": [
+      "prettier --write",
+      "eslint --fix --cache"
+    ]
+  },
+  "dependencies": {
+    "@coral-xyz/common": "workspace:*",
+    "@solana/wallet-standard-features": "^1.2.0",
+    "@solana/wallet-standard-util": "^1.1.1",
+    "@solana/web3.js": "1.63.1",
+    "@types/uuid": "^9.0.1",
+    "bip32": "^2.0.6",
+    "bip32-path": "^0.4.2",
+    "bip39": "^3.0.4",
+    "bs58": "^5.0.0",
+    "ed25519-hd-key": "^1.2.0",
+    "ethers5": "npm:ethers@^5.5.1",
+    "ethers6": "npm:ethers@^6.8.0",
+    "eventemitter3": "^5.0.1",
+    "tweetnacl": "^1.0.3",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "@types/eventemitter3": "^2.0.2",
+    "eslint-config-custom": "*",
+    "typescript": "^5.3.3"
+  }
+}

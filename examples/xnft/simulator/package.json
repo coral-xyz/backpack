@@ -1,0 +1,19 @@
+{
+  "name": "@coral-xyz/example-plugin-simulator",
+  "version": "0.1.0",
+  "scripts": {
+    "build": "xnft legacy build",
+    "start": "xnft legacy watch",
+    "dev": "xnft legacy dev"
+  },
+  "devDependencies": {
+    "local-web-server": "^5.2.0"
+  },
+  "dependencies": {
+    "@coral-xyz/xnft-cli": "*",
+    "@project-serum/anchor": "^0.23.0",
+    "@solana/web3.js": "^1.36.0",
+    "react": "18.2.0",
+    "react-xnft": "0.2.0-latest.3318"
+  }
+}

@@ -1,0 +1,83 @@
+name: app-mobile OTA production
+on:
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: Platform (android/ios)
+        type: choice
+        required: true
+        default: ios
+        options:
+          - ios
+          - android
+
+jobs:
+  update:
+    name: EAS Update Production
+    runs-on: ubuntu-latest
+    # runs-on: macos-latest
+
+    env:
+      EXPO_USE_DEV_SERVER: true
+      TMPDIR: /tmp # Used for metro caching
+      NODE_OPTIONS: "--max_old_space_size=4096"
+      NODE_ENV: production
+      APP_ENV: production
+
+    steps:
+      - name: Check for EXPO_TOKEN
+        run: |
+          if [ -z "${{ secrets.EXPO_TOKEN }}" ]; then
+            echo "You must provide an EXPO_TOKEN secret linked to this project's Expo account in this repo's secrets. Learn more: https://docs.expo.dev/eas-update/github-actions"
+            exit 1
+          fi
+
+      - name: 📦 Checkout repository
+        uses: actions/checkout@v3
+
+      - name: 🌐 Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: yarn
+
+      - name: Cache Metro
+        uses: actions/cache@v3
+        id: cache-metro
+        with:
+          path: |
+            ${{ env.TMPDIR }}/metro-cache
+            ${{ env.TMPDIR }}/haste-map*
+          key: npm-${{ env.NODE_VERSION }}-${{ runner.os }}
+
+      - name: 🚀 Setup EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: 🧶 Install dependencies
+        run: yarn install --immutable
+
+      - name: 🏗️ Build dependencies
+        env:
+          NODE_ENV: production
+          BACKPACK_CONFIG_VERSION: "${{ env.RELEASE_PREFIX }}-latest-beta-${{ github.run_number }}"
+          BACKPACK_CONFIG_LOG_LEVEL: "none"
+          # CI!=true so that build warnings aren't treated like errors (for now)
+          CI: ""
+        run: yarn build:mobile
+
+      - name: 🚀 Publish Apple Update
+        env:
+          APP_ENV: production
+        working-directory: ./packages/app-mobile
+        if: "contains(github.event.inputs.platform, 'ios')"
+        run: "yarn ios:ota-production"
+
+      - name: 🚀 Publish Android Update
+        env:
+          APP_ENV: production
+        working-directory: ./packages/app-mobile
+        if: "contains(github.event.inputs.platform, 'android')"
+        run: "yarn android:ota-production"

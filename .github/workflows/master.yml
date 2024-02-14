@@ -1,0 +1,130 @@
+# Actions that run when PRs are merged into master, or code is pushed to it.
+
+name: Master
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-test-and-release:
+    runs-on: ubuntu-latest
+    name: Build, run tests and release
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build setup
+        uses: ./.github/actions/build-setup
+
+      - name: Set env.RELEASE_PREFIX from package.json
+        run: |
+          version=$(jq -r .version packages/app-extension/package.json)
+          echo "RELEASE_PREFIX=$version" >> $GITHUB_ENV
+          echo $version
+
+      ##########################################################################
+      # Build extension.
+      ##########################################################################
+
+      - run: yarn build
+        env:
+          BACKPACK_CONFIG_VERSION: "${{ env.RELEASE_PREFIX }}-latest-beta-${{ github.run_number }}"
+          BACKPACK_CONFIG_GITHUB_RUN_NUMBER: "${{ github.run_number }}"
+          BACKPACK_CONFIG_LOG_LEVEL: "info"
+          BACKPACK_FEATURE_LIGHT_MODE: "true"
+          BACKPACK_FEATURE_POP_MODE: "true"
+          BACKPACK_FEATURE_XNFT: "true"
+          BACKPACK_FEATURE_FORCE_LATEST_VERSION: "true"
+          # CI!=true so that build warnings aren't treated like errors (for now)
+          CI: ""
+
+      - name: "rename beta build"
+        working-directory: packages/app-extension
+        run: mv build build-beta
+
+      ##########################################################################
+      # Tests.
+      ##########################################################################
+
+      - run: yarn test
+
+      ##########################################################################
+      # Upload build artifacts.
+      ##########################################################################
+
+      #
+      # Upload beta artifact.
+      #
+      - name: "zip beta build artifacts"
+        working-directory: packages/app-extension
+        run: zip -r build-beta-${{ github.run_number }}.zip build-beta/
+      - name: "upload build artifacts"
+        uses: actions/upload-artifact@v2
+        with:
+          name: backpack-build-beta
+          path: packages/app-extension/build-beta-${{ github.run_number }}.zip
+
+      ##########################################################################
+      # Release.
+      ##########################################################################
+
+      #
+      # Download artifacts.
+      #
+      - uses: actions/download-artifact@v2
+        with:
+          name: backpack-build-beta
+          path: ./
+
+      #
+      # Create release.
+      #
+      - uses: actions/create-release@v1
+        name: Create Draft Release
+        id: create_release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ env.RELEASE_PREFIX }}-latest-${{ github.run_number }}
+          release_name: ${{ env.RELEASE_PREFIX }}-latest-${{ github.run_number }}
+          draft: false
+          prerelease: false
+
+      #
+      # Attach files to the release.
+      #
+      - uses: actions/upload-release-asset@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./build-beta-${{ github.run_number }}.zip
+          asset_name: build-beta-${{ github.run_number }}.zip
+          asset_content_type: application/zip
+
+      ##########################################################################
+      # NPM Publish.
+      ##########################################################################
+
+      - name: "update npm package version"
+        run: ./scripts/npm_release.sh ${{ env.RELEASE_PREFIX }}-latest.${{ github.run_number }}
+      - name: "publish to npm: common"
+        uses: JS-DevTools/npm-publish@v1
+        with:
+          token: ${{ secrets.NPM_ACCESS_TOKEN }}
+          tag: latest
+          package: packages/common/package.json
+      - name: "publish to npm: @coral-xyz/xnft-cli"
+        uses: JS-DevTools/npm-publish@v1
+        with:
+          token: ${{ secrets.NPM_ACCESS_TOKEN }}
+          tag: latest
+          package: packages/xnft-cli/package.json
+      - name: "change @coral-xyz/xnft-cli package name to xnft"
+        run: sed -i 's/"@coral-xyz\/xnft-cli"/"xnft"/g' packages/xnft-cli/package.json
+      - name: "publish to npm: xnft"
+        uses: JS-DevTools/npm-publish@v1
+        with:
+          token: ${{ secrets.NPM_ACCESS_TOKEN }}
+          tag: latest
+          package: packages/xnft-cli/package.json

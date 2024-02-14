@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "dist/esm/",
+    "rootDir": "./src",
+    "lib": ["es2020", "dom"]
+  },
+  "include": ["./src"],
+  "references": [
+    { "path": "../common" },
+    { "path": "../i18n" },
+    { "path": "../secure-background" },
+    { "path": "../secure-clients" }
+  ]
+}

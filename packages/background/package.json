@@ -1,0 +1,46 @@
+{
+  "name": "@coral-xyz/background",
+  "version": "0.1.0",
+  "module": "dist/esm/index.js",
+  "source": "src/index.ts",
+  "react-native": "src/index.ts",
+  "types": "dist/esm/index.d.ts",
+  "scripts": {
+    "build": "tsc -b && yarn build:html",
+    "dev": "tsc --watch",
+    "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx --cache",
+    "lint:fix": "yarn run lint --fix",
+    "start": "yarn start:html",
+    "build:html": "node esbuild.js",
+    "start:html": "node esbuild.js --watch",
+    "format": "npx prettier --write --config ../../.prettierrc --ignore-path ../../.prettierignore --log-level error",
+    "format:all": "yarn format '**/*.{js,jsx,ts,tsx}' --cache"
+  },
+  "dependencies": {
+    "@coral-xyz/common": "workspace:*",
+    "@coral-xyz/secure-background": "workspace:*",
+    "@coral-xyz/secure-clients": "workspace:*",
+    "@solana/web3.js": "^1.63.1",
+    "bip39": "^3.1.0",
+    "eventemitter3": "^4.0.7"
+  },
+  "devDependencies": {
+    "@craftamap/esbuild-plugin-html": "^0.6.1",
+    "@types/eventemitter3": "^2.0.2",
+    "esbuild": "^0.19.10",
+    "esbuild-plugin-polyfill-node": "^0.3.0",
+    "eslint-config-custom": "*",
+    "typescript": "^5.3.3"
+  },
+  "targets": {
+    "modern": {
+      "context": "browser",
+      "engines": {
+        "browsers": "last 2 ios_saf versions"
+      }
+    },
+    "module": false,
+    "main": false,
+    "types": false
+  }
+}

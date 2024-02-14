@@ -1,0 +1,31 @@
+{
+  "name": "@coral-xyz/provider-injection",
+  "version": "0.1.0",
+  "source": "src/index.ts",
+  "scripts": {
+    "start": "node build.js --watch",
+    "build": "node build.js",
+    "build:publish": "cd ../secure-ui; yarn build; cd ../provider-core; yarn build; cd ../provider-injection; yarn build; cp ./dist/browser/index.js ../app-extension/build/injected.js; cp ./dist/browser/index.js ../app-extension/dev/injected.js",
+    "format": "npx prettier --write --config ../../.prettierrc --ignore-path ../../.prettierignore --log-level error",
+    "format:all": "yarn format '**/*.{js,jsx,ts,tsx}' --cache"
+  },
+  "browserslist": "> 0.5%, last 2 versions, not dead",
+  "dependencies": {
+    "@coral-xyz/common": "workspace:*",
+    "@coral-xyz/provider-core": "workspace:*",
+    "@coral-xyz/secure-clients": "workspace:^",
+    "@coral-xyz/wallet-standard": "workspace:*",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/uuid": "^9.0.0",
+    "esbuild": "^0.19.10",
+    "esbuild-node-builtins": "^0.1.0",
+    "eslint-config-custom": "*",
+    "typescript": "^5.3.3"
+  },
+  "app": "dist/browser/index.js",
+  "targets": {
+    "app": {}
+  }
+}

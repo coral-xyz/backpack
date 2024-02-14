@@ -1,0 +1,72 @@
+{
+  "name": "@coral-xyz/tamagui",
+  "version": "1.0.0",
+  "license": "MIT",
+  "types": "./types/index.d.ts",
+  "main": "src/index.tsx",
+  "module:jsx": "src",
+  "module": "dist/esm",
+  "react-native": "src/index.tsx",
+  "files": [
+    "types",
+    "src",
+    "dist"
+  ],
+  "sideEffects": [
+    "*.css"
+  ],
+  "scripts": {
+    "build": "tamagui-build",
+    "start": "tamagui-build --watch",
+    "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx",
+    "lint:fix": "yarn run lint --fix",
+    "format": "npx prettier --write --config ../../.prettierrc --ignore-path ../../.prettierignore --log-level error",
+    "format:all": "yarn format '**/*.{js,jsx,ts,tsx}' --cache"
+  },
+  "lint-staged": {
+    "*.{js,jsx,css,md,json}": "prettier --write",
+    "*.{ts,tsx}": [
+      "prettier --write",
+      "eslint --fix --cache"
+    ]
+  },
+  "dependencies": {
+    "@coral-xyz/common": "workspace:*",
+    "@coral-xyz/recoil": "workspace:*",
+    "@emotion/css": "^11.11.2",
+    "@mui/material": "^5.14.1",
+    "@mui/styles": "^5.14.20",
+    "@react-navigation/native": "^6.1.7",
+    "@tamagui/animations-react-native": "~1.76.0",
+    "@tamagui/babel-plugin": "~1.76.0",
+    "@tamagui/config": "~1.76.0",
+    "@tamagui/core": "~1.76.0",
+    "@tamagui/font-inter": "~1.76.0",
+    "@tamagui/helpers-icon": "~1.76.0",
+    "@tamagui/lucide-icons": "~1.76.0",
+    "@tamagui/shorthands": "~1.76.0",
+    "@tamagui/theme-base": "~1.76.0",
+    "@tamagui/themes": "~1.76.0",
+    "@types/color": "^3.0.6",
+    "color": "^4.2.3",
+    "expo-image": "~1.10.6",
+    "expo-linking": "~6.2.2",
+    "expo-modules-core": "~1.11.6",
+    "rc-scrollbars": "^1.1.6",
+    "react-content-loader": "^6.2.1",
+    "react-error-boundary": "^4.0.9",
+    "react-native-gesture-handler": "~2.14.0",
+    "react-native-svg": "14.1.0",
+    "tamagui": "~1.76.0"
+  },
+  "peerDependencies": {
+    "react": "18.2.0",
+    "react-native": "0.73.4"
+  },
+  "devDependencies": {
+    "@tamagui/build": "~1.76.0",
+    "@types/node": "^20.10.0",
+    "@types/react": "^18.2.6",
+    "eslint-config-custom": "*"
+  }
+}

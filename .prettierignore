@@ -1,0 +1,5 @@
+build/
+lib/
+dist/
+d.ts
+__generated__

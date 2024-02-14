@@ -1,0 +1,33 @@
+name: Build setup
+description: Prepare everything before running 'yarn build'
+
+runs:
+  using: composite
+  steps:
+    ##########################################################################
+    # Setup environment.
+    ##########################################################################
+
+    #
+    # Make sure react-native package.json key is added if used in mobile
+    #
+    - name: "check-package-json-react-native.sh: chmod"
+      run: chmod +x ./scripts/check-package-json-react-native.sh
+      shell: bash
+
+    - name: "Run check-package-json-react-native.sh"
+      run: ./scripts/check-package-json-react-native.sh
+      shell: bash
+
+    ##########################################################################
+    # Yarn install.
+    ##########################################################################
+
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 20
+        cache: "yarn"
+
+    - name: yarn install
+      run: yarn install --immutable
+      shell: bash

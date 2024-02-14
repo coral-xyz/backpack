@@ -1,0 +1,47 @@
+{
+  "private": true,
+  "name": "@coral-xyz/data-components",
+  "version": "1.0.0",
+  "license": "MIT",
+  "main": "dist/esm/index.js",
+  "module": "dist/esm/index.js",
+  "source": "src/index.ts",
+  "types": "dist/esm/index.d.ts",
+  "react-native": "src/index.ts",
+  "scripts": {
+    "build": "yarn gql:generate && tsc -b && tsc-alias",
+    "start": "tsc --watch",
+    "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx --cache",
+    "gql:generate": "graphql-codegen --config codegen.yml",
+    "format": "npx prettier --write --config ../../.prettierrc --ignore-path ../../.prettierignore --log-level error",
+    "format:all": "yarn format '**/*.{js,jsx,ts,tsx}' --cache"
+  },
+  "lint-staged": {
+    "*.{js,jsx,css,md,json}": "prettier --write",
+    "*.{ts,tsx}": [
+      "prettier --write",
+      "eslint --fix --cache"
+    ]
+  },
+  "dependencies": {
+    "@apollo/client": "^3.8.8",
+    "@coral-xyz/common": "workspace:*",
+    "@coral-xyz/i18n": "workspace:*",
+    "@coral-xyz/recoil": "workspace:*",
+    "@coral-xyz/secure-background": "workspace:^",
+    "@coral-xyz/tamagui": "workspace:*",
+    "@expo/vector-icons": "^14.0.0",
+    "helius-sdk": "^1.0.12",
+    "react": "^18.2.0",
+    "react-native": "0.73.4",
+    "recoil": "^0.7.5"
+  },
+  "devDependencies": {
+    "@graphql-codegen/cli": "^3.3.1",
+    "@graphql-codegen/client-preset": "^3.0.1",
+    "@types/react": "^18.2.6",
+    "eslint-config-custom": "*",
+    "tsc-alias": "^1.8.6",
+    "typescript": "^5.3.3"
+  }
+}

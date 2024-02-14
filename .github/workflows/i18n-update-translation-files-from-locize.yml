@@ -1,0 +1,49 @@
+# Runs via manual trigger and on a cron schedule
+
+name: i18n Update Translation Files from Locize
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 */3 * * *" # Every 3 hours
+
+jobs:
+  fetch-and-process-translation-files:
+    runs-on: ubuntu-latest
+    name: Fetch and process translation files
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: master
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Fetch and process translations from Locize
+        run: node json-tasks.js fetch-and-process-translation-files
+        working-directory: packages/i18n
+        env:
+          LOCIZE_API_KEY: ${{ secrets.LOCIZE_API_KEY }}
+          LOCIZE_NAMESPACE: ${{ vars.LOCIZE_NAMESPACE }}
+          LOCIZE_PROJECT_ID: ${{ vars.LOCIZE_PROJECT_ID }}
+
+      - name: Check for changes
+        id: git-check
+        run: |
+          git add packages/i18n/src/locales
+          git status
+          if git diff --staged --quiet; then
+            echo "No changes detected."
+          else
+            echo "Changes detected."
+            echo "changes=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit changes
+        if: steps.git-check.outputs.changes == 'true'
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git commit -m "fetch-and-process-translation-files updates"
+          git push origin master:bot/i18n-updates --force

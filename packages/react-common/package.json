@@ -1,0 +1,43 @@
+{
+  "name": "@coral-xyz/react-common",
+  "version": "0.1.0",
+  "module": "dist/esm/index.js",
+  "react-native": "src/index.ts",
+  "source": "src/index.ts",
+  "types": "dist/esm/index.d.ts",
+  "scripts": {
+    "build": "tsc -b && tsc-alias",
+    "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx --cache",
+    "format": "npx prettier --write --config ../../.prettierrc --ignore-path ../../.prettierignore --log-level error",
+    "format:all": "yarn format '**/*.{js,jsx,ts,tsx}' --cache"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@coral-xyz/common": "workspace:*",
+    "@coral-xyz/i18n": "workspace:*",
+    "@coral-xyz/recoil": "workspace:*",
+    "@coral-xyz/tamagui": "workspace:*",
+    "@mui/icons-material": "^5.14.1",
+    "@mui/material": "^5.14.1",
+    "@mui/system": "^5.14.1",
+    "ethers": "^5.7.0",
+    "react": "18.2.0"
+  },
+  "lint-staged": {
+    "*.{js,jsx,css,md,json}": "prettier --write",
+    "*.{ts,tsx}": [
+      "prettier --write",
+      "eslint --fix --cache"
+    ]
+  },
+  "devDependencies": {
+    "eslint-config-custom": "workspace:^",
+    "tsc-alias": "^1.7.0",
+    "typescript": "^5.3.3"
+  },
+  "targets": {
+    "module": false,
+    "main": false,
+    "types": false
+  }
+}

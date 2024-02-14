@@ -1,0 +1,137 @@
+name: app-mobile OTA staging
+on:
+  workflow_dispatch:
+  # push:
+  #   branches:
+  #     - master
+  #   paths:
+  #     - "packages/app-mobile/**"
+
+jobs:
+  update:
+    name: EAS Update Staging
+    # runs-on: macos-latest
+    runs-on: ubuntu-latest
+    # REQUIRED: limit concurrency when pushing main(default) branch to prevent conflict for this action to update its fingerprint database
+    concurrency: fingerprint-${{ github.event_name != 'pull_request' && 'main' || github.run_id }}
+    permissions:
+      # REQUIRED: Allow comments of PRs
+      pull-requests: write # Allow comments on PRs
+      # REQUIRED: Allow updating fingerprint in acton caches
+      actions: write
+
+    env:
+      EXPO_USE_DEV_SERVER: true
+      TMPDIR: /tmp # Used for metro caching
+      NODE_OPTIONS: "--max_old_space_size=4096"
+      NODE_ENV: production
+      APP_ENV: staging
+
+    steps:
+      - name: Check for EXPO_TOKEN
+        run: |
+          if [ -z "${{ secrets.EXPO_TOKEN }}" ]; then
+            echo "You must provide an EXPO_TOKEN secret linked to this project's Expo account in this repo's secrets. Learn more: https://docs.expo.dev/eas-update/github-actions"
+            exit 1
+          fi
+
+      - name: 📦 Checkout repository
+        uses: actions/checkout@v3
+
+      - name: 🌐 Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: yarn
+
+      - name: Cache Metro
+        uses: actions/cache@v3
+        id: cache-metro
+        with:
+          path: |
+            ${{ env.TMPDIR }}/metro-cache
+            ${{ env.TMPDIR }}/haste-map*
+          key: npm-${{ env.NODE_VERSION }}-${{ runner.os }}
+
+      - name: 🚀 Setup EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: 🧶 Install dependencies
+        run: yarn install --immutable
+
+      - name: Check fingerprint
+        uses: expo/expo-github-action/fingerprint@main
+
+      - uses: actions/github-script@v6
+        if: ${{ github.event_name == 'pull_request' && steps.fingerprint.outputs.fingerprint-diff == '[]' }}
+        with:
+          script: |
+            try {
+              await github.rest.issues.removeLabel({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                name: ['Fingerprint:changed']
+              })
+            } catch (e) {
+              if (e.status != 404) {
+                throw e;
+              }
+            }
+            github.rest.issues.addLabels({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ['Fingerprint:compatible']
+            })
+
+      - uses: actions/github-script@v6
+        if: ${{ github.event_name == 'pull_request' && steps.fingerprint.outputs.fingerprint-diff != '[]' }}
+        with:
+          script: |
+            try {
+              await github.rest.issues.removeLabel({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                name: ['Fingerprint:compatible']
+              })
+            } catch (e) {
+              if (e.status != 404) {
+                throw e;
+              }
+            }
+            github.rest.issues.addLabels({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ['Fingerprint:changed']
+            })
+
+      - name: 🏗️ Build dependencies
+        env:
+          NODE_ENV: production
+          BACKPACK_CONFIG_VERSION: "${{ env.RELEASE_PREFIX }}-latest-beta-${{ github.run_number }}"
+          BACKPACK_CONFIG_LOG_LEVEL: "none"
+          # CI!=true so that build warnings aren't treated like errors (for now)
+          CI: ""
+        run: yarn build:mobile
+
+      - name: 🚀 Publish iOS Update
+        env:
+          APP_ENV: staging
+        working-directory: ./packages/app-mobile
+        if: ${{ hashFiles('./assets/hiddenwebview.html') != '' }}
+        run: "yarn ios:ota-staging"
+        continue-on-error: true # prevents from failing CI
+
+      - name: 🚀 Publish Android Update
+        working-directory: ./packages/app-mobile
+        if: ${{ hashFiles('./assets/hiddenwebview.html') != '' }}
+        env:
+          APP_ENV: staging
+        run: "yarn android:ota-staging"
+        continue-on-error: true # prevents from failing CI

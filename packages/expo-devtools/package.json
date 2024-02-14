@@ -1,0 +1,40 @@
+{
+  "name": "@coral-xyz/expo-devtools",
+  "version": "0.0.1",
+  "description": "Expo Dev Tools for Backpack",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "sideEffects": false,
+  "scripts": {
+    "build": "expo-module build",
+    "build:all": "expo-module prepare && cd webui && npx expo export -p web --output-dir ../dist",
+    "clean": "expo-module clean",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepare && expo-module prepublishOnly && cd webui && npx expo export -p web --output-dir ../dist",
+    "web:dev": "cd webui && npx expo start -w",
+    "web:export": "cd webui && npx expo export -p web --output-dir ../dist",
+    "format": "npx prettier --write --config ../../.prettierrc --ignore-path ../../.prettierignore --log-level error",
+    "format:all": "yarn format '**/*.{js,jsx,ts,tsx}' --cache"
+  },
+  "keywords": [
+    "expo",
+    "devtools"
+  ],
+  "files": [
+    "build",
+    "dist",
+    "expo-module.config.json"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@expo/metro-runtime": "~3.1.1"
+  },
+  "devDependencies": {
+    "expo": "~50.0.6",
+    "expo-module-scripts": "^3.1.0",
+    "typescript": "^5.1.3"
+  },
+  "peerDependencies": {
+    "expo": "~50.0.6"
+  }
+}

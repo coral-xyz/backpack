@@ -1,0 +1,6 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+npx lint-staged
+node scripts/sync-expo-deps.js --dry-run
+source scripts/verify_workspace_package.sh

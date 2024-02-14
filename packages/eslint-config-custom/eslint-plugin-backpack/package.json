@@ -1,0 +1,8 @@
+{
+  "name": "eslint-plugin-backpack",
+  "version": "1.0.0",
+  "main": "index.js",
+  "peerDependencies": {
+    "eslint": "^8.49.0"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "expo": {
+    "web": {
+      "bundler": "metro"
+    },
+    "experiments": {
+      "baseUrl": "/_expo/plugins/backpack-devtools"
+    }
+  }
+}

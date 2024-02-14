@@ -1,0 +1,8 @@
+{
+  "name": "eslint-plugin-mui-custom",
+  "version": "0.0.1",
+  "main": "index.js",
+  "peerDependencies": {
+    "eslint": "^8.49.0"
+  }
+}

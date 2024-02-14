@@ -1,0 +1,122 @@
+# Actions that only run when opening or updating pull requests
+
+name: Pull Requests
+on:
+  pull_request:
+    types: [opened, synchronize]
+    branches:
+      - master
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    name: Build and run tests
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build setup
+        uses: ./.github/actions/build-setup
+
+      ##########################################################################
+      # Build extension.
+      ##########################################################################
+
+      - run: yarn build
+        env:
+          # CI!=true so that build warnings aren't treated like errors (for now)
+          CI: ""
+
+      ##########################################################################
+      # Tests.
+      ##########################################################################
+
+      - run: yarn test
+
+  add-labels-based-on-whats-changed:
+    name: Add PR labels
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          filters: |
+            mobile:
+              - 'packages/app-mobile/**'
+              - 'packages/**/*.native.*'
+            extension:
+              - 'packages/app-extension/**'
+            xnft:
+              - 'packages/xnft-cli/**'
+
+      - if: steps.changes.outputs.mobile == 'true'
+        uses: andymckay/labeler@1.0.4
+        with:
+          add-labels: "mobile"
+
+      - if: steps.changes.outputs.extension == 'true'
+        uses: andymckay/labeler@1.0.4
+        with:
+          add-labels: "extension"
+
+      - if: steps.changes.outputs.xnft == 'true'
+        uses: andymckay/labeler@1.0.4
+        with:
+          add-labels: "xnft"
+
+  yarn-lock-changes:
+    name: yarn.lock changes
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: simek/yarn-lock-changes@main
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+  check-native-files:
+    name: Check for unedited counterpart native files
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Check changed files
+        id: check-counterparts
+        run: |
+          rm -f counterparts.txt
+          echo "Have you checked the counterpart file(s)? You edited -" >> counterparts.txt
+          echo "" >> counterparts.txt
+          git fetch origin ${{ github.base_ref }}
+          # Store the diff output in a variable
+          diff_output=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }})
+          echo "$diff_output" | while read -r file; do
+            base_name="${file%.*}"
+            ext="${file##*.}"
+            if [[ $base_name == *".native"* ]]; then
+              counterpart="${base_name/.native/}.$ext"
+            else
+              counterpart="$base_name.native.$ext"
+            fi
+            echo $counterpart
+            # Check if counterpart is NOT in the diff_output
+            if ! echo "$diff_output" | grep -q "^$counterpart$"; then
+              # If counterpart exists in git but not in the diff output, then proceed
+              if git ls-files "$counterpart" --error-unmatch > /dev/null 2>&1; then
+                echo "counterparts=true" >> "$GITHUB_OUTPUT"
+                echo "* [$file](https://github.com/coral-xyz/backpack-private/blob/master/$file) but not [$(basename "$counterpart")](https://github.com/coral-xyz/backpack-private/blob/master/$counterpart)" >> counterparts.txt
+              fi
+            fi
+          done
+      - uses: marocchino/sticky-pull-request-comment@v2
+        if: ${{ steps.check-counterparts.outputs.counterparts }}
+        name: Add or update unedited counterpart native file comment
+        with:
+          header: counterpart_comment
+          path: counterparts.txt
+      - uses: marocchino/sticky-pull-request-comment@v2
+        if: ${{ !steps.check-counterparts.outputs.counterparts }}
+        name: Remove unedited counterpart native file comment if it exists
+        with:
+          header: counterpart_comment
+          delete: true

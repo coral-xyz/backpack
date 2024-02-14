@@ -1,0 +1,30 @@
+# Runs when merging a PR into master and the English translation file is changed
+
+name: i18n Upload English File to Locize
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - "packages/i18n/src/locales/en.json"
+
+jobs:
+  upload-english-file:
+    runs-on: ubuntu-latest
+    name: Upload English translation file to Locize
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Run node json-tasks.js upload-english-file
+        run: node json-tasks.js upload-english-file
+        working-directory: packages/i18n
+        env:
+          LOCIZE_API_KEY: ${{ secrets.LOCIZE_API_KEY }}
+          LOCIZE_NAMESPACE: ${{ vars.LOCIZE_NAMESPACE }}
+          LOCIZE_PROJECT_ID: ${{ vars.LOCIZE_PROJECT_ID }}

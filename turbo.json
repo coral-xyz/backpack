@@ -1,0 +1,57 @@
+{
+  "$schema": "https://turborepo.org/schema.json",
+  "pipeline": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": [
+        "build/**",
+        "dist/**",
+        "packages/wallet-standard/lib/**",
+        "node_modules/.cache/metro/**"
+      ],
+      "env": [
+        "TAMAGUI_TARGET",
+        "TAMAGUI_IGNORE_BUNDLE_ERRORS",
+        "TAMAGUI_SHOW_FULL_BUNDLE_ERRORS",
+        "GOOGLE_SERVICES_JSON",
+        "BACKPACK_CONFIG_VERSION",
+        "BACKPACK_CONFIG_LOG_LEVEL",
+        "BACKPACK_FEATURE_LIGHT_MODE",
+        "BACKPACK_FEATURE_POP_MODE",
+        "AIRTABLE_API_KEY",
+        "APP_ENV",
+        "NODE_ENV",
+        "SENTRY_DSN",
+        "SENTRY_ORG",
+        "SENTRY_PROJECT",
+        "SENTRY_AUTH_TOKEN"
+      ]
+    },
+    "test": {
+      "dependsOn": ["^build"],
+      "inputs": ["**/*.{ts,tsx,js,jsx}"]
+    },
+    "start": {
+      "dependsOn": ["^build"]
+    },
+    "lint": {
+      "cache": false,
+      "outputs": []
+    },
+    "lint:fix": {
+      "cache": false,
+      "outputs": []
+    },
+    "dev": {
+      "cache": false,
+      "outputs": []
+    },
+    "gql:generate": {
+      "cache": false,
+      "outputs": [
+        "packages/app-mobile/src/graphql/__generated__/**",
+        "packages/data-components/src/apollo/**"
+      ]
+    }
+  }
+}

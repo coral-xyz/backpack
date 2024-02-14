@@ -1,0 +1,43 @@
+{
+  "name": "@coral-xyz/provider-core",
+  "version": "0.1.0",
+  "module": "dist/esm/index.js",
+  "source": "src/index.ts",
+  "types": "dist/esm/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "start": "tsc --watch",
+    "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx --cache",
+    "lint:fix": "yarn run lint --fix",
+    "format": "npx prettier --write --config ../../.prettierrc --ignore-path ../../.prettierignore --log-level error",
+    "format:all": "yarn format '**/*.{js,jsx,ts,tsx}' --cache"
+  },
+  "lint-staged": {
+    "*.{js,jsx,css,md,json}": "prettier --write",
+    "*.{ts,tsx}": [
+      "prettier --write",
+      "eslint --fix --cache"
+    ]
+  },
+  "dependencies": {
+    "@coral-xyz/anchor": "^0.28.0",
+    "@coral-xyz/common": "workspace:*",
+    "@coral-xyz/secure-background": "workspace:*",
+    "@coral-xyz/secure-clients": "workspace:*",
+    "@coral-xyz/wallet-standard": "workspace:*",
+    "@ethersproject/abstract-provider": "^5.7.0",
+    "@ethersproject/transactions": "^5.7.0",
+    "@solana/wallet-standard-features": "^1.2.0",
+    "@solana/wallet-standard-util": "^1.1.1",
+    "@solana/web3.js": "^1.63.1",
+    "@walletconnect/jsonrpc-utils": "^1.0.8",
+    "bs58": "^5.0.0",
+    "eth-rpc-errors": "^4.0.3",
+    "ethers6": "npm:ethers@^6.8.0",
+    "eventemitter3": "^4.0.7"
+  },
+  "devDependencies": {
+    "eslint-config-custom": "*",
+    "typescript": "^5.3.3"
+  }
+}

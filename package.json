@@ -1,0 +1,80 @@
+{
+  "name": "backpack",
+  "packageManager": "yarn@4.0.2",
+  "private": true,
+  "workspaces": {
+    "packages": [
+      "examples/clients/*",
+      "examples",
+      "examples/xnft/*",
+      "packages/*",
+      "web"
+    ]
+  },
+  "scripts": {
+    "lint": "turbo run lint",
+    "lint:fix": "turbo run lint:fix",
+    "format": "yarn workspaces foreach --exclude @coral-xyz/wallet-standard --all run format:all",
+    "start": "env-cmd --silent turbo run start --concurrency=100% --filter='./packages/*'",
+    "start:fresh": "yarn install && yarn clean && yarn install && yarn start",
+    "test": "env-cmd --silent turbo run test -- --passWithNoTests --watchAll=false",
+    "build": "env-cmd --silent turbo run build --filter='!./examples/**'",
+    "depcheck": "npx esno scripts/monorepo_depcheck.ts",
+    "depcheck:all": "./scripts/monorepo_depcheck.sh",
+    "build:fresh": "git add . && git clean -xfd && yarn install && yarn build --force",
+    "e2e": "env-cmd --silent turbo run e2e",
+    "clean": "git clean -xfd",
+    "start:ext": "env-cmd --silent turbo run start --filter='@coral-xyz/app-extension...' --filter='@coral-xyz/background...' --concurrency=50",
+    "build:ext": "env-cmd --silent turbo run build --filter='@coral-xyz/app-extension...' --filter='@coral-xyz/background...'",
+    "start:mobile": "turbo run start --filter='@coral-xyz/app-mobile...'",
+    "build:mobile": "turbo run build --filter='@coral-xyz/app-mobile...'",
+    "upgrade:tamagui": "manypkg upgrade tamagui && manypkg upgrade @tamagui && manypkg upgrade tamagui-loader && manypkg upgrade react-native-web-lite",
+    "sync-i18n-from-airtable": "npx esno scripts/airtable-to-localizations.ts && prettier --write packages/i18n/src/locales",
+    "sync-i18n-to-airtable": "npx esno scripts/sync-localizations-to-airtable.ts",
+    "check-deps": "check-dependency-version-consistency .",
+    "postinstall": "husky install",
+    "gql": "env-cmd --silent turbo run gql:generate"
+  },
+  "devDependencies": {
+    "@manypkg/cli": "^0.21.1",
+    "airtable": "^0.12.2",
+    "buffer": "^5.5.0",
+    "chalk": "4.1.2",
+    "check-dependency-version-consistency": "^3.0.3",
+    "depcheck": "^1.4.7",
+    "env-cmd": "^10.1.0",
+    "eslint": "^8.49.0",
+    "graphql": "^16.8.1",
+    "husky": "^8.0.3",
+    "lint-staged": "^15.2.0",
+    "prettier": "^3.2.4",
+    "turbo": "^1.11.1",
+    "typescript": "^5.3.3"
+  },
+  "lint-staged": {
+    "*.{js,jsx,css,md,json}": "prettier --write",
+    "*.{ts,tsx}": [
+      "prettier --write",
+      "eslint --fix --cache"
+    ]
+  },
+  "resolutions": {
+    "@expo/config-plugins": "~7.8.0",
+    "@saberhq/token-utils": "npm:@coral-xyz/token-utils@1.15.0-beta.0",
+    "@solana/buffer-layout": "^4.0.1",
+    "@solana/web3.js": "1.63.1",
+    "@types/node": "20.10.0 || ^18.0.0",
+    "json-schema": "^0.4.0",
+    "prettier": "^3.2.4",
+    "react-dom": "18.2.0",
+    "react": "18.2.0",
+    "wrangler": "^2.10.0"
+  },
+  "engines": {
+    "node": "20.10.0",
+    "yarn": "^4.0.0"
+  },
+  "dependencies": {
+    "patch-package": "^6.5.0"
+  }
+}

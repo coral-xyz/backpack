@@ -1,0 +1,42 @@
+{
+    "private": true,
+    "name": "@coral-xyz/wallet-standard",
+    "version": "0.1.0",
+    "author": "Solana Maintainers <maintainers@solana.foundation>",
+    "repository": "https://github.com/solana-labs/wallet-standard",
+    "license": "Apache-2.0",
+    "engines": {
+        "node": ">=16"
+    },
+    "type": "module",
+    "sideEffects": false,
+    "main": "./lib/cjs/index.js",
+    "module": "./lib/esm/index.js",
+    "types": "./lib/types/index.d.ts",
+    "exports": {
+        "require": "./lib/cjs/index.js",
+        "import": "./lib/esm/index.js",
+        "types": "./lib/types/index.d.ts"
+    },
+    "scripts": {
+        "fmt": "prettier --write '{*,**/*}.{ts,tsx,js,jsx,json}'",
+        "clean": "shx mkdir -p lib && shx rm -rf lib",
+        "tsc": "tsc --build --verbose tsconfig.all.json",
+        "package": "shx mkdir -p lib/cjs && shx echo '{ \"type\": \"commonjs\" }' > lib/cjs/package.json",
+        "build": "npm run clean && npm run tsc && npm run package"
+    },
+    "dependencies": {
+        "@solana/wallet-standard-features": "^1.1.0",
+        "@solana/web3.js": "^1.58.0",
+        "@wallet-standard/base": "^1.0.1",
+        "@wallet-standard/features": "^1.0.3",
+        "bs58": "^4.0.1"
+    },
+    "devDependencies": {
+        "@types/bs58": "^4.0.1",
+        "@types/node-fetch": "^2.6.2",
+        "prettier": "^2.7.1",
+        "shx": "^0.3.4",
+        "typescript": "^4.8.4"
+    }
+}
