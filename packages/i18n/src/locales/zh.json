@@ -374,5 +374,13 @@
   "you_pay": "你支付",
   "your_account": "你的账户",
   "your_addresses": "你的地址",
-  "zip": "邮政编码"
+  "zip": "邮政编码",
+  "ipfs_gateways": "IPFS网关",
+  "custom": "自定义",
+  "gateway": "网关",
+  "gateway_url": "网关URL",
+  "switch": "切换",
+  "ipfs_gateway": "IPFS网关",
+  "custom_ipfs_gateway": "自定义IPFS网关",
+  "web_domain_resolver": "网域解析器"
 }

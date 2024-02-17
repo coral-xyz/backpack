@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Backpack DNS Resolver</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" type="text/css" media="screen" href="style.css" />
+    <style>
+      body {
+        display: flex;
+        font-family: 'Lato', sans-serif;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background: #111;
+      }
+
+      .backpack {
+        position: absolute;
+        z-index: 1;
+        height: 100px;
+        margin-bottom: 20px;
+      }
+      .loader {
+        position: absolute;
+        width: 350px;
+        height: 350px;
+        border-radius: 50%;
+        background: linear-gradient(#f07e6e, #84cdfa, #5ad1cd);
+        animation: animate 1.2s linear infinite;
+        display: block;
+        margin: auto;
+      }
+
+      .text-container{
+        position: absolute;
+        z-index: 99;
+        margin-top: 150px;
+        max-width: 150px;
+        text-align: center;
+        overflow-wrap: break-word;
+      }
+
+      .loading-text{
+        z-index: 2;
+      }
+
+      @keyframes animate {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      .loader span {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background: linear-gradient(#f07e6e, #84cdfa, #5ad1cd);
+      }
+
+      .loader span:nth-child(1) {
+        filter: blur(5px);
+      }
+
+      .loader span:nth-child(2) {
+        filter: blur(10px);
+      }
+
+      .loader span:nth-child(3) {
+        filter: blur(25px);
+      }
+
+      .loader span:nth-child(4) {
+        filter: blur(50px);
+      }
+
+      .loader:after {
+        content: "";
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        right: 10px;
+        bottom: 10px;
+        background: #f1f1f1;
+        border: solid white 10px;
+        border-radius: 50%;
+      }
+    </style>
+  </head>
+  <body>
+    <img class="backpack" src="./anchor-production.png"></img>
+    <div class="text-container">
+      <text class="loading-text">Redirecting to <b id="domainDisplay"></b></text>
+    </div>
+    <div class="loader">
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  </body>
+  <script src="dnsRedirects.js"></script>
+</html>

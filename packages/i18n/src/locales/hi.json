@@ -229,5 +229,13 @@
   },
   "you_pay": "आप भुगतान करते हैं",
   "your_account": "आपका खाता",
-  "your_addresses": "आपके पते"
+  "your_addresses": "आपके पते",
+  "ipfs_gateways": "IPFS गेटवे",
+  "custom": "कस्टम",
+  "gateway": "गेटवे",
+  "gateway_url": "गेटवे URL",
+  "switch": "स्विच",
+  "ipfs_gateway": "IPFS गेटवे",
+  "custom_ipfs_gateway": "कस्टम IPFS गेटवे",
+  "web_domain_resolver": "वेब डोमेन रिज़ॉल्वर"
 }

@@ -90,6 +90,9 @@ export function Preferences() {
     [t("hidden_tokens")]: {
       onClick: () => navigation.push(Routes.PreferencesHiddenTokensScreen),
     },
+    [t("web_domain_resolver")]: {
+      onClick: () => navigation.push(Routes.PreferencesWebDomainResolverScreen),
+    },
   };
 
   // if (BACKPACK_FEATURE_LIGHT_MODE) {

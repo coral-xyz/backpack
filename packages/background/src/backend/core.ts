@@ -642,6 +642,61 @@ export class Backend {
     return SUCCESS_RESPONSE;
   }
 
+  async domainContentIPFSGatewayRead(uuid: string): Promise<string> {
+    const data = await secureStore.getWalletDataForUser(uuid);
+    return data.webDnsResolutionGateway.ipfsGateway;
+  }
+
+  async domainContentIPFSGatewayUpdate(ipfsGateway: string): Promise<string> {
+    const uuid = (await this.keyringStore.activeUserKeyring()).uuid;
+    const data = await secureStore.getWalletDataForUser(uuid!);
+
+    await secureStore.setWalletDataForUser(uuid!, {
+      ...data,
+      webDnsResolutionGateway: {
+        ...data.webDnsResolutionGateway,
+        ipfsGateway,
+      },
+    });
+    await this.notificationsClient.userUpdated();
+
+    return SUCCESS_RESPONSE;
+  }
+
+  async supportedWebDNSNetworkRead(
+    uuid: string,
+    blockchain: Blockchain
+  ): Promise<Boolean> {
+    const data = await secureStore.getWalletDataForUser(uuid);
+    const supportedNetworks =
+      data.webDnsResolutionGateway.supportedWebDNSNetwork;
+
+    return blockchain in supportedNetworks
+      ? supportedNetworks[blockchain]
+      : false;
+  }
+
+  async supportedWebDNSNetworkUpdate(
+    blockchain: Blockchain,
+    isEnabled: boolean
+  ): Promise<string> {
+    const uuid = (await this.keyringStore.activeUserKeyring()).uuid;
+    const data = await secureStore.getWalletDataForUser(uuid!);
+
+    await secureStore.setWalletDataForUser(uuid!, {
+      ...data,
+      webDnsResolutionGateway: {
+        ...data.webDnsResolutionGateway,
+        supportedWebDNSNetwork: {
+          ...data.webDnsResolutionGateway.supportedWebDNSNetwork,
+          [blockchain]: isEnabled,
+        },
+      },
+    });
+    await this.notificationsClient.userUpdated();
+    return SUCCESS_RESPONSE;
+  }
+
   async setFeatureGates(gates: FEATURE_GATES_MAP) {
     await legacyStore.setFeatureGates(gates);
     this.events.emit(BACKEND_EVENT, {

@@ -85,6 +85,10 @@ import {
   UI_RPC_METHOD_SETTINGS_DEVELOPER_MODE_READ,
   UI_RPC_METHOD_SETTINGS_DEVELOPER_MODE_UPDATE,
   UI_RPC_METHOD_SETTINGS_LOCK_FULL_SCREEN_UPDATE,
+  UI_RPC_METHOD_SETTINGS_DOMAIN_CONTENT_IPFS_GATEWAY_READ,
+  UI_RPC_METHOD_SETTINGS_DOMAIN_CONTENT_IPFS_GATEWAY_UPDATE,
+  UI_RPC_METHOD_SETTINGS_DOMAIN_RESOLUTION_NETWORKS_READ,
+  UI_RPC_METHOD_SETTINGS_DOMAIN_RESOLUTION_NETWORKS_UPDATE,
   UI_RPC_METHOD_TOGGLE_SHOW_ALL_COLLECTIBLES,
   UI_RPC_METHOD_USER_READ,
   withContextPort,
@@ -176,6 +180,18 @@ async function handle<T = any>(
       return await handleApprovedOriginsUpdate(ctx, params[0]);
     case UI_RPC_METHOD_APPROVED_ORIGINS_DELETE:
       return await handleApprovedOriginsDelete(ctx, params[0]);
+    case UI_RPC_METHOD_SETTINGS_DOMAIN_CONTENT_IPFS_GATEWAY_READ:
+      return await handleDomainContentIPFSGatewayRead(ctx, params[0]);
+    case UI_RPC_METHOD_SETTINGS_DOMAIN_CONTENT_IPFS_GATEWAY_UPDATE:
+      return await handleDomainContentIPFSGatewayUpdate(ctx, params[0]);
+    case UI_RPC_METHOD_SETTINGS_DOMAIN_RESOLUTION_NETWORKS_READ:
+      return await handleSupportedWebDNSNetworkRead(ctx, params[0], params[1]);
+    case UI_RPC_METHOD_SETTINGS_DOMAIN_RESOLUTION_NETWORKS_UPDATE:
+      return await handleSupportedWebDNSNetworkUpdate(
+        ctx,
+        params[0],
+        params[1]
+      );
     case UI_RPC_METHOD_SET_FEATURE_GATES:
       return await handleSetFeatureGates(ctx, params[0]);
     case UI_RPC_METHOD_GET_FEATURE_GATES:
@@ -588,5 +604,42 @@ async function handleToggleShowAllCollectibles(
   ctx: Context<Backend>
 ): Promise<RpcResponse<string>> {
   const resp = await ctx.backend.toggleShowAllCollectibles();
+  return [resp];
+}
+
+async function handleDomainContentIPFSGatewayRead(
+  ctx: Context<Backend>,
+  uuid: string
+): Promise<RpcResponse<boolean>> {
+  const resp = await ctx.backend.domainContentIPFSGatewayRead(uuid);
+  return [resp];
+}
+
+async function handleDomainContentIPFSGatewayUpdate(
+  ctx: Context<Backend>,
+  ipfsGateway: string
+): Promise<RpcResponse<boolean>> {
+  const resp = await ctx.backend.domainContentIPFSGatewayUpdate(ipfsGateway);
+  return [resp];
+}
+
+async function handleSupportedWebDNSNetworkRead(
+  ctx: Context<Backend>,
+  uuid: string,
+  blockchain: Blockchain
+): Promise<RpcResponse<boolean>> {
+  const resp = await ctx.backend.supportedWebDNSNetworkRead(uuid, blockchain);
+  return [resp];
+}
+
+async function handleSupportedWebDNSNetworkUpdate(
+  ctx: Context<Backend>,
+  blockchain: Blockchain,
+  isEnabled: boolean
+): Promise<RpcResponse<string>> {
+  const resp = await ctx.backend.supportedWebDNSNetworkUpdate(
+    blockchain,
+    isEnabled
+  );
   return [resp];
 }

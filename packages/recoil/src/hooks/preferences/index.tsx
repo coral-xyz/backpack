@@ -1,3 +1,4 @@
+import type { Blockchain } from "@coral-xyz/common";
 import type { User } from "@coral-xyz/secure-background/types";
 import { useRecoilValue } from "recoil";
 
@@ -41,4 +42,15 @@ export function useAllUsers(): User[] {
 
 export function useAllUsersNullable(): User[] | null {
   return useRecoilValue(atoms.allUsersNullable);
+}
+
+export function useIpfsGateway(): string {
+  return useRecoilValue(atoms.domainContentIpfsGateway)!;
+}
+
+export function useSupportedDnsNetwork(blockchain: Blockchain): boolean {
+  const supportedNetworks = useRecoilValue(atoms.enabledDNSResolverNetworks);
+  return blockchain in supportedNetworks
+    ? supportedNetworks[blockchain]
+    : false;
 }

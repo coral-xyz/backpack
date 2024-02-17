@@ -736,5 +736,13 @@
   "your_withdrawal_addresses": "Your Withdrawal Addresses",
   "youre_all_good": "You're all good!",
   "youre_verified": "You're verified!",
-  "zip": "Zip Code"
+  "zip": "Zip Code",
+  "ipfs_gateways": "IPFS Gateway",
+  "custom": "Custom",
+  "gateway": "Gateway",
+  "gateway_url": "Gateway URL",
+  "switch": "Switch",
+  "ipfs_gateway": "IPFS Gateway",
+  "custom_ipfs_gateway": "Custom IPFS Gateway",
+  "web_domain_resolver": "Web Domain Resolver"
 }
