@@ -2,8 +2,13 @@ import type {
   AutolockSettings,
   Blockchain,
   Preferences,
+  SupportedWebDnsResolutionNetwork,
 } from "@coral-xyz/common";
-import { DEFAULT_AUTO_LOCK_INTERVAL_SECS } from "@coral-xyz/secure-background/legacyCommon";
+import {
+  DEFAULT_AUTO_LOCK_INTERVAL_SECS,
+  DEFAULT_ENABLED_WEB_DNS_RESOLUTION_NETWORKS,
+  DEFAULT_GATEWAY,
+} from "@coral-xyz/secure-background/legacyCommon";
 import type { User } from "@coral-xyz/secure-background/types";
 import type { Commitment } from "@solana/web3.js";
 import { atom, selector, selectorFamily } from "recoil";
@@ -226,5 +231,22 @@ export const allBlockchainConnectionUrls = atom<{
     },
   }),
 });
+
+export const domainContentIpfsGateway = selector<string>({
+  key: "domainContentIpfsGateway",
+  get: async ({ get }) => {
+    const p = get(preferences);
+    return p.webDnsResolutionGateway?.ipfsGateway;
+  },
+});
+
+export const enabledDNSResolverNetworks =
+  selector<SupportedWebDnsResolutionNetwork>({
+    key: "enabledDNSResolverNetworks",
+    get: async ({ get }) => {
+      const p = get(preferences);
+      return p.webDnsResolutionGateway?.supportedWebDNSNetwork;
+    },
+  });
 
 export * from "./xnft-preferences";

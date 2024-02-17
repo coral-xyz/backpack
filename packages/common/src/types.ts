@@ -195,6 +195,7 @@ export type Preferences = {
   lockedCollections?: string[];
   hiddenTokenAddresses?: Record<Blockchain, string[]>;
   showAllCollectibles?: boolean;
+  webDnsResolutionGateway: WebDnsResolutionGateway;
 } & DeprecatedWalletDataDoNotUse;
 
 export type AutolockSettingsOption = "never" | "onClose" | undefined;
@@ -252,4 +253,15 @@ export type Sender = {
     width: number;
     windowId: number;
   };
+};
+
+// Object to store enabled/disabled web dns resolution for supported networks.
+export type SupportedWebDnsResolutionNetwork = {
+  [network in Blockchain]: boolean;
+};
+
+// Stores the IPFS gateway pairing
+export type WebDnsResolutionGateway = {
+  ipfsGateway: string;
+  supportedWebDNSNetwork: SupportedWebDnsResolutionNetwork;
 };

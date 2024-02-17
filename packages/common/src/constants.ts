@@ -166,6 +166,14 @@ export const UI_RPC_METHOD_SETTINGS_AGGREGATE_WALLETS_UPDATE =
   "ui-rpc-method-settings-aggregate-wallet-update";
 export const UI_RPC_METHOD_TRY_TO_SIGN_MESSAGE =
   "ui-rpc-method-try-to-sign-message";
+export const UI_RPC_METHOD_SETTINGS_DOMAIN_CONTENT_IPFS_GATEWAY_READ =
+  "ui-rpc-method-settings-domain-content-ipfs-gateway-read";
+export const UI_RPC_METHOD_SETTINGS_DOMAIN_CONTENT_IPFS_GATEWAY_UPDATE =
+  "ui-rpc-method-settings-domain-content-ipfs-gateway-update";
+export const UI_RPC_METHOD_SETTINGS_DOMAIN_RESOLUTION_NETWORKS_READ =
+  "ui-rpc-method-settings-domain-resolution-networks-read";
+export const UI_RPC_METHOD_SETTINGS_DOMAIN_RESOLUTION_NETWORKS_UPDATE =
+  "ui-rpc-method-settings-domain-resolution-networks-update";
 export const UI_RPC_METHOD_USER_READ = "ui-rpc-method-user-read";
 export const UI_RPC_METHOD_ALL_USERS_READ = "ui-rpc-method-all-users-read";
 export const UI_RPC_METHOD_PREFERENCES_READ = "ui-rpc-method-references-read";
@@ -595,3 +603,15 @@ export const BACKPACK_TEAM = [
 ];
 
 export const MOBILE_USER_PASSWORD_KEY = "user-password";
+
+// Default IPFS gateways used to resolve web domains
+export const DEFAULT_IPFS_GATEWAYS = [
+  "dweb.link",
+  "infura-ipfs.io",
+  "cf-ipfs.com",
+  "astyanax.io",
+  "ipfs.io",
+  "cloudflare-ipfs.com",
+  "gateway.pinata.cloud",
+  "4everland.io",
+];

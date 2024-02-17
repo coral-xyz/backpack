@@ -34,5 +34,5 @@
     "192": "anchor.png",
     "512": "anchor.png"
   },
-  "permissions": ["alarms", "storage", "background"]
+  "permissions": ["alarms", "storage", "background", "webNavigation", "tabs"]
 }

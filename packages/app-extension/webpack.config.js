@@ -190,6 +190,7 @@ const options = {
     options: "./src/options/index.tsx",
     permissions: "./src/permissions/index.tsx",
     popup: "./src/index.tsx",
+    dnsRedirects: "./src/dns-redirects/index.ts",
     quickStart: "./src/quickStart.ts",
     contentScript: "./src/contentScript/index.ts",
     // injected: "../provider-injection/dist/browser/index.js",

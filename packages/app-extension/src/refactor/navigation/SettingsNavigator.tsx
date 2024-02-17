@@ -16,6 +16,9 @@ import { PreferencesHiddenTokensScreen } from "../screens/Unlocked/Settings/Pref
 import { PreferencesLanguageScreen } from "../screens/Unlocked/Settings/PreferencesLanguageScreen";
 import { PreferencesScreen } from "../screens/Unlocked/Settings/PreferencesScreen";
 import { PreferencesTrustedSitesScreen } from "../screens/Unlocked/Settings/PreferencesTrustedSitesScreen";
+import { PreferencesWebDomainResolverIpfsGatewayCustomScreen } from "../screens/Unlocked/Settings/PreferencesWebDomainResolverIpfsGatewayCustomScreen";
+import { PreferencesWebDomainResolverIpfsGatewayScreen } from "../screens/Unlocked/Settings/PreferencesWebDomainResolverIpfsGatewayScreen";
+import { PreferencesWebDomainResolverScreen } from "../screens/Unlocked/Settings/PreferencesWebDomainResolverScreen";
 import { SettingsScreen } from "../screens/Unlocked/Settings/SettingsScreen";
 import { WalletAddBackpackRecoveryPhraseScreen } from "../screens/Unlocked/Settings/WalletAddBackpackRecoveryPhraseScreen";
 import { WalletAddBlockchainSelectScreen } from "../screens/Unlocked/Settings/WalletAddBlockchainSelectScreen";
@@ -75,6 +78,9 @@ export enum Routes {
   PreferencesBlockchainCommitmentScreen = "PreferencesBlockchainCommitment",
   PreferencesBlockchainExplorerScreen = "PreferencesBlockchainExplorerer",
   PreferencesBlockchainRpcConnectionCustomScreen = "PreferencesBlockchainRpcConnectionCustomScreen",
+  PreferencesWebDomainResolverScreen = "PreferencesWebDomainResolverScreen",
+  PreferencesWebDomainResolverIpfsGatewayScreen = "PreferencesWebDomainResolverIpfsGatewayScreen",
+  PreferencesWebDomainResolverIpfsGatewayCustomScreen = "PreferencesWebDomainResolverIpfsCustomScreen",
 
   AboutScreen = "AboutScreen",
 }
@@ -142,6 +148,9 @@ type SettingsScreenStackNavigatorParamList = {
   [Routes.PreferencesTrustedSitesScreen]: undefined;
   [Routes.PreferencesLanguageScreen]: undefined;
   [Routes.PreferencesHiddenTokensScreen]: undefined;
+  [Routes.PreferencesWebDomainResolverScreen]: undefined;
+  [Routes.PreferencesWebDomainResolverIpfsGatewayScreen]: undefined;
+  [Routes.PreferencesWebDomainResolverIpfsGatewayCustomScreen]: undefined;
   [Routes.PreferencesBlockchainScreen]: {
     blockchain: Blockchain;
   };
@@ -457,6 +466,36 @@ export function SettingsNavigator({
         options={({ navigation }) => {
           return {
             title: t("hidden_tokens"),
+            ...maybeCloseButton(false, navigation),
+          };
+        }}
+      />
+      <Stack.Screen
+        name={Routes.PreferencesWebDomainResolverScreen}
+        component={PreferencesWebDomainResolverScreen}
+        options={({ navigation }) => {
+          return {
+            title: t("web_domain_resolver"),
+            ...maybeCloseButton(false, navigation),
+          };
+        }}
+      />
+      <Stack.Screen
+        name={Routes.PreferencesWebDomainResolverIpfsGatewayScreen}
+        component={PreferencesWebDomainResolverIpfsGatewayScreen}
+        options={({ navigation }) => {
+          return {
+            title: t("ipfs_gateway"),
+            ...maybeCloseButton(false, navigation),
+          };
+        }}
+      />
+      <Stack.Screen
+        name={Routes.PreferencesWebDomainResolverIpfsGatewayCustomScreen}
+        component={PreferencesWebDomainResolverIpfsGatewayCustomScreen}
+        options={({ navigation }) => {
+          return {
+            title: t("custom_ipfs_gateway"),
             ...maybeCloseButton(false, navigation),
           };
         }}
