@@ -3,6 +3,7 @@ import { changeLanguage, type InitOptions } from "i18next";
 
 import en from "./locales/en.json";
 import hi from "./locales/hi.json";
+import kr from "./locales/kr.json";
 import zh from "./locales/zh.json";
 
 export * from "react-i18next";
@@ -22,6 +23,11 @@ export const SUPPORTED_LANGUAGES = [
     key: "zh",
     value: "Chinese",
     nativeValue: "中文",
+  },
+  {
+    key: "kr",
+    value: "Korean",
+    nativeValue: "한국어",
   },
 ] as const;
 
@@ -45,7 +51,7 @@ export const updateLanguage = async (
 
 export const i18nPreferences: InitOptions = {
   // this might not be necessary
-  supportedLngs: ["en", "hi", "zh"],
+  supportedLngs: ["en", "hi", "zh", "kr"],
   resources: {
     en: {
       translation: en,
@@ -55,6 +61,9 @@ export const i18nPreferences: InitOptions = {
     },
     zh: {
       translation: zh,
+    },
+    kr: {
+      translation: kr,
     },
   },
   fallbackLng: "en",
