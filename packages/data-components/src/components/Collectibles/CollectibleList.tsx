@@ -1,8 +1,13 @@
 import { UI_RPC_METHOD_TOGGLE_SHOW_ALL_COLLECTIBLES } from "@coral-xyz/common";
 import { showAllCollectibles, useBackgroundClient } from "@coral-xyz/recoil";
 import { useMedia, YStack } from "@coral-xyz/tamagui";
-import { useCallback, useMemo } from "react";
-import { FlatList, type ListRenderItem } from "react-native";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  Dimensions,
+  FlatList,
+  Platform,
+  type ListRenderItem,
+} from "react-native";
 import { useRecoilValue } from "recoil";
 
 import type { CollectiblesProps } from ".";
@@ -16,17 +21,66 @@ export type CollectibleListProps = {
   enableShowUnverifiedButton?: boolean;
 };
 
+// Placeholder collection name
+const placeholder = "placeholder-lads-ftw";
+
 export function CollectibleList({
-  collectibleGroups,
+  collectibleGroups: baseCollectibleGroups,
   enableShowUnverifiedButton,
   EmptyStateComponent,
 }: CollectibleListProps) {
+  const [numColumns, setNumColumns] = useState(2);
+
   const media = useMedia();
+  const imageBoxSize = Platform.select({ native: 165, web: 165 });
   const background = useBackgroundClient();
   const showAll = useRecoilValue(showAllCollectibles);
 
-  const numColumns = _getNumberOfColumns(media);
   const gap = _getGap(media);
+
+  const visibleGroups = useMemo(() => {
+    if (enableShowUnverifiedButton) {
+      return showAll
+        ? baseCollectibleGroups
+        : baseCollectibleGroups.filter((group) => group.whitelisted);
+    }
+    return baseCollectibleGroups;
+  }, [baseCollectibleGroups, enableShowUnverifiedButton, showAll]);
+
+  // Handles dynamic column count and update
+  useEffect(() => {
+    if (!imageBoxSize) return;
+    const updateColumns = () => {
+      const width = Dimensions.get("window").width;
+      const columns = Math.floor((width - gap) / (imageBoxSize + gap));
+      setNumColumns(Math.max(columns, 2));
+    };
+
+    // Subscribe to dimension changes
+    const subscription = Dimensions.addEventListener("change", updateColumns);
+    updateColumns(); // Initial setup
+
+    return () => {
+      subscription.remove();
+    };
+  }, [gap, imageBoxSize]);
+
+  // Add placeholder items to fill the last row when the number of items is not a multiple of the number of columns
+  // Not the proudest implementation, but required to keep the grid layout consistent in flatList, otherwise use a different library or change layouts.
+  const lastColumnItems = visibleGroups.length % numColumns;
+  const collectibleGroups = useMemo(() => {
+    if (visibleGroups.length % numColumns !== numColumns) {
+      return [
+        ...visibleGroups,
+        ...Array(numColumns - lastColumnItems).fill({
+          collection: placeholder,
+          data: [],
+        }),
+      ];
+    } else {
+      return visibleGroups;
+    }
+  }, [visibleGroups, lastColumnItems, numColumns]);
 
   const handleToggleShowAll = useCallback(async () => {
     await background.request({
@@ -51,18 +105,13 @@ export function CollectibleList({
    * @returns {ReactElement}
    */
   const renderItem: ListRenderItem<CollectibleGroup> = useCallback(
-    ({ item }) => <CollectibleCard key={item.collection} collectibles={item} />,
-    []
+    ({ item }) => {
+      if (item.collection === placeholder)
+        return <YStack key={item.collection} style={{ width: imageBoxSize }} />;
+      return <CollectibleCard key={item.collection} collectibles={item} />;
+    },
+    [imageBoxSize]
   );
-
-  const visibleGroups = useMemo(() => {
-    if (enableShowUnverifiedButton) {
-      return showAll
-        ? collectibleGroups
-        : collectibleGroups.filter((group) => group.whitelisted);
-    }
-    return collectibleGroups;
-  }, [collectibleGroups, enableShowUnverifiedButton, showAll]);
 
   return (
     <YStack space="$2" flex={1}>
@@ -79,9 +128,9 @@ export function CollectibleList({
             paddingBottom: 16,
             minHeight: "100%",
           }}
-          columnWrapperStyle={{ gap }}
+          columnWrapperStyle={{ gap, justifyContent: "space-around" }}
           numColumns={numColumns}
-          data={visibleGroups}
+          data={collectibleGroups}
           keyExtractor={keyExtractor}
           renderItem={renderItem}
           ListFooterComponent={
@@ -103,5 +152,4 @@ export function CollectibleList({
 const _getGap = (media: ReturnType<typeof useMedia>): number =>
   media.sm ? 16 : media.md ? 20 : 24;
 
-const _getNumberOfColumns = (media: ReturnType<typeof useMedia>): number =>
-  media.sm ? 2 : media.md ? 3 : media.lg ? 4 : media.xl ? 5 : media.xxl ? 6 : 7;
+const _getImageBoxSize = () => Platform.select({ native: 165, web: 165 });
