@@ -19,7 +19,7 @@ export class EthereumProvider {
   ): Promise<any> {
     const { walletPublicKey, ethereumClient } = ctx;
 
-    // transfrom transaction from ethers5 to ethers6
+    // transform transaction from ethers5 to ethers6
     const transaction = Transaction.from(
       ethers5.utils.serializeTransaction(tx as UnsignedTransaction)
     );

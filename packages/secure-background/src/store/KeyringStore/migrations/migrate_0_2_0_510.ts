@@ -29,7 +29,7 @@ export async function migrate_0_2_0_510(
 
 // Migration:
 //
-//  - moves the wallet data object to a user specfic location.
+//  - moves the wallet data object to a user specific location.
 //  - clears out the old global wallet data object.
 async function migrateWalletData_0_2_0_510(
   userInfo: {

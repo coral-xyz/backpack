@@ -45,7 +45,7 @@ export class ToSecureUITransportSender<
     globalThis.chrome?.runtime?.onConnect.addListener((port) => {
       logger.debug("Plugin Connected", port.name);
 
-      // if we are still connected to a differnt plugin disconnect it
+      // if we are still connected to a different plugin disconnect it
       if (this.port && this.port?.name !== port.name) {
         this.disconnectPlugin(this.port);
       }

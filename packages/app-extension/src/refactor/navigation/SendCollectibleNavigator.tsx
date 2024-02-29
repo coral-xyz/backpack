@@ -55,7 +55,7 @@ export function SendCollectibleNavigator({
     >
       <Stack.Screen
         name={Routes.SendCollectibleAddressSelectScreen}
-        // @ts-ignore: todo: update this hack once we actually embed this navigator in a parent naviagator.
+        // @ts-ignore: todo: update this hack once we actually embed this navigator in a parent navigator.
         component={(props: SendCollectibleAddressSelectScreenProps) => (
           <SendCollectibleAddressSelectScreen
             {...props}

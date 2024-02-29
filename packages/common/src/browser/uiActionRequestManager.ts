@@ -52,7 +52,7 @@ export class UiActionRequestManager {
   }
 
   public static async cancelAllRequests() {
-    // Copy the array to aviod mutating it during iteration.
+    // Copy the array to avoid mutating it during iteration.
     const routines = [...UiActionRequestManager._routines];
     routines.forEach(({ cancelRoutine }) => {
       cancelRoutine();

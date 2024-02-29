@@ -31,7 +31,7 @@ export const SendLamportSignMessageButton: FC = () => {
 
     const serializedTransactoin = transaction.serializeMessage();
     // const [signature, { blockhash, lastValidBlockHeight }] = await Promise.all([
-    //   wallet.signMessage!(new Uint8Array(serializedTransactoin)),
+    //   wallet.signMessage!(new Uint8Array(serializedTransaction)),
     //   connection.getLatestBlockhash(),
     // ]);
 
