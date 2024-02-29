@@ -134,7 +134,7 @@ export function ImportWallets({
           const result = result_.wallets[0].walletDescriptors.map(
             (descriptor) => ({
               ...descriptor,
-              mnemonic, // bring back option for mnemonic === true to differentiat privatkey_derived & mnemnoic
+              mnemonic, // bring back option for mnemonic === true to differentiate privatkey_derived & mnemnoic
             })
           ) as WalletDescriptor[];
           setImportedPublicKeys(
@@ -278,7 +278,7 @@ export function ImportWallets({
   }, [fetchPublicKeys]);
 
   //
-  // Clear accounts and selected acounts on change of derivation path.
+  // Clear accounts and selected accounts on change of derivation path.
   //
   useEffect(
     () => {

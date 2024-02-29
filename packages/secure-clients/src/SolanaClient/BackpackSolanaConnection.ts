@@ -85,7 +85,7 @@ export class BackpackSolanaConnection extends Connection {
     //
     // We sort the data so that we can have a consistent key when teh data
     // doesn't change. We remove the mints and metadata from the key because
-    // it's not neceessary at all when calculating whether something has
+    // it's not necessary at all when calculating whether something has
     // changed.
     //
     return JSON.stringify({
