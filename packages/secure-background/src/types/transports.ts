@@ -8,7 +8,7 @@ import type {
 import type { TransportResponder } from "../transports/TransportResponder";
 
 type SerializeableValues =
-  | SolanaSignInInput // unfortunatly this is necessary due to this being an interface.
+  | SolanaSignInInput // unfortunately this is necessary due to this being an interface.
   | undefined
   | null
   | boolean

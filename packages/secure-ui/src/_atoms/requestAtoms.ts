@@ -117,7 +117,7 @@ export const currentRequestAtom = selector<TransportResponder<
     const nextPending = queue.find((event) => !event.responded);
     // if we dont have any pending, return the last already responded event
     // so the screen does not go blank while animating out.
-    // <Presentation> automatically disables intracting with responded events.
+    // <Presentation> automatically disables interacting with responded events.
     return nextPending ?? queue[0] ?? null;
   },
   // this prevents recoil from freezing the object in dev mode

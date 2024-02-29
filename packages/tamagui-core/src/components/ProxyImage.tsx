@@ -6,7 +6,7 @@ import {
   type StyleProp,
 } from "react-native";
 
-// React Native apps need to specifcy a width and height for remote images
+// React Native apps need to specify a width and height for remote images
 export const ProxyImage = ({
   onError,
   src,

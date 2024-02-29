@@ -9,7 +9,7 @@ import {
   ToMobileAppTransportSender,
 } from "@coral-xyz/secure-clients";
 
-// This is a bit of a hack, it's speicifically at the top of this file
+// This is a bit of a hack, it's specifically at the top of this file
 // to ensure it's loaded before other code
 if (globalThis.ReactNativeWebView && !globalThis.isHiddenWebView) {
   Object.defineProperty(window, "___fromApp", {

@@ -466,7 +466,7 @@ export class TensorClient {
           return true;
         }
 
-        // group attribues by type (same type -> OR, different type -> AND)
+        // group attributes by type (same type -> OR, different type -> AND)
         const groupedAttributes: {
           [type: string]: string[];
         } = {};

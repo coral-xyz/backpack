@@ -92,7 +92,7 @@ document.addEventListener("keydown", async function onKeyDown(event) {
 });
 
 // Render the UI.
-// TOOD(react) createRoot is required: https://reactjs.org/blog/2022/03/08/react-18-upgrade-guide.html#updates-to-client-rendering-apis
+// TODO(react) createRoot is required: https://reactjs.org/blog/2022/03/08/react-18-upgrade-guide.html#updates-to-client-rendering-apis
 const container = document.getElementById("root");
 const root = createRoot(container!);
 root.render(

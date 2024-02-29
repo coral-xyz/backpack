@@ -140,7 +140,7 @@ export const OnboardAccount = ({
         ]
       : []),
     ...(keyringType === "mnemonic" || keyringType === "ledger"
-      ? // if were importing mnemonic of ledger we need to select the blockchiain
+      ? // if were importing mnemonic of ledger we need to select the blockchain
         [
           <BlockchainSelector
             key="BlockchainSelector"

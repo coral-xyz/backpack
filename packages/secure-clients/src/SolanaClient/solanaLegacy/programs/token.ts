@@ -298,7 +298,7 @@ function splitOutNfts(
       }
     }
     //
-    // Token standard not available so use decimals to determin if it's an NFT.
+    // Token standard not available so use decimals to determine if it's an NFT.
     //
     else {
       const mint = mintsMap.get(token.mint.toString());

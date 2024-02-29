@@ -64,7 +64,7 @@ export const solanaMutatedTransactionAtom = selectorFamily<
         );
         return mutatedTx;
       } catch {
-        // if somethign fails return original transaction
+        // if something fails return original transaction
         return request.tx;
       }
     },

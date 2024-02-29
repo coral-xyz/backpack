@@ -61,7 +61,7 @@ export function executeLedgerFunction<R, T extends Transport>(
 
         const isError = isLedgerError(e?.message);
         if (isError("HID_PERMISSIONS_NOT_AVAILABLE")) {
-          // It's not uncommon to get one / two permissions error before succesfull connect.
+          // It's not uncommon to get one / two permissions error before successful connect.
           // so we just count the errors and act on them after the gesture timer ran out.
           HID_PERMISSIONS_NOT_AVAILABLE_count++;
         }

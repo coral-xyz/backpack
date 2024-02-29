@@ -61,7 +61,7 @@ export const solanaTxDowngradableAccountsAtom = selectorFamily<
               return true;
             } else if (!simulationAccount) {
               // TODO: This just means the simulation RPC response doesn't have the account
-              // could be an indetermine state of the account.
+              // could be an indeterminate state of the account.
               return false;
             }
             return (
