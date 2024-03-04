@@ -6,6 +6,7 @@ import { encode } from "bs58";
 import nacl from "tweetnacl";
 
 import { LedgerKeyringBase } from "../../keyring/ledger";
+import { TrezorKeyringBase } from "../../keyring/trezor";
 import type {
   HdKeyring,
   HdKeyringFactory,
@@ -16,6 +17,8 @@ import type {
   KeyringJson,
   LedgerKeyring,
   LedgerKeyringJson,
+  TrezorKeyring,
+  TrezorKeyringJson,
 } from "../../keyring/types";
 
 import {
@@ -278,5 +281,40 @@ class SolanaLedgerKeyring extends LedgerKeyringBase implements LedgerKeyring {
       signableMessage: request.message,
       derivationPath: walletDescriptor.derivationPath.replace("m/", ""),
     };
+  }
+}
+
+export class SolanaTrezorKeyringFactory {
+  public init(walletDescriptors: Array<WalletDescriptor>): TrezorKeyring {
+    return new SolanaTrezorKeyring(walletDescriptors, Blockchain.SOLANA);
+  }
+
+  public fromJson(obj: TrezorKeyringJson): TrezorKeyring {
+    return new SolanaTrezorKeyring(obj.walletDescriptors, Blockchain.SOLANA);
+  }
+}
+
+export class SolanaTrezorKeyring
+  extends TrezorKeyringBase
+  implements TrezorKeyring
+{
+  public async prepareSignTransaction(request: {
+    publicKey: string;
+    tx: string;
+  }): Promise<{
+    signableTx: string;
+    derivationPath: string;
+  }> {
+    throw new Error("[DEBUG] [SOLANA TREZOR KEYRING] Method not implemented.");
+  }
+
+  public async prepareSignMessage(request: {
+    publicKey: string;
+    message: string;
+  }): Promise<{
+    signableMessage: string;
+    derivationPath: string;
+  }> {
+    throw new Error("[DEBUG] [SOLANA TREZOR KEYRING] Method not implemented.");
   }
 }

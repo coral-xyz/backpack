@@ -122,11 +122,13 @@ export function ImportMnemonic({
   blockchain,
   inputMnemonic,
   ledger,
+  trezor,
   publicKey,
 }: {
   blockchain: Blockchain;
   inputMnemonic: boolean;
   ledger?: boolean;
+  trezor?: boolean;
   publicKey?: string;
   keyringExists?: boolean;
 }) {
@@ -140,6 +142,8 @@ export function ImportMnemonic({
     publicKey ?? null
   );
   const navigation = useNavigation<any>();
+  const isHardware = ledger === true || trezor === true;
+  const device = ledger ? "ledger" : trezor ? "trezor" : undefined;
 
   const closeParentDrawer = () => {
     navigation.popToTop();
@@ -156,6 +160,12 @@ export function ImportMnemonic({
             return {
               type: BlockchainWalletInitType.HARDWARE,
               device: "ledger",
+              ...walletDescriptor,
+            };
+          } else if (trezor) {
+            return {
+              type: BlockchainWalletInitType.HARDWARE,
+              device: "trezor",
               ...walletDescriptor,
             };
           } else if (mnemonic === true) {
@@ -215,7 +225,8 @@ export function ImportMnemonic({
       key="ImportWallets"
       fullscreen={false}
       blockchain={blockchain}
-      mnemonic={ledger ? undefined : mnemonic}
+      mnemonic={isHardware ? undefined : mnemonic}
+      device={device}
       recovery={publicKey}
       onNext={async (walletDescriptors: Array<WalletDescriptor>) => {
         await onComplete(walletDescriptors);

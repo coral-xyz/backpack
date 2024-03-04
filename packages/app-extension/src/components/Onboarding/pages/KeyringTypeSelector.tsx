@@ -38,6 +38,13 @@ export const KeyringTypeSelector = ({
           onPress={() => onNext("ledger")}
           textAlign="left"
         />
+        <BpSecondaryButton
+          iconBefore={<_HardwareIcon />}
+          label={t("have_hardware_wallet_trezor")}
+          justifyContent="flex-start"
+          onPress={() => onNext("trezor")}
+          textAlign="left"
+        />
 
         <BpSecondaryButton
           iconBefore={<_KeyIcon />}

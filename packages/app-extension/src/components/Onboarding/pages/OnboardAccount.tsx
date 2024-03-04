@@ -6,7 +6,7 @@ import type {
 } from "@coral-xyz/common";
 import { useTranslation } from "@coral-xyz/i18n";
 import { useOnboarding } from "@coral-xyz/recoil";
-import { useTheme,XStack, YStack } from "@coral-xyz/tamagui";
+import { useTheme, XStack, YStack } from "@coral-xyz/tamagui";
 
 import { useSteps } from "../../../hooks/useSteps";
 import { CreatePassword } from "../../common/Account/CreatePassword";
@@ -139,7 +139,9 @@ export const OnboardAccount = ({
           />,
         ]
       : []),
-    ...(keyringType === "mnemonic" || keyringType === "ledger"
+    ...(keyringType === "mnemonic" ||
+    keyringType === "ledger" ||
+    keyringType === "trezor"
       ? // if were importing mnemonic of ledger we need to select the blockchiain
         [
           <BlockchainSelector
@@ -151,12 +153,15 @@ export const OnboardAccount = ({
             }}
             onNext={nextStep}
           />,
-          ...(keyringType === "ledger" || action === "import"
+          ...(keyringType === "ledger" ||
+          keyringType === "trezor" ||
+          action === "import"
             ? [
               <ImportWallets
                 allowMultiple
                 autoSelect
                 newAccount
+                device={keyringType === "mnemonic" ? undefined : keyringType}
                 key="ImportWallets"
                 blockchain={blockchain!}
                 mnemonic={mnemonic!}

@@ -134,6 +134,8 @@ export class UserKeyring {
       this.blockchains.set(blockchain, keyring);
     }
 
+    // Temporarily to fix a weird switch issue
+    /* eslint-disable no-fallthrough */
     switch (blockchainWalletInit.type) {
       case BlockchainWalletInitType.MNEMONIC: {
         if (blockchainWalletInit.mnemonic) {
@@ -158,12 +160,22 @@ export class UserKeyring {
         return { publicKey, name, blockchain };
       }
       case BlockchainWalletInitType.HARDWARE: {
-        return {
-          ...(await this.ledgerImport({
-            ...blockchainWalletInit,
-          })),
-          blockchain,
-        };
+        switch (blockchainWalletInit.device) {
+          case "ledger":
+            return {
+              ...(await this.ledgerImport({
+                ...blockchainWalletInit,
+              })),
+              blockchain,
+            };
+          case "trezor":
+            return {
+              ...(await this.trezorImport({
+                ...blockchainWalletInit,
+              })),
+              blockchain,
+            };
+        }
       }
       case BlockchainWalletInitType.PRIVATEKEY_DERIVED: {
         const [publicKey, name] = await keyring.importSecretFromMnemonic(
@@ -177,6 +189,7 @@ export class UserKeyring {
       }
     }
   }
+  /* eslint-enable no-fallthrough */
 
   public async blockchainKeyringRemove(blockchain: Blockchain): Promise<void> {
     const user = await this.store.getActiveUser();
@@ -286,6 +299,44 @@ export class UserKeyring {
       name,
       publicKey: walletDescriptor.publicKey,
     };
+  }
+
+  private async trezorImport(walletDescriptor: WalletDescriptor): Promise<{
+    publicKey: string;
+    name: string;
+  }> {
+    const blockchainKeyring = this.blockchains.get(walletDescriptor.blockchain);
+    const trezorKeyring = blockchainKeyring!.trezorKeyring!;
+    console.log(
+      "[DEBUG] UserKeyring: trezorImport: walletDescriptor:",
+      walletDescriptor,
+      blockchainKeyring,
+      trezorKeyring
+    );
+
+    throw new Error("Method not implemented.");
+    /*
+    const ledgerKeyring = blockchainKeyring!.ledgerKeyring!;
+    await ledgerKeyring.add(walletDescriptor);
+    const name = this.store.defaultKeyname.defaultLedger(
+      ledgerKeyring.publicKeys().length
+    );
+    await this.store.setUserPublicKey(
+      this.uuid,
+      walletDescriptor.blockchain,
+      walletDescriptor.publicKey,
+      {
+        name,
+        isCold: true,
+        type: "hardware",
+      }
+    );
+
+    return {
+      name,
+      publicKey: walletDescriptor.publicKey,
+    };
+    */
   }
 
   public async keyDelete({

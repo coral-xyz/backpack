@@ -160,6 +160,7 @@ export class UserService {
 
   private handlePreviewWallets: TransportHandler<"SECURE_USER_PREVIEW_WALLETS"> =
     async ({ request, event, respond, error }) => {
+      console.log("[DEBUG] handlePreviewWallets", request);
       const keyringStoreState = await this.keyringStore.state();
       const userKeyring =
         keyringStoreState !== KeyringStoreState.NeedsOnboarding
@@ -174,15 +175,17 @@ export class UserService {
 
       switch (request.type) {
         case BlockchainWalletPreviewType.HARDWARE: {
-          const ledgerResponse = await safeClientResponse(
+          console.log("[DEBUG] handlePreviewWallets 2", request);
+          const hardwareResponse = await safeClientResponse(
             this.secureUIClient.confirm(event, {})
           );
+          console.log("[DEBUG] hardwareResponse", hardwareResponse);
 
-          const walletDescriptors = ledgerResponse.walletDescriptors.map(
+          const walletDescriptors = hardwareResponse.walletDescriptors.map(
             (walletDescriptor) => {
               const descriptor: BlockchainWalletDescriptor = {
                 type: BlockchainWalletDescriptorType.HARDWARE,
-                device: "ledger",
+                device: request.device,
                 blockchain: request.blockchain,
                 publicKey: walletDescriptor.publicKey,
                 derivationPath: walletDescriptor.derivationPath,

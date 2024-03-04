@@ -39,6 +39,7 @@ const fundedAddressesLabel = "Funded Addresses";
 export function ImportWallets({
   blockchain,
   mnemonic,
+  device,
   onNext,
   // onError,
   allowMultiple = true,
@@ -54,6 +55,7 @@ export function ImportWallets({
   allowMultiple?: boolean;
   autoSelect?: boolean;
   fullscreen?: boolean;
+  device?: "ledger" | "trezor";
 }) {
   const userClient = useRecoilValue(userClientAtom);
   const blockchainConfig = useRecoilValue(blockchainConfigAtom(blockchain));
@@ -117,26 +119,37 @@ export function ImportWallets({
       const walletPreview =
         mnemonic === undefined
           ? ({
-            type: BlockchainWalletPreviewType.HARDWARE,
-            derivationPaths: fetchDerivationPaths,
-            blockchain,
-          } as BlockchainWalletPublicKeyRequest<BlockchainWalletPreviewType.HARDWARE>)
+              type: BlockchainWalletPreviewType.HARDWARE,
+              derivationPaths: fetchDerivationPaths,
+              device: device,
+              blockchain,
+            } as BlockchainWalletPublicKeyRequest<BlockchainWalletPreviewType.HARDWARE>)
           : ({
-            type: BlockchainWalletPreviewType.MNEMONIC,
-            mnemonic: typeof mnemonic === "string" ? mnemonic : undefined,
-            derivationPaths: fetchDerivationPaths,
-            blockchain,
-          } as BlockchainWalletPublicKeyRequest<BlockchainWalletPreviewType.MNEMONIC>);
+              type: BlockchainWalletPreviewType.MNEMONIC,
+              mnemonic: typeof mnemonic === "string" ? mnemonic : undefined,
+              derivationPaths: fetchDerivationPaths,
+              blockchain,
+            } as BlockchainWalletPublicKeyRequest<BlockchainWalletPreviewType.MNEMONIC>);
+      console.log(
+        "[DEBUG] [ImportWallets] loadPublicKeys walletPreview",
+        walletPreview
+      );
+      console.log(
+        "[DEBUG] [ImportWallets] loadPublicKeys userClient",
+        userClient
+      );
 
       return safeClientResponse(userClient.previewWallets(walletPreview))
         .then((result_) => {
-          setLoadPublicKeysError(false)
+          console.log("[DEBUG] [ImportWallets] loadPublicKeys success");
+          setLoadPublicKeysError(false);
           const result = result_.wallets[0].walletDescriptors.map(
             (descriptor) => ({
               ...descriptor,
               mnemonic, // bring back option for mnemonic === true to differentiat privatkey_derived & mnemnoic
             })
           ) as WalletDescriptor[];
+          console.log("[DEBUG] [ImportWallets] loadPublicKeys result", result_);
           setImportedPublicKeys(
             result_.wallets[0].walletDescriptors
               .filter((descriptor) => descriptor.imported)
@@ -153,9 +166,10 @@ export function ImportWallets({
             return result.find((fetched) => fetched.derivationPath === path)!;
           });
         })
-        .catch(() => {
-          setLoadPublicKeysError(true)
-          return []
+        .catch((e) => {
+          console.log("[DEBUG] [ImportWallets] loadPublicKeys error", e);
+          setLoadPublicKeysError(true);
+          return [];
         });
     },
     [blockchain, userClient, walletDescriptorsCache]
@@ -213,11 +227,19 @@ export function ImportWallets({
             blockchain: Blockchain;
           }[]
         ) => {
+          console.log(
+            "[DEBUG] [ImportWallets] fetchPublicKeys newWalletDescriptors",
+            newWalletDescriptors
+          );
           if (!isFundedAddresses) {
             setWalletDescriptors(newWalletDescriptors);
           }
           const balances = await loadBalances(
             newWalletDescriptors.map((descriptor) => descriptor.publicKey)
+          );
+          console.log(
+            "[DEBUG] [ImportWallets] fetchPublicKeys balances",
+            balances
           );
           const balancesObj = Object.fromEntries(
             balances
@@ -271,7 +293,6 @@ export function ImportWallets({
     // loadBalances,
     // setWalletDescriptors,
   ]);
-
 
   useEffect(() => {
     fetchPublicKeys();
@@ -376,13 +397,14 @@ export function ImportWallets({
   const renderItem = useCallback(
     (item: WalletDescriptor) => {
       const { publicKey, derivationPath } = item;
-      const displayBalance = `${balances?.[publicKey]
-        ? (+ethers.utils.formatUnits(
-          balances?.[publicKey],
-          decimals
-        )).toFixed(4)
-        : "-"
-        } ${symbol}`;
+      const displayBalance = `${
+        balances?.[publicKey]
+          ? (+ethers.utils.formatUnits(
+              balances?.[publicKey],
+              decimals
+            )).toFixed(4)
+          : "-"
+      } ${symbol}`;
 
       const label = formatWalletAddress(item.publicKey, 5);
       const disabled = isDisabledPublicKey(publicKey);
@@ -502,7 +524,7 @@ export function ImportWallets({
       <YStack f={1} width="100%">
         <Scrollbar style={{ flex: 1 }}>
           {walletDescriptors === null ||
-            (balances === null && isFundedAddresses) ? (
+          (balances === null && isFundedAddresses) ? (
             <Loader />
           ) : !derivationPathInputError && walletDescriptors.length > 0 ? (
             <YStack space="$2" paddingHorizontal="$4">
@@ -524,7 +546,7 @@ export function ImportWallets({
           <BpPrimaryButton
             label={t("try_again")}
             onPress={() => {
-              fetchPublicKeys()
+              fetchPublicKeys();
             }}
           />
         ) : (

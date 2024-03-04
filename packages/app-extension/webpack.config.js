@@ -311,7 +311,7 @@ const options = {
                     ? {
                         // add support for react devtools in development mode
                         extension_pages:
-                          "script-src 'self' http://localhost:8097; object-src 'self'",
+                          "script-src 'self' http://localhost:8097; object-src 'self'; frame-src: 'self'",
                       }
                     : undefined,
                 },
@@ -356,6 +356,18 @@ const options = {
           from: "../provider-injection/dist/browser/index.js",
           to: "injected.js",
           force: true,
+        },
+        {
+          from: "src/webextension/trezor/trezor-content-script.js",
+          to: "vendor/trezor-content-script.js",
+        },
+        {
+          from: "src/webextension/trezor/trezor-usb-permissions.js",
+          to: "vendor/trezor-usb-permissions.js",
+        },
+        {
+          from: "src/webextension/trezor/trezor-usb-permissions.html",
+          to: "vendor/trezor-usb-permissions.html",
         },
       ],
     }),

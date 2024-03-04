@@ -23,7 +23,7 @@ const logger = getLogger("secure-ui ToSecureUITransportSender");
 // Forwarder does not set its own origin and instead expects a origin to exist on the request.
 export class ToSecureUITransportSender<
   X extends SECURE_EVENTS,
-  R extends SecureRequestType = undefined
+  R extends SecureRequestType = undefined,
 > implements TransportSender<X, R>
 {
   private port: chrome.runtime.Port | null = null;
@@ -90,6 +90,7 @@ export class ToSecureUITransportSender<
     );
     // if same port has reconnected (reload)
     if (newPort?.name === port.name) {
+      console.log("[DEBUG] ToSecureUITransportSender: err 1");
       return; //-> dont send error responses
     }
 
@@ -102,6 +103,7 @@ export class ToSecureUITransportSender<
     try {
       port.disconnect();
     } catch (e) {
+      console.log("[DEBUG] ToSecureUITransportSender: err 2");
       /* this is okay to fail, as it means no listeners left. */
       logger.error("Plugin Disconnect", e);
     }
@@ -110,6 +112,7 @@ export class ToSecureUITransportSender<
     this.responseQueue
       .filter((response) => response.portName === port.name)
       .forEach((response) => {
+        console.log("[DEBUG] ToSecureUITransportSender: err 3", response);
         const responseWithId = {
           name: response.request.name,
           id: response.request.id,
@@ -183,6 +186,7 @@ export class ToSecureUITransportSender<
     if (queuedRequest) {
       queuedRequest.resolve(response.data);
     } else {
+      console.log("[DEBUG] ToSecureUITransportSender: err 4");
       logger.error("No queued request found.", response.data);
     }
 
@@ -219,6 +223,7 @@ export class ToSecureUITransportSender<
       globalThis.chrome?.windows
         .remove(this.port.sender.tab.windowId)
         .catch((e) => {
+          console.log("[DEBUG] ToSecureUITransportSender: err 5");
           logger.error("Plugin Close", name, e);
         });
     }
@@ -259,6 +264,7 @@ export class ToSecureUITransportSender<
           focused: true,
         })
         .catch((e) => {
+          console.log("[DEBUG] ToSecureUITransportSender: err 6");
           logger.error("window.update", e);
         });
     }
@@ -267,6 +273,7 @@ export class ToSecureUITransportSender<
   private openPopup = (windowId: string) => {
     this.lastOpenedWindowId = windowId;
     openPopupWindow("popup.html?windowId=" + windowId).catch((e) => {
+      console.log("[DEBUG] ToSecureUITransportSender: err 7");
       logger.error("openPopup", e);
     });
   };

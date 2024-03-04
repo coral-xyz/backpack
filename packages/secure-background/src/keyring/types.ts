@@ -4,6 +4,7 @@ export type BlockchainKeyringJson = {
   hdKeyring?: HdKeyringJson;
   importedKeyring: KeyringJson;
   ledgerKeyring: LedgerKeyringJson;
+  trezorKeyring: TrezorKeyringJson;
   activeWallet: string;
   deletedWallets: Array<string>;
 };
@@ -21,6 +22,11 @@ export type HdKeyringJson = {
 };
 
 export type LedgerKeyringJson = {
+  walletDescriptors: Array<WalletDescriptor>;
+};
+
+// TODO: Implement & Type Check
+export type TrezorKeyringJson = {
   walletDescriptors: Array<WalletDescriptor>;
 };
 
@@ -81,4 +87,28 @@ export interface LedgerKeyring extends KeyringBase {
   toJson(): LedgerKeyringJson;
 }
 
-export type AnyKeyring = Keyring | HdKeyring | LedgerKeyring;
+//
+// Trezor keyring types
+//
+
+// TODO: Implement & Type Check
+export interface TrezorKeyringFactory {
+  init(walletDescriptors: Array<WalletDescriptor>): LedgerKeyring;
+  fromJson(obj: LedgerKeyringJson): LedgerKeyring;
+}
+
+// TODO: Implement & Type Check
+export interface TrezorKeyring extends KeyringBase {
+  prepareSignTransaction(request: { publicKey: string; tx: string }): Promise<{
+    signableTx: string;
+    derivationPath: string;
+  }>;
+  prepareSignMessage(request: { publicKey: string; message: string }): Promise<{
+    signableMessage: string;
+    derivationPath: string;
+  }>;
+  add(walletDescriptor: WalletDescriptor): Promise<void>;
+  toJson(): TrezorKeyringJson;
+}
+
+export type AnyKeyring = Keyring | HdKeyring | LedgerKeyring | TrezorKeyring;
