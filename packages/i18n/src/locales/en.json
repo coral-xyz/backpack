@@ -382,7 +382,7 @@
   "nft_send_pending": "{{name}} will be transferred out of your wallet once the transaction is complete.",
   "nft_send_title": "Sending {{name}}...",
   "no_balances": "No Balances",
-  "no_balances_helper_text": "You have don't have any balances yet. Please add funds to be able to withdraw.",
+  "no_balances_helper_text": "You don't have any balances yet. Please add funds to be able to withdraw.",
   "no_favorites": {
     "subtitle": "Bookmark your favorite websites to get started!",
     "title": "No Favorites"
