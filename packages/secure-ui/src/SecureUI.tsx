@@ -34,6 +34,7 @@ import { SvmSignAllTransactionsRequest } from "./RequestHandlers/SvmSignAllTrans
 import { SvmSignInRequest } from "./RequestHandlers/SvmSignInRequest";
 import { SvmSignMessageRequest } from "./RequestHandlers/SvmSignMessageRequest";
 import { SvmSignTransactionRequest } from "./RequestHandlers/SvmSignTransactionRequest/SvmSignTransactionRequest";
+import { TrezorSignRequest } from "./RequestHandlers/TrezorRequests/TrezorSignRequest";
 import { UnlockRequest } from "./RequestHandlers/UnlockRequest";
 import { RequireUserUnlocked } from "./RequireUserUnlocked/RequireUserUnlocked";
 import SecureUIBottomSheetModalProvider from "./SecureUIBottomSheetModalProvider";
@@ -131,12 +132,24 @@ function SecureUIRoot({ presentation }: { presentation?: PresentationTypes }) {
               case "LEDGER_EVM_SIGN_TX":
               case "LEDGER_EVM_SIGN_MESSAGE":
                 return (
-                  <LedgerSignRequest
+                  <TrezorSignRequest
                     currentRequest={
                       currentRequest as QueuedUiRequest<LedgerSignEvents>
                     }
                   />
                 );
+              /*
+                TODO: Implement
+              case "TREZOR_SVM_SIGN_TX":
+              case "TREZOR_SVM_SIGN_MESSAGE":
+                return (
+                  <TrezorSignRequest
+                    currentRequest={
+                      currentRequest as QueuedUiRequest<LedgerSignEvents>
+                    }
+                  />
+                );
+                */
               case "SECURE_USER_PREVIEW_WALLETS":
                 return (
                   <HardwarePreviewPublicKeysRequest

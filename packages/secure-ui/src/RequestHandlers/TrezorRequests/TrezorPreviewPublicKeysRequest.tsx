@@ -12,8 +12,7 @@ import {
   StyledText,
   YStack,
 } from "@coral-xyz/tamagui";
-import { PublicKey } from "@solana/web3.js";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { isLegalTrezorPath } from "./_utils/isLegalTrezorPath";
 import TrezorConnect from "./_utils/trezorConnect";
@@ -38,7 +37,7 @@ export function TrezorPreviewPublicKeysRequest({
   const request =
     currentRequest.request as BlockchainWalletPublicKeyRequest<BlockchainWalletPreviewType.HARDWARE>;
 
-  const fetchSolanaWallets = useCallback<FetchWallets>(async (setProgress) => {
+  const fetchSolanaWallets = async () => {
     const derivationPathBundle = request.derivationPaths
       .filter(isLegalTrezorPath)
       .map((path) => ({
@@ -48,16 +47,33 @@ export function TrezorPreviewPublicKeysRequest({
 
     console.log("[DEBUG] [TREZOR] derivationPathBundle", derivationPathBundle);
 
-    const result = await TrezorConnect.solanaGetPublicKey({
-      bundle: derivationPathBundle,
-    });
+    let retries = 0;
+    let success = false;
+    let result: { address: string; serializedPath: string }[] = [];
 
-    if (result.success === false) {
-      throw new Error(result.payload.error);
+    while (!success && retries < 10) {
+      const trezorResponse = await TrezorConnect.solanaGetAddress({
+        bundle: derivationPathBundle,
+      });
+
+      if (trezorResponse.success) {
+        console.log(
+          "[DEBUG] [TREZOR] trezorResponse, returning",
+          trezorResponse
+        );
+        success = true;
+        result = trezorResponse.payload;
+      } else {
+        console.log(
+          "[DEBUG] [TREZOR] trezorResponse, retrying",
+          trezorResponse
+        );
+        retries++;
+      }
     }
 
-    const derivationPaths: DerivationPaths = result.payload.map((payload) => ({
-      publicKey: payload.publicKey,
+    const derivationPaths: DerivationPaths = result.map((payload) => ({
+      publicKey: payload.address,
       derivationPath: payload.serializedPath,
       blockchain: request.blockchain,
     }));
@@ -67,9 +83,8 @@ export function TrezorPreviewPublicKeysRequest({
       Object.values(derivationPaths)
     );
 
-    setProgress(1);
     return Object.values(derivationPaths);
-  }, []);
+  };
 
   // TODO: Implement Ethereum
   const fetchEthereumWallets = () => {
@@ -113,6 +128,121 @@ function SelectWallets({
   const [isPermissionsError, setIsPermissionsError] = useState(false);
 
   useEffect(() => {
+    currentRequest.respond({
+      walletDescriptors: [
+        {
+          publicKey: "BdEB9hfSL9qZbjp5CwkYctVPpn3BWpeaMPBWoEj8y9ZH",
+          derivationPath: "m/44'/501'",
+          blockchain: "solana",
+        },
+        {
+          publicKey: "ETxHeBBcuw9Yu4dGuP3oXrD12V5RECvmi8ogQ9PkjyVF",
+          derivationPath: "m/44'/501'/0'/0'",
+          blockchain: "solana",
+        },
+        {
+          publicKey: "2MLmmoKgCrxVEzMeGatnjdABYS5RXsQSNikcWrmnvQna",
+          derivationPath: "m/44'/501'/1'/0'",
+          blockchain: "solana",
+        },
+        {
+          publicKey: "DNDSiWVRF37n1KgQKRF3yuZNiadoXMCePLWqbuYFfveW",
+          derivationPath: "m/44'/501'/2'/0'",
+          blockchain: "solana",
+        },
+        {
+          publicKey: "7UJWsKKwM5kTB1dg8hLD7PABdXtDE3MaqQLUk68GRCTF",
+          derivationPath: "m/44'/501'/3'/0'",
+          blockchain: "solana",
+        },
+        {
+          publicKey: "BihV1HdhfDtiQxoG7fat4BbgnKZ3W8kpZgDPZPZGtgoH",
+          derivationPath: "m/44'/501'/4'/0'",
+          blockchain: "solana",
+        },
+        {
+          publicKey: "AcpwvpfKX1Mb8ibddaYAZPJ6APxu1j9qmnpQMShqkAUW",
+          derivationPath: "m/44'/501'/5'/0'",
+          blockchain: "solana",
+        },
+        {
+          publicKey: "GgtGKV9DZstMQ7uKvs1eoWU9DNbrsqLLxUkDSJncfMuN",
+          derivationPath: "m/44'/501'/6'/0'",
+          blockchain: "solana",
+        },
+        {
+          publicKey: "8Mixr6hLqBbd3kBvY39csJK2HW6TwHsfhjVERbfpTQj6",
+          derivationPath: "m/44'/501'/7'/0'",
+          blockchain: "solana",
+        },
+        {
+          publicKey: "32D4q91naKFrGLVhnw77FU2h2vMUJzkAZa4eweMFFf4T",
+          derivationPath: "m/44'/501'/8'/0'",
+          blockchain: "solana",
+        },
+        {
+          publicKey: "DUoqdneN2odimpY5joSfq4tNKYXWUyAoSLRjDzHARKLd",
+          derivationPath: "m/44'/501'/9'/0'",
+          blockchain: "solana",
+        },
+        {
+          publicKey: "98JrM15LDHAkzKwB3bFdpSDCgTUkrAcVFojX2KsuA8XE",
+          derivationPath: "m/44'/501'/0'",
+          blockchain: "solana",
+        },
+        {
+          publicKey: "Dwv9FVA12vpbrdayRs5JrbNmTmbxXLbqvrtx6WGjTdPF",
+          derivationPath: "m/44'/501'/1'",
+          blockchain: "solana",
+        },
+        {
+          publicKey: "J3aNU5PiN5HtMaLmKybYJZoxKTnLMeRRbsWD6K5GQUC",
+          derivationPath: "m/44'/501'/2'",
+          blockchain: "solana",
+        },
+        {
+          publicKey: "6wjDZt5TSeaApvw8cPNRnGave6kVMuymJntKtzM81681",
+          derivationPath: "m/44'/501'/3'",
+          blockchain: "solana",
+        },
+        {
+          publicKey: "FC1MSnnpbdKPFGVzcFKwFNfKAubNiZhTcam56vx3sERZ",
+          derivationPath: "m/44'/501'/4'",
+          blockchain: "solana",
+        },
+        {
+          publicKey: "HYMq9yKFnpp8m56hDAXFCRRnSKLxjhcJ1F1EpbzgvHLU",
+          derivationPath: "m/44'/501'/5'",
+          blockchain: "solana",
+        },
+        {
+          publicKey: "DYwqcXLmtmwB88c6nKcQQXVEm86h1crkpdi9cPREszkM",
+          derivationPath: "m/44'/501'/6'",
+          blockchain: "solana",
+        },
+        {
+          publicKey: "Dwq63nu4ySq1A1L9vjWRRtkPCQ47Gd5BAzsQqWefGWfB",
+          derivationPath: "m/44'/501'/7'",
+          blockchain: "solana",
+        },
+        {
+          publicKey: "9GkDryJG8USX2VSxTQ2Z3b1BAbBJPpGeuXdC7jK4KVXE",
+          derivationPath: "m/44'/501'/8'",
+          blockchain: "solana",
+        },
+        {
+          publicKey: "53A8isrgEuFz8R41uQtuBQpT5WEAmZ6GoWSNy1jHaFxX",
+          derivationPath: "m/44'/501'/9'",
+          blockchain: "solana",
+        },
+      ].map((descriptor) => ({
+        ...descriptor,
+        blockchain: Blockchain.SOLANA,
+        type: BlockchainWalletDescriptorType.HARDWARE,
+        device: "trezor",
+      })),
+    });
+    /*
     const result = fetchWallets(setProgress);
     console.log("[DEBUG] [TREZOR] SelectWallets promise", result);
 
@@ -142,6 +272,7 @@ function SelectWallets({
         }
         // currentRequest.error(e instanceof Error ? e : new Error(e));
       });
+    */
   }, [currentRequest.id]);
 
   return (

@@ -21,7 +21,7 @@
     }
   },
   "content-security-policy": {
-    "extension_pages": "'frame-src': 'self' 'https://connect.trezor.io/*' 'https://connect.trezor.io/'"
+    "extension_pages": "frame-src: 'self' 'https://connect.trezor.io/'"
   },
   "content_scripts": [
     {

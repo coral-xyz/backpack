@@ -232,7 +232,9 @@ export function ImportWallets({
             newWalletDescriptors
           );
           if (!isFundedAddresses) {
-            setWalletDescriptors(newWalletDescriptors);
+            setWalletDescriptors(
+              newWalletDescriptors.filter((it) => it != null)
+            );
           }
           const balances = await loadBalances(
             newWalletDescriptors.map((descriptor) => descriptor.publicKey)
@@ -251,6 +253,7 @@ export function ImportWallets({
           setBalances(balancesObj);
           setWalletDescriptors(
             newWalletDescriptors
+              .filter((it) => it != null)
               .filter((walletDescriptor) => {
                 if (isFundedAddresses) {
                   const balance = balancesObj[walletDescriptor.publicKey];

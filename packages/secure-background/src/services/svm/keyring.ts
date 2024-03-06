@@ -305,7 +305,26 @@ export class SolanaTrezorKeyring
     signableTx: string;
     derivationPath: string;
   }> {
-    throw new Error("[DEBUG] [SOLANA TREZOR KEYRING] Method not implemented.");
+    console.log(
+      "[DEBUG] [SOLANA TREZOR KEYRING] prepareSignTransaction",
+      request
+    );
+
+    const walletDescriptor = this.walletDescriptors.find(
+      (p) => p.publicKey === request.publicKey
+    );
+    if (!walletDescriptor) {
+      throw new Error("ledger address not found");
+    }
+
+    const transaction = deserializeTransaction(request.tx);
+    // TODO: Check if we can use `encode` here as for ledger
+    const signableTx = transaction.message.serialize().toString("hex");
+
+    return {
+      signableTx,
+      derivationPath: walletDescriptor.derivationPath.replace("m/", ""),
+    };
   }
 
   public async prepareSignMessage(request: {

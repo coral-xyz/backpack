@@ -109,6 +109,9 @@ export class SecureStore {
     defaultLedger(index: number): string {
       return `Ledger ${index}`;
     },
+    defaultTrezor(index: number): string {
+      return `Trezor ${index}`;
+    },
   };
 
   // this privatStore is passed to migrations

@@ -19,6 +19,7 @@ export function useActiveSolanaWallet(): {
 }
 
 export function useActiveWallet(): Wallet {
+  console.log("[DEBUG] useActiveWallet", useRecoilValue(atoms.activeWallet));
   return useRecoilValue(atoms.activeWallet);
 }
 export function useActiveWalletNullable(): Wallet | null {

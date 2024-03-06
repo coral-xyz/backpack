@@ -1,6 +1,9 @@
 import type { WalletDescriptor } from "@coral-xyz/common";
 import { Blockchain } from "@coral-xyz/common";
-import { createSignInMessage, createSignInMessageText } from "@solana/wallet-standard-util";
+import {
+  createSignInMessage,
+  createSignInMessageText,
+} from "@solana/wallet-standard-util";
 import { Connection, PublicKey, VersionedTransaction } from "@solana/web3.js";
 import bs58, { decode, encode } from "bs58";
 
@@ -19,6 +22,7 @@ import type {
   TransportSender,
 } from "../../types/transports";
 import { LedgerClient } from "../ledger/client";
+import { TrezorClient } from "../trezor/client";
 import { UserClient } from "../user/client";
 
 import type { SECURE_SVM_EVENTS, SECURE_SVM_SIGN_MESSAGE } from "./events";
@@ -28,6 +32,7 @@ export class SVMService {
   public destroy: TransportRemoveListener;
   private secureUIClient: SecureUIClient;
   private ledgerClient: LedgerClient;
+  private trezorClient: TrezorClient;
   private userClient: UserClient;
   private keyringStore: KeyringStore;
 
@@ -41,6 +46,7 @@ export class SVMService {
     this.secureUIClient = new SecureUIClient(interfaces.secureUISender);
     this.userClient = new UserClient(interfaces.secureSender);
     this.ledgerClient = new LedgerClient(interfaces.secureUISender);
+    this.trezorClient = new TrezorClient(interfaces.secureUISender);
     this.destroy = interfaces.secureReceiver.setHandler(
       this.eventHandler.bind(this)
     );
@@ -137,64 +143,65 @@ export class SVMService {
     });
   };
 
-  private handleSignIn: TransportHandler<"SECURE_SVM_SIGN_IN"> =
-    async ({
-      event,
-      request,
-      error,
-      respond
-    }) => {
+  private handleSignIn: TransportHandler<"SECURE_SVM_SIGN_IN"> = async ({
+    event,
+    request,
+    error,
+    respond,
+  }) => {
+    const user = await safeClientResponse(this.userClient.getUser());
+    if (user.keyringStoreState === KeyringStoreState.NeedsOnboarding) {
+      return error(new Error("No active user"));
+    }
+    let publicKey =
+      user.publicKeys?.platforms[request.blockchain]?.activePublicKey;
 
-      const user = await safeClientResponse(
-        this.userClient.getUser()
-      );
-      if (user.keyringStoreState === KeyringStoreState.NeedsOnboarding) {
-        return error(new Error("No active user"));
+    if (!publicKey) {
+      return error(new Error("No account for blockchain"));
+    }
+
+    if (request.input?.address) {
+      publicKey = request.input.address;
+      const publicKeyInfo =
+        user.publicKeys?.platforms[request.blockchain]?.publicKeys[
+          request.input.address
+        ];
+      if (!publicKeyInfo) {
+        return error(new Error("Requested public key not found."));
       }
-      let publicKey =
-        user.publicKeys?.platforms[request.blockchain]?.activePublicKey;
+    }
 
-      if (!publicKey) {
-        return error(new Error("No account for blockchain"));
-      }
+    const message = createSignInMessage({
+      domain: event.origin.address,
+      address: publicKey,
+      ...(request.input ?? {}),
+    });
 
-      if(request.input?.address) {
-        publicKey = request.input.address;
-        const publicKeyInfo = user.publicKeys?.platforms[request.blockchain]?.publicKeys[request.input.address];
-        if(!publicKeyInfo) {
-          return error(new Error("Requested public key not found."));
-        }
-      }
+    const encodedMessage = encode(message);
 
-      const message = createSignInMessage({
-        domain: event.origin.address,
-        address: publicKey,
-        ...request.input ?? {}
-      });
-
-      const encodedMessage = encode(message);
-
-      await safeClientResponse(this.secureUIClient.confirm(event, {
+    await safeClientResponse(
+      this.secureUIClient.confirm(event, {
         message: encode(message),
-        publicKey
-      }));
-
-      const { signature } = await this.getMessageSignature(
-        user,
         publicKey,
-        encodedMessage,
-        event.origin
-      )
-
-      const connectionUrl = user.preferences.blockchains.solana.connectionUrl;
-
-      return respond({
-        signedMessage: encodedMessage,
-        signature,
-        publicKey,
-        connectionUrl
       })
-    };
+    );
+
+    const { signature } = await this.getMessageSignature(
+      user,
+      publicKey,
+      encodedMessage,
+      event.origin
+    );
+
+    const connectionUrl = user.preferences.blockchains.solana.connectionUrl;
+
+    return respond({
+      signedMessage: encodedMessage,
+      signature,
+      publicKey,
+      connectionUrl,
+    });
+  };
 
   private handleSignMessage: TransportHandler<"SECURE_SVM_SIGN_MESSAGE"> =
     async (event) => {
@@ -223,7 +230,7 @@ export class SVMService {
         publicKey,
         event.request.message,
         event.event.origin
-      )
+      );
 
       return event.respond({
         signedMessage: signature,
@@ -347,8 +354,32 @@ export class SVMService {
       ?.publicKeys()
       .includes(publicKey);
 
+    const isTrezorWallet = !!blockchainKeyring.trezorKeyring
+      ?.publicKeys()
+      .includes(publicKey);
+
     // If we need ledger signature, request via ledgerClient
-    if (blockchainKeyring.ledgerKeyring && isLedgerWallet) {
+    if (blockchainKeyring.trezorKeyring && isTrezorWallet) {
+      const trezorRequest =
+        await blockchainKeyring.trezorKeyring.prepareSignTransaction({
+          publicKey,
+          tx,
+        });
+
+      const trezorResponse = await safeClientResponse(
+        this.trezorClient.svmSignTransaction(
+          {
+            txMessage: trezorRequest.signableTx,
+            derivationPath: trezorRequest.derivationPath,
+          },
+          { origin }
+        )
+      );
+
+      return {
+        signature: trezorResponse.signature,
+      };
+    } else if (blockchainKeyring.ledgerKeyring && isLedgerWallet) {
       const ledgerRequest =
         await blockchainKeyring.ledgerKeyring.prepareSignTransaction({
           publicKey,
@@ -422,10 +453,7 @@ export class SVMService {
       );
       return { signature: ledgerResponse.signature };
     } else {
-      const signature = await blockchainKeyring.signMessage(
-        message,
-        publicKey
-      );
+      const signature = await blockchainKeyring.signMessage(message, publicKey);
       return { signature };
     }
   }

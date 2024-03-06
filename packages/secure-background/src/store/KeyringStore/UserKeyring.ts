@@ -307,19 +307,11 @@ export class UserKeyring {
   }> {
     const blockchainKeyring = this.blockchains.get(walletDescriptor.blockchain);
     const trezorKeyring = blockchainKeyring!.trezorKeyring!;
-    console.log(
-      "[DEBUG] UserKeyring: trezorImport: walletDescriptor:",
-      walletDescriptor,
-      blockchainKeyring,
-      trezorKeyring
-    );
 
-    throw new Error("Method not implemented.");
-    /*
-    const ledgerKeyring = blockchainKeyring!.ledgerKeyring!;
-    await ledgerKeyring.add(walletDescriptor);
-    const name = this.store.defaultKeyname.defaultLedger(
-      ledgerKeyring.publicKeys().length
+    await trezorKeyring.add(walletDescriptor);
+
+    const name = this.store.defaultKeyname.defaultTrezor(
+      trezorKeyring.publicKeys().length
     );
     await this.store.setUserPublicKey(
       this.uuid,
@@ -336,7 +328,6 @@ export class UserKeyring {
       name,
       publicKey: walletDescriptor.publicKey,
     };
-    */
   }
 
   public async keyDelete({
