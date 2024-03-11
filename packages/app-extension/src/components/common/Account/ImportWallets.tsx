@@ -139,7 +139,9 @@ export function ImportWallets({
         userClient
       );
 
-      return safeClientResponse(userClient.previewWallets(walletPreview))
+      let r1 = await safeClientResponse(
+        userClient.previewWallets(walletPreview)
+      )
         .then((result_) => {
           console.log("[DEBUG] [ImportWallets] loadPublicKeys success");
           setLoadPublicKeysError(false);
@@ -171,6 +173,56 @@ export function ImportWallets({
           setLoadPublicKeysError(true);
           return [];
         });
+
+      if (r1.length === 0) {
+        console.log("[DEBUG] [ImportWallets] loadPublicKeys sleeping...");
+        const sleep = () => {
+          return new Promise((resolve) => setTimeout(resolve, 2000));
+        };
+        await sleep();
+
+        console.log("[DEBUG] [ImportWallets] loadPublicKeys trying again...");
+
+        r1 = await safeClientResponse(userClient.previewWallets(walletPreview))
+          .then((result_) => {
+            console.log("[DEBUG] [ImportWallets] 2 loadPublicKeys success");
+            setLoadPublicKeysError(false);
+            const result = result_.wallets[0].walletDescriptors.map(
+              (descriptor) => ({
+                ...descriptor,
+                mnemonic, // bring back option for mnemonic === true to differentiat privatkey_derived & mnemnoic
+              })
+            ) as WalletDescriptor[];
+            console.log(
+              "[DEBUG] [ImportWallets] 2 loadPublicKeys result",
+              result_
+            );
+            setImportedPublicKeys(
+              result_.wallets[0].walletDescriptors
+                .filter((descriptor) => descriptor.imported)
+                .map((descriptor) => descriptor.publicKey)
+            );
+            setWalletDescriptorsCache((cached) => [
+              ...(cached ?? []),
+              ...result,
+            ]);
+            return derivationPaths.map((path) => {
+              const cached = cachedDerivationPaths.find(
+                (cached) => cached.derivationPath === path
+              );
+              if (cached) {
+                return cached;
+              }
+              return result.find((fetched) => fetched.derivationPath === path)!;
+            });
+          })
+          .catch((e) => {
+            console.log("[DEBUG] [ImportWallets] 2 loadPublicKeys error", e);
+            setLoadPublicKeysError(true);
+            return [];
+          });
+      }
+      return r1;
     },
     [blockchain, userClient, walletDescriptorsCache]
   );
@@ -227,17 +279,21 @@ export function ImportWallets({
             blockchain: Blockchain;
           }[]
         ) => {
+          const discoveredWalletDescriptors = newWalletDescriptors.filter(
+            (it) => it != null
+          );
+
           console.log(
-            "[DEBUG] [ImportWallets] fetchPublicKeys newWalletDescriptors",
-            newWalletDescriptors
+            "[DEBUG] [ImportWallets] fetchPublicKeys discoveredWalletDescriptors",
+            discoveredWalletDescriptors
           );
           if (!isFundedAddresses) {
-            setWalletDescriptors(
-              newWalletDescriptors.filter((it) => it != null)
-            );
+            setWalletDescriptors(discoveredWalletDescriptors);
           }
           const balances = await loadBalances(
-            newWalletDescriptors.map((descriptor) => descriptor.publicKey)
+            discoveredWalletDescriptors.map(
+              (descriptor) => descriptor.publicKey
+            )
           );
           console.log(
             "[DEBUG] [ImportWallets] fetchPublicKeys balances",
@@ -252,8 +308,7 @@ export function ImportWallets({
           );
           setBalances(balancesObj);
           setWalletDescriptors(
-            newWalletDescriptors
-              .filter((it) => it != null)
+            discoveredWalletDescriptors
               .filter((walletDescriptor) => {
                 if (isFundedAddresses) {
                   const balance = balancesObj[walletDescriptor.publicKey];

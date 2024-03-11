@@ -7,6 +7,7 @@ import {
   ErrorCrossMarkIcon,
   YStack,
 } from "@coral-xyz/tamagui";
+import { encode } from "bs58";
 import { useCallback, useEffect, useState } from "react";
 
 import TrezorConnect from "./_utils/trezorConnect";
@@ -143,9 +144,14 @@ async function svmSignTx(
   setStatus: (status: string) => void
 ) {
   console.log("[DEBUG] [svmSignTx] currentRequest: ", currentRequest);
+  // TODO: perhaps move this elsewhere? Keeping it here to keep the data flows unified
+  // Transform path into trezor compatible one
   const { derivationPath, txMessage } = currentRequest.request;
+  const path = derivationPath.startsWith("m/")
+    ? derivationPath
+    : `m/${derivationPath}`;
   const result = TrezorConnect.solanaSignTransaction({
-    path: derivationPath,
+    path,
     serializedTx: txMessage,
   });
 
@@ -162,7 +168,7 @@ async function svmSignTx(
       result.payload.signature
     );
     currentRequest.respond({
-      signature: result.payload.signature,
+      signature: encode(Buffer.from(result.payload.signature, "hex")),
     });
   });
 }

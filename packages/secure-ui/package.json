@@ -44,7 +44,6 @@
     "@solana/wallet-standard-features": "^1.2.0",
     "@solana/wallet-standard-util": "^1.1.1",
     "@solana/web3.js": "1.63.1",
-    "@trezor/connect-web": "^9.1.12",
     "bs58": "^5.0.0",
     "ethers5": "npm:ethers@^5.5.1",
     "ethers6": "npm:ethers@^6.8.0",

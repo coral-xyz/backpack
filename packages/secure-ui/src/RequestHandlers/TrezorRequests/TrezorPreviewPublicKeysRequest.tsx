@@ -47,36 +47,22 @@ export function TrezorPreviewPublicKeysRequest({
 
     console.log("[DEBUG] [TREZOR] derivationPathBundle", derivationPathBundle);
 
-    let retries = 0;
-    let success = false;
-    let result: { address: string; serializedPath: string }[] = [];
+    // We want this method, not `solanaGetPublicKeys` to conform with ledger
+    const trezorResponse = await TrezorConnect.solanaGetAddress({
+      bundle: derivationPathBundle,
+    });
 
-    while (!success && retries < 10) {
-      const trezorResponse = await TrezorConnect.solanaGetAddress({
-        bundle: derivationPathBundle,
-      });
-
-      if (trezorResponse.success) {
-        console.log(
-          "[DEBUG] [TREZOR] trezorResponse, returning",
-          trezorResponse
-        );
-        success = true;
-        result = trezorResponse.payload;
-      } else {
-        console.log(
-          "[DEBUG] [TREZOR] trezorResponse, retrying",
-          trezorResponse
-        );
-        retries++;
-      }
+    if (trezorResponse.success === false) {
+      return [];
     }
 
-    const derivationPaths: DerivationPaths = result.map((payload) => ({
-      publicKey: payload.address,
-      derivationPath: payload.serializedPath,
-      blockchain: request.blockchain,
-    }));
+    const derivationPaths: DerivationPaths = trezorResponse.payload.map(
+      ({ address, serializedPath }) => ({
+        publicKey: address,
+        derivationPath: serializedPath,
+        blockchain: request.blockchain,
+      })
+    );
 
     console.log(
       "[DEBUG] [TREZOR] derivationPaths",
@@ -128,6 +114,7 @@ function SelectWallets({
   const [isPermissionsError, setIsPermissionsError] = useState(false);
 
   useEffect(() => {
+    /*
     currentRequest.respond({
       walletDescriptors: [
         {
@@ -242,37 +229,43 @@ function SelectWallets({
         device: "trezor",
       })),
     });
-    /*
-    const result = fetchWallets(setProgress);
-    console.log("[DEBUG] [TREZOR] SelectWallets promise", result);
-
-    result
-      .then((result) => {
-        console.log("[DEBUG] [TREZOR] SelectWallets result", result);
-        currentRequest.respond({
-          walletDescriptors: result.map((descriptor) => ({
-            ...descriptor,
-            type: BlockchainWalletDescriptorType.HARDWARE,
-            device: "trezor",
-          })),
-        });
-      })
-      .catch((e) => {
-        console.log("[DEBUG] [TREZOR] SelectWallets error", e);
-        // FIXME: This error can't happen for Trezor.
-        // Catch Trezor Errors instead.
-        if (e.message === "HID_PERMISSIONS_NOT_AVAILABLE") {
-          setIsError(true);
-          setIsPermissionsError(true);
-          setStatus("Missing HID browser permissions.");
-        } else {
-          setStatus(e.message);
-          setIsError(true);
-          setIsPermissionsError(false);
-        }
-        // currentRequest.error(e instanceof Error ? e : new Error(e));
-      });
     */
+
+    try {
+      const result = fetchWallets(setProgress);
+
+      result
+        .then((result) => {
+          console.log("[DEBUG] [TREZOR] SelectWallets result", result);
+          currentRequest.respond({
+            walletDescriptors: result.map((descriptor) => ({
+              ...descriptor,
+              type: BlockchainWalletDescriptorType.HARDWARE,
+              device: "trezor",
+            })),
+          });
+        })
+        .catch((e) => {
+          console.log("[DEBUG] [TREZOR] SelectWallets error", e);
+          // FIXME: This error can't happen for Trezor.
+          // Catch Trezor Errors instead.
+          if (e.message === "HID_PERMISSIONS_NOT_AVAILABLE") {
+            setIsError(true);
+            setIsPermissionsError(true);
+            setStatus("Missing HID browser permissions.");
+          } else {
+            setStatus(e.message);
+            setIsError(true);
+            setIsPermissionsError(false);
+          }
+          // currentRequest.error(e instanceof Error ? e : new Error(e));
+        });
+    } catch (e) {
+      console.log(
+        "[DEBUG] [TREZOR] SelectWallets some kinda weird error calling fetchWallets",
+        e
+      );
+    }
   }, [currentRequest.id]);
 
   return (

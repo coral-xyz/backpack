@@ -311,7 +311,7 @@ const options = {
                     ? {
                         // add support for react devtools in development mode
                         extension_pages:
-                          "script-src 'self' http://localhost:8097; object-src 'self'; frame-src: 'self' 'https://connect.trezor.io/'",
+                          "script-src 'self' http://localhost:8097; object-src 'self'; frame-src: 'self' 'https://connect.trezor.io/*' '*://127.0.0.1:21325/*'",
                       }
                     : undefined,
                 },
