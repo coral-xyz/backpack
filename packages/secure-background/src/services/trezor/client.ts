@@ -14,6 +14,8 @@ export class TrezorClient {
     request: SecureRequest<"LEDGER_SVM_SIGN_TX">["request"],
     options: SecureRequestOptions<"LEDGER_SVM_SIGN_TX", "ui">
   ): Promise<SecureResponse<"LEDGER_SVM_SIGN_TX", "ui">> {
+    // TODO: This is in ServiceWorker
+    // use normal SVM Sign event, then request trezor connect window and sign
     return this.client
       .send({
         name: "LEDGER_SVM_SIGN_TX",
@@ -22,6 +24,7 @@ export class TrezorClient {
         ...options,
       })
       .then((response) => {
+        // get the user to sign on trezor here
         return response;
       });
   }
