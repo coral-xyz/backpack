@@ -8,10 +8,10 @@ Clone the `trezor/trezor-suite` repo, then inside it run:
 ```
     yarn
     yarn build:libs
-    yarn workspace @trezor/connect-webextension build
-    node packages/connect-examples/update-webextensions-sw.js
-    yarn workspace @trezor/connect-iframe build:core-module
+    yarn workspace @trezor/connect-web build:webextension
+    yarn workspace @trezor/connect-web build:inline
+    node packages/connect-examples/update-webextensions.js
 ```
 
-You'll find the requisite files in `packages/connect-webextension/build`, copy them here
+You'll find the requisite files in `packages/connect-examples/webextension-mv3/build`, copy them here
 If additional files are necessary, modify the webpack config in `app-extension/webpack.config.js` to include them

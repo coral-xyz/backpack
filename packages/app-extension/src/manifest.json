@@ -21,7 +21,7 @@
     }
   },
   "content-security-policy": {
-    "extension_pages": "frame-src: 'self' *://connect.trezor.io/*"
+    "extension_pages": "frame-src: 'self' '*://connect.trezor.io/*'"
   },
   "content_scripts": [
     {
@@ -33,7 +33,7 @@
     },
     {
       "js": ["vendor/trezor-content-script.js"],
-      "matches": ["*://connect.trezor.io/9/*"]
+      "matches": ["*://connect.trezor.io/*"]
     }
   ],
   "icons": {
@@ -42,5 +42,5 @@
     "512": "anchor.png"
   },
   "host-permissions": ["*://connect.trezor.io/*", "*://127.0.0.1:21325/*"],
-  "permissions": ["alarms", "storage", "background"]
+  "permissions": ["alarms", "storage", "background", "*://connect.trezor.io/*"]
 }
