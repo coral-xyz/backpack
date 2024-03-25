@@ -269,6 +269,7 @@
   "hardware": "Hardware",
   "hardware_wallet": "Hardware wallet",
   "have_hardware_wallet": "Import hardware wallet",
+  "have_hardware_wallet_trezor": "Import hardware wallet (Trezor)",
   "help_ampersand_support": "Help & Support",
   "help_us_learn_more_about_you_as_an_investor": "Help us learn more about you as an investor. We’re required by law to collect this information.",
   "hidden_tokens": "Hidden Tokens",

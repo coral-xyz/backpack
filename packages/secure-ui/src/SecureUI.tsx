@@ -1,23 +1,20 @@
-import type { QueuedUiRequest } from "./_atoms/requestAtoms";
+import {
+  notificationListenerAtom,
+  secureBackgroundSenderAtom,
+} from "@coral-xyz/recoil";
 import type {
   SECURE_EVENTS,
   TransportBroadcastListener,
   TransportReceiver,
   TransportSender,
 } from "@coral-xyz/secure-clients/types";
-
-import type { ReactNode } from "react";
-import { Suspense, useMemo } from "react";
-
-import {
-  notificationListenerAtom,
-  secureBackgroundSenderAtom,
-} from "@coral-xyz/recoil";
 import {
   View,
   config as tamaguiConfig,
   TamaguiProvider,
 } from "@coral-xyz/tamagui";
+import type { ReactNode } from "react";
+import { Suspense, useMemo } from "react";
 import { RecoilRoot, useRecoilValueLoadable } from "recoil";
 
 import { Presentation, PresentationTypes } from "./Presentation";
@@ -27,15 +24,17 @@ import { EvmSignMessageRequest } from "./RequestHandlers/EvmSignMessageRequest";
 import { EvmSignTransactionRequest } from "./RequestHandlers/EvmSignTransactionRequest/EvmSignTransactionRequest";
 import { ExportBackupRequest } from "./RequestHandlers/ExportBackupRequest";
 import { GetMnemonicRequest } from "./RequestHandlers/GetMnemonicRequest";
-import { LedgerPreviewPublicKeysRequest } from "./RequestHandlers/LedgerRequests/LedgerPreviewPublicKeysRequest";
 import {
   LedgerSignEvents,
   LedgerSignRequest,
 } from "./RequestHandlers/LedgerRequests/LedgerSignRequest";
+import { HardwarePreviewPublicKeysRequest } from "./RequestHandlers/PreviewPublicKeysRequest";
 import { ResetBackpackRequest } from "./RequestHandlers/ResetBackpackRequest";
 import { SvmSignAllTransactionsRequest } from "./RequestHandlers/SvmSignAllTransactionsRequest";
+import { SvmSignInRequest } from "./RequestHandlers/SvmSignInRequest";
 import { SvmSignMessageRequest } from "./RequestHandlers/SvmSignMessageRequest";
 import { SvmSignTransactionRequest } from "./RequestHandlers/SvmSignTransactionRequest/SvmSignTransactionRequest";
+import { TrezorSignRequest } from "./RequestHandlers/TrezorRequests/TrezorSignRequest";
 import { UnlockRequest } from "./RequestHandlers/UnlockRequest";
 import { RequireUserUnlocked } from "./RequireUserUnlocked/RequireUserUnlocked";
 import SecureUIBottomSheetModalProvider from "./SecureUIBottomSheetModalProvider";
@@ -43,7 +42,7 @@ import {
   currentRequestAtom,
   secureUIReceiverAtom,
 } from "./_atoms/requestAtoms";
-import { SvmSignInRequest } from "./RequestHandlers/SvmSignInRequest";
+import type { QueuedUiRequest } from "./_atoms/requestAtoms";
 
 export function SecureUI({
   timing = 0,
@@ -80,6 +79,9 @@ export function SecureUI({
 function SecureUIRoot({ presentation }: { presentation?: PresentationTypes }) {
   const currentRequestLoadable = useRecoilValueLoadable(currentRequestAtom);
   const currentRequest = currentRequestLoadable.getValue();
+
+  console.log("[DEBUG] [SecureUIRoot] currentRequest: ", currentRequest);
+
   return (
     <Presentation presentation={presentation} currentRequest={currentRequest}>
       {currentRequest
@@ -130,15 +132,27 @@ function SecureUIRoot({ presentation }: { presentation?: PresentationTypes }) {
               case "LEDGER_EVM_SIGN_TX":
               case "LEDGER_EVM_SIGN_MESSAGE":
                 return (
-                  <LedgerSignRequest
+                  <TrezorSignRequest
                     currentRequest={
                       currentRequest as QueuedUiRequest<LedgerSignEvents>
                     }
                   />
                 );
+              /*
+                TODO: Implement
+              case "TREZOR_SVM_SIGN_TX":
+              case "TREZOR_SVM_SIGN_MESSAGE":
+                return (
+                  <TrezorSignRequest
+                    currentRequest={
+                      currentRequest as QueuedUiRequest<LedgerSignEvents>
+                    }
+                  />
+                );
+                */
               case "SECURE_USER_PREVIEW_WALLETS":
                 return (
-                  <LedgerPreviewPublicKeysRequest
+                  <HardwarePreviewPublicKeysRequest
                     currentRequest={
                       currentRequest as QueuedUiRequest<"SECURE_USER_PREVIEW_WALLETS">
                     }

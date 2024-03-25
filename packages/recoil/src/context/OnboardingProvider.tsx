@@ -178,6 +178,7 @@ export function OnboardingProvider({
 
         // TODO: we shouldn't use the same handler for both paths here.
         if (
+          keyringType === "trezor" ||
           keyringType === "ledger" ||
           action === "import" ||
           keyringType === "private-key"
@@ -238,7 +239,10 @@ export function OnboardingProvider({
     ): MnemonicKeyringInit | LedgerKeyringInit | PrivateKeyKeyringInit => {
       if (data.keyringType === "private-key") {
         return data.privateKeyKeyringInit!;
-      } else if (data.keyringType === "ledger") {
+      } else if (
+        data.keyringType === "ledger" ||
+        data.keyringType === "trezor"
+      ) {
         return {
           signedWalletDescriptors: data.signedWalletDescriptors!,
         };
@@ -266,6 +270,12 @@ export function OnboardingProvider({
         return data.signedWalletDescriptors!.map((descriptor) => ({
           type: BlockchainWalletInitType.HARDWARE,
           device: "ledger",
+          ...descriptor,
+        }));
+      } else if (data.keyringType === "trezor") {
+        return data.signedWalletDescriptors!.map((descriptor) => ({
+          type: BlockchainWalletInitType.HARDWARE,
+          device: "trezor",
           ...descriptor,
         }));
       } else {

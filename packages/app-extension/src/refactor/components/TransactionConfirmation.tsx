@@ -175,6 +175,7 @@ export async function withTransactionCancelBypass(fn: Function) {
     await fn();
   } catch (err: any) {
     const msg = (err.message ?? "") as string;
+    // FIXME: This throws on SUCCESSFUL token txs submitted through trezor
     console.error("unable to create transaction", err);
 
     if (

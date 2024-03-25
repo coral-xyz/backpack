@@ -20,64 +20,64 @@ export enum BlockchainWalletDescriptorType {
 }
 
 export type BlockchainWalletPublicKeyRequest<
-  T extends BlockchainWalletPreviewType = BlockchainWalletPreviewType
+  T extends BlockchainWalletPreviewType = BlockchainWalletPreviewType,
 > = T extends BlockchainWalletPreviewType.HARDWARE
   ? {
       type: T;
-      device: "ledger";
+      device: "ledger" | "trezor";
       blockchain: Blockchain;
       derivationPaths: string[];
     }
   : T extends BlockchainWalletPreviewType.PRIVATEKEY
-  ? {
-      type: T;
-      blockchain: Blockchain;
-      privateKey: string;
-    }
-  : T extends BlockchainWalletPreviewType.MNEMONIC
-  ? {
-      type: T;
-      blockchain: Blockchain;
-      mnemonic?: string;
-      derivationPaths: string[];
-    }
-  : T extends BlockchainWalletPreviewType.MNEMONIC_NEXT
-  ? {
-      type: T;
-      blockchain: Blockchain;
-      mnemonic?: string;
-    }
-  : never;
+    ? {
+        type: T;
+        blockchain: Blockchain;
+        privateKey: string;
+      }
+    : T extends BlockchainWalletPreviewType.MNEMONIC
+      ? {
+          type: T;
+          blockchain: Blockchain;
+          mnemonic?: string;
+          derivationPaths: string[];
+        }
+      : T extends BlockchainWalletPreviewType.MNEMONIC_NEXT
+        ? {
+            type: T;
+            blockchain: Blockchain;
+            mnemonic?: string;
+          }
+        : never;
 
 export type BlockchainWalletDescriptor<
-  T extends BlockchainWalletDescriptorType = BlockchainWalletDescriptorType
+  T extends BlockchainWalletDescriptorType = BlockchainWalletDescriptorType,
 > = T extends BlockchainWalletDescriptorType.HARDWARE
   ? {
       type: T;
-      device: "ledger";
+      device: "ledger" | "trezor";
       blockchain: Blockchain;
       publicKey: string;
       imported: boolean;
       derivationPath: string;
     }
   : T extends BlockchainWalletDescriptorType.PRIVATEKEY
-  ? {
-      type: T;
-      blockchain: Blockchain;
-      publicKey: string;
-      imported: boolean;
-    }
-  : T extends BlockchainWalletDescriptorType.MNEMONIC
-  ? {
-      type: T;
-      blockchain: Blockchain;
-      publicKey: string;
-      imported: boolean;
-      derivationPath: string;
-    }
-  : never;
+    ? {
+        type: T;
+        blockchain: Blockchain;
+        publicKey: string;
+        imported: boolean;
+      }
+    : T extends BlockchainWalletDescriptorType.MNEMONIC
+      ? {
+          type: T;
+          blockchain: Blockchain;
+          publicKey: string;
+          imported: boolean;
+          derivationPath: string;
+        }
+      : never;
 export type BlockchainWalletInit<
-  T extends BlockchainWalletInitType = BlockchainWalletInitType
+  T extends BlockchainWalletInitType = BlockchainWalletInitType,
 > = T extends BlockchainWalletInitType.MNEMONIC
   ? {
       type: T;
@@ -87,31 +87,31 @@ export type BlockchainWalletInit<
       derivationPath: string;
     }
   : T extends BlockchainWalletInitType.PRIVATEKEY_DERIVED
-  ? {
-      type: T;
-      blockchain: Blockchain;
-      mnemonic: string;
-      publicKey: string;
-      derivationPath: string;
-      name?: string;
-    }
-  : T extends BlockchainWalletInitType.PRIVATEKEY
-  ? {
-      type: T;
-      blockchain: Blockchain;
-      publicKey: string;
-      privateKey: string;
-      name?: string;
-    }
-  : T extends BlockchainWalletInitType.HARDWARE
-  ? {
-      type: T;
-      device: "ledger";
-      blockchain: Blockchain;
-      publicKey: string;
-      derivationPath: string;
-    }
-  : never;
+    ? {
+        type: T;
+        blockchain: Blockchain;
+        mnemonic: string;
+        publicKey: string;
+        derivationPath: string;
+        name?: string;
+      }
+    : T extends BlockchainWalletInitType.PRIVATEKEY
+      ? {
+          type: T;
+          blockchain: Blockchain;
+          publicKey: string;
+          privateKey: string;
+          name?: string;
+        }
+      : T extends BlockchainWalletInitType.HARDWARE
+        ? {
+            type: T;
+            device: "ledger" | "trezor";
+            blockchain: Blockchain;
+            publicKey: string;
+            derivationPath: string;
+          }
+        : never;
 
 export type BlockchainConfig<B extends Blockchain = Blockchain> = {
   caip2Id: string; // caip-2 "namespace:reference"

@@ -10,6 +10,7 @@ import {
   SolanaHdKeyringFactory,
   SolanaKeyringFactory,
   SolanaLedgerKeyringFactory,
+  SolanaTrezorKeyringFactory,
 } from "../services/svm/keyring";
 import type { SecureStore } from "../store/SecureStore";
 
@@ -33,21 +34,25 @@ export function keyringForBlockchain(
       store,
       new SolanaHdKeyringFactory(),
       new SolanaKeyringFactory(),
-      new SolanaLedgerKeyringFactory()
+      new SolanaLedgerKeyringFactory(),
+      new SolanaTrezorKeyringFactory()
     ),
     [Blockchain.ECLIPSE]: new BlockchainKeyring(
       Blockchain.ECLIPSE,
       store,
       new SolanaHdKeyringFactory(),
       new SolanaKeyringFactory(),
-      new SolanaLedgerKeyringFactory()
+      new SolanaLedgerKeyringFactory(),
+      new SolanaTrezorKeyringFactory()
     ),
     [Blockchain.ETHEREUM]: new BlockchainKeyring(
       Blockchain.ETHEREUM,
       store,
       new EthereumHdKeyringFactory(),
       new EthereumKeyringFactory(),
-      new EthereumLedgerKeyringFactory()
+      new EthereumLedgerKeyringFactory(),
+      // FIXME: Fix ETH Trezor properly
+      new SolanaTrezorKeyringFactory()
     ),
   }[blockchain];
 }

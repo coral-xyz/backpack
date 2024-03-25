@@ -21,6 +21,8 @@ import type {
   KeyringFactory,
   LedgerKeyring,
   LedgerKeyringFactory,
+  TrezorKeyring,
+  TrezorKeyringFactory,
 } from "./types";
 
 const logger = getLogger("background/backend/keyring");
@@ -31,9 +33,11 @@ export class BlockchainKeyring {
   private hdKeyringFactory: HdKeyringFactory;
   private keyringFactory: KeyringFactory;
   private ledgerKeyringFactory: LedgerKeyringFactory;
+  private trezorKeyringFactory: TrezorKeyringFactory;
   private hdKeyring?: HdKeyring;
   private importedKeyring?: Keyring;
   public ledgerKeyring?: LedgerKeyring;
+  public trezorKeyring?: TrezorKeyring;
   private activeWallet?: string;
   private deletedWallets?: Array<string>;
   private blockchain: Blockchain;
@@ -43,12 +47,14 @@ export class BlockchainKeyring {
     store: SecureStore,
     hdKeyringFactory: HdKeyringFactory,
     keyringFactory: KeyringFactory,
-    ledgerKeyringFactory: LedgerKeyringFactory
+    ledgerKeyringFactory: LedgerKeyringFactory,
+    trezorKeyringFactory: TrezorKeyringFactory
   ) {
     this.store = store;
     this.hdKeyringFactory = hdKeyringFactory;
     this.keyringFactory = keyringFactory;
     this.ledgerKeyringFactory = ledgerKeyringFactory;
+    this.trezorKeyringFactory = trezorKeyringFactory;
     this.blockchain = blockchain;
   }
 
@@ -56,6 +62,7 @@ export class BlockchainKeyring {
     hdPublicKeys: Array<string>;
     importedPublicKeys: Array<string>;
     ledgerPublicKeys: Array<string>;
+    trezorPublicKeys: Array<string>;
   } {
     const hdPublicKeys = this.hdKeyring ? this.hdKeyring.publicKeys() : [];
     const importedPublicKeys = this.importedKeyring
@@ -64,10 +71,15 @@ export class BlockchainKeyring {
     const ledgerPublicKeys = this.ledgerKeyring
       ? this.ledgerKeyring.publicKeys()
       : [];
+    const trezorPublicKeys = this.trezorKeyring
+      ? this.trezorKeyring.publicKeys()
+      : [];
+
     return {
       hdPublicKeys,
       importedPublicKeys,
       ledgerPublicKeys,
+      trezorPublicKeys,
     };
   }
 
@@ -77,6 +89,7 @@ export class BlockchainKeyring {
     }
 
     this.ledgerKeyring = this.ledgerKeyringFactory.init([]);
+    this.trezorKeyring = this.trezorKeyringFactory.init([]);
     this.importedKeyring = this.keyringFactory.init([]);
   }
 
@@ -225,13 +238,14 @@ export class BlockchainKeyring {
   }
 
   public toJson(): BlockchainKeyringJson {
-    if (!this.importedKeyring || !this.ledgerKeyring) {
+    if (!this.importedKeyring || !this.ledgerKeyring || !this.trezorKeyring) {
       throw new Error("blockchain keyring is locked");
     }
     return {
       hdKeyring: this.hdKeyring ? this.hdKeyring.toJson() : undefined,
       importedKeyring: this.importedKeyring.toJson(),
       ledgerKeyring: this.ledgerKeyring.toJson(),
+      trezorKeyring: this.trezorKeyring.toJson(),
       activeWallet: this.activeWallet!,
       deletedWallets: this.deletedWallets!,
     };
@@ -242,6 +256,7 @@ export class BlockchainKeyring {
       hdKeyring,
       importedKeyring,
       ledgerKeyring,
+      trezorKeyring,
       activeWallet,
       deletedWallets,
     } = json;
@@ -250,6 +265,7 @@ export class BlockchainKeyring {
       : undefined;
     this.importedKeyring = this.keyringFactory.fromJson(importedKeyring);
     this.ledgerKeyring = this.ledgerKeyringFactory.fromJson(ledgerKeyring);
+    this.trezorKeyring = this.trezorKeyringFactory.fromJson(trezorKeyring);
     this.activeWallet = activeWallet;
     this.deletedWallets = deletedWallets;
   }
@@ -283,6 +299,7 @@ export class BlockchainKeyring {
       this.hdKeyring,
       this.importedKeyring,
       this.ledgerKeyring,
+      this.trezorKeyring,
     ]) {
       if (keyring && keyring.publicKeys().find((k) => k === publicKey)) {
         return keyring;

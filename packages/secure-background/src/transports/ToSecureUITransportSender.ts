@@ -23,7 +23,7 @@ const logger = getLogger("secure-ui ToSecureUITransportSender");
 // Forwarder does not set its own origin and instead expects a origin to exist on the request.
 export class ToSecureUITransportSender<
   X extends SECURE_EVENTS,
-  R extends SecureRequestType = undefined
+  R extends SecureRequestType = undefined,
 > implements TransportSender<X, R>
 {
   private port: chrome.runtime.Port | null = null;
@@ -43,11 +43,16 @@ export class ToSecureUITransportSender<
     this.forwardOrigin = !!init.forwardOrigin;
 
     globalThis.chrome?.runtime?.onConnect.addListener((port) => {
+      console.log(
+        "[DEBUG] ToSecureUITransportSender: Plugin Connected",
+        port.name
+      );
       logger.debug("Plugin Connected", port.name);
 
       // if we are still connected to a differnt plugin disconnect it
       if (this.port && this.port?.name !== port.name) {
-        this.disconnectPlugin(this.port);
+        // FIXME: This causes Trezor account discovery & other methods to fail. Why?
+        //this.disconnectPlugin(this.port);
       }
 
       // set port
@@ -77,6 +82,10 @@ export class ToSecureUITransportSender<
   }
 
   private maybeDisconnectPlugin = async (port: chrome.runtime.Port) => {
+    console.log(
+      "[DEBUG] ToSecureUITransportSender: maybeDisconnectPlugin",
+      port.name
+    );
     // It's possible that a plugin is closed because a new one opened.
     // We only handle the disconnect if the port is currently connected.
     if (this.port?.name !== port.name) {
@@ -90,18 +99,24 @@ export class ToSecureUITransportSender<
     );
     // if same port has reconnected (reload)
     if (newPort?.name === port.name) {
+      console.log("[DEBUG] ToSecureUITransportSender: err 1");
       return; //-> dont send error responses
     }
 
     this.disconnectPlugin(port);
   };
   private disconnectPlugin = (port: chrome.runtime.Port) => {
+    console.log(
+      "[DEBUG] ToSecureUITransportSender: disconnectPlugin",
+      port.name
+    );
     logger.debug("Plugin Disconnected", port.name);
 
     // remove listeners & reference
     try {
       port.disconnect();
     } catch (e) {
+      console.log("[DEBUG] ToSecureUITransportSender: err 2");
       /* this is okay to fail, as it means no listeners left. */
       logger.error("Plugin Disconnect", e);
     }
@@ -110,6 +125,7 @@ export class ToSecureUITransportSender<
     this.responseQueue
       .filter((response) => response.portName === port.name)
       .forEach((response) => {
+        console.log("[DEBUG] ToSecureUITransportSender: err 3", response);
         const responseWithId = {
           name: response.request.name,
           id: response.request.id,
@@ -131,6 +147,7 @@ export class ToSecureUITransportSender<
   public send: TransportSend<X, R> = <T extends X = X, C extends R = R>(
     request: TransportSendRequest<T, C>
   ) => {
+    console.log("[DEBUG] ToSecureUITransportSender: send", request);
     // new request -> we wont need to close popup.
     clearTimeout(this.maybeClosePopupTimeout);
 
@@ -160,6 +177,7 @@ export class ToSecureUITransportSender<
     channel: string;
     data: SecureResponse<X, R>;
   }) => {
+    console.log("[DEBUG] ToSecureUITransportSender: responseHandler", response);
     if (response.channel !== CHANNEL_SECURE_UI_RESPONSE) {
       return;
     }
@@ -183,6 +201,7 @@ export class ToSecureUITransportSender<
     if (queuedRequest) {
       queuedRequest.resolve(response.data);
     } else {
+      console.log("[DEBUG] ToSecureUITransportSender: err 4");
       logger.error("No queued request found.", response.data);
     }
 
@@ -198,6 +217,7 @@ export class ToSecureUITransportSender<
   };
 
   private isPopupClosable = () => {
+    console.log("[DEBUG] ToSecureUITransportSender: isPopupClosable");
     // if we're not waiting for any more responses
     // and this is the popup we originally opened
     // -> we can close popup.
@@ -211,6 +231,7 @@ export class ToSecureUITransportSender<
   };
 
   private maybeClosePopup() {
+    console.log("[DEBUG] ToSecureUITransportSender: maybeClosePopup");
     // if we can close popup
     // -> close the popup.
     if (this.isPopupClosable() && this.port?.sender?.tab?.windowId) {
@@ -219,12 +240,17 @@ export class ToSecureUITransportSender<
       globalThis.chrome?.windows
         .remove(this.port.sender.tab.windowId)
         .catch((e) => {
+          console.log("[DEBUG] ToSecureUITransportSender: err 5");
           logger.error("Plugin Close", name, e);
         });
     }
   }
 
   private sendRequests = () => {
+    console.log(
+      "[DEBUG] ToSecureUITransportSender: sendRequests",
+      this.requestQueue
+    );
     // no queued requests -> done
     if (this.requestQueue.length <= 0) {
       return;
@@ -259,14 +285,17 @@ export class ToSecureUITransportSender<
           focused: true,
         })
         .catch((e) => {
+          console.log("[DEBUG] ToSecureUITransportSender: err 6");
           logger.error("window.update", e);
         });
     }
   };
 
   private openPopup = (windowId: string) => {
+    console.log("[DEBUG] ToSecureUITransportSender: openPopup", windowId);
     this.lastOpenedWindowId = windowId;
     openPopupWindow("popup.html?windowId=" + windowId).catch((e) => {
+      console.log("[DEBUG] ToSecureUITransportSender: err 7");
       logger.error("openPopup", e);
     });
   };
